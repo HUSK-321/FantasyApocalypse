@@ -17,7 +17,6 @@ void APlayableController::BeginPlay()
 
 void APlayableController::SetPlayerEvent(APlayableCharacter* ControllingPlayer)
 {
-	UE_LOG(LogTemp, Warning, TEXT("SetPlayerEvent"));
 	ControllingPlayer->PlayerHealthChangedEvent.AddDynamic(this, &APlayableController::SetHealthHUD);
 	ControllingPlayer->PlayerStaminaChangedEvent.AddDynamic(this, &APlayableController::SetStaminaHUD);
 }

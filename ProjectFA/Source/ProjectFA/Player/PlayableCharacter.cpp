@@ -37,7 +37,6 @@ void APlayableCharacter::BeginPlay()
 		// TODO : Controller should do this, not in player
 		PlayableController->SetPlayerEvent(this);
 	}
-	UE_LOG(LogTemp, Warning, TEXT("PostInitializeComponents"));
 	PlayerHealthChangedEvent.Broadcast(CurrentHealth, MaxHealth);
 	PlayerStaminaChangedEvent.Broadcast(CurrentStamina, MaxStamina);
 }
