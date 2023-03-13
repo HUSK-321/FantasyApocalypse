@@ -1,5 +1,6 @@
 #include "PlayableCharacter.h"
 
+#include "PlayableController.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
@@ -8,7 +9,8 @@ APlayableCharacter::APlayableCharacter()
 	:
 	CameraSpringArm(CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraSpringArm"))),
 	FollowCamera(CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"))),
-	MaxWalkSpeed(400.f), MaxSprintSpeed(700.f), bNowSprinting(false), MaxStamina(100.f), CurrentStamina(100.f),
+	MaxWalkSpeed(400.f), MaxSprintSpeed(700.f), bNowSprinting(false),
+	MaxHealth(100.f), CurrentHealth(100.f), MaxStamina(100.f), CurrentStamina(100.f),
 	StaminaIncreaseFactor(10.f), StaminaDecreaseFactor(20.f)
 {
 	PrimaryActorTick.bCanEverTick = true;
@@ -30,6 +32,9 @@ void APlayableCharacter::BeginPlay()
 	Super::BeginPlay();
 
 	GetCharacterMovement()->MaxWalkSpeed = MaxWalkSpeed;
+
+	SetHealthHUD();
+	SetStaminaHUD();
 }
 
 void APlayableCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -135,4 +140,28 @@ void APlayableCharacter::ManageStaminaAmount(float DeltaTime)
 	{
 		SetSprinting(false);
 	}
+
+	SetStaminaHUD();
+}
+
+void APlayableCharacter::ReceiveDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType,
+                                       AController* InstigatorController, AActor* DamageCauser)
+{
+	CurrentHealth = FMath::Clamp(CurrentHealth - Damage, 0.f, MaxHealth);
+
+	SetHealthHUD();
+}
+
+void APlayableCharacter::SetHealthHUD()
+{
+	PlayableController = (PlayableController == nullptr) ? Cast<APlayableController>(Controller) : PlayableController;
+	if(PlayableController == nullptr)	return;
+	PlayableController->SetHealthHUD(CurrentHealth, MaxHealth);
+}
+
+void APlayableCharacter::SetStaminaHUD()
+{
+	PlayableController = (PlayableController == nullptr) ? Cast<APlayableController>(Controller) : PlayableController;
+	if(PlayableController == nullptr)	return;
+	PlayableController->SetStaminaHUD(CurrentStamina, MaxStamina);
 }

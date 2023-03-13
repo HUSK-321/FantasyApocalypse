@@ -9,6 +9,7 @@
 class UInputComponent;
 class USpringArmComponent;
 class UCameraComponent;
+class APlayableController;
 
 UCLASS()
 class PROJECTFA_API APlayableCharacter : public ACharacter
@@ -16,15 +17,23 @@ class PROJECTFA_API APlayableCharacter : public ACharacter
 	GENERATED_BODY()
 
 private:
-	
+
+	UPROPERTY()
 	TObjectPtr<USpringArmComponent> CameraSpringArm;
+	UPROPERTY()
 	TObjectPtr<UCameraComponent> FollowCamera;
+	UPROPERTY()
+	TObjectPtr<APlayableController> PlayableController;
 
 	UPROPERTY(EditAnywhere, Category = "Player Property")
 	float MaxWalkSpeed;
 	UPROPERTY(EditAnywhere, Category = "Player Property")
 	float MaxSprintSpeed;
 	bool bNowSprinting;
+	UPROPERTY(EditAnywhere, Category = "Player Property")
+	float MaxHealth;
+	UPROPERTY(EditAnywhere, Category = "Player Property")
+	float CurrentHealth;
 	UPROPERTY(EditAnywhere, Category = "Player Property")
 	float MaxStamina;
 	UPROPERTY(EditAnywhere, Category = "Player Property")
@@ -54,7 +63,11 @@ private:
 	void CrouchButtonPressed();
 	void SprintButtonPressed();
 	void SprintButtonReleased();
+	UFUNCTION()
+	void ReceiveDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType, AController* InstigatorController, AActor* DamageCauser);
 	void SetSprinting(bool bSprinting);
 	void ManageStaminaAmount(float DeltaTime);
 
+	void SetHealthHUD();
+	void SetStaminaHUD();
 };
