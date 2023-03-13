@@ -76,3 +76,5 @@ DerivedDataCache/*
 # Assets from EpicGames
 # Content/[ASSET NAME]/*
 # !Content/[ASSET NAME]/.gitkeep
+Content/InfinityBladeWeapons/*
+!Content/InfinityBladeWeapons/.gitkeep
