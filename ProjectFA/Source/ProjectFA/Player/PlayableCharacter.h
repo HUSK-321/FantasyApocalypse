@@ -9,12 +9,18 @@
 class UInputComponent;
 class USpringArmComponent;
 class UCameraComponent;
-class APlayableController;
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FPlayerCurrentMaxDelegate, const float&, CurrentValue, const float&, MaxValue);
 
 UCLASS()
 class PROJECTFA_API APlayableCharacter : public ACharacter
 {
 	GENERATED_BODY()
+
+public:
+	
+	FPlayerCurrentMaxDelegate PlayerHealthChangedEvent;
+	FPlayerCurrentMaxDelegate PlayerStaminaChangedEvent;
 
 private:
 
@@ -22,8 +28,6 @@ private:
 	TObjectPtr<USpringArmComponent> CameraSpringArm;
 	UPROPERTY()
 	TObjectPtr<UCameraComponent> FollowCamera;
-	UPROPERTY()
-	TObjectPtr<APlayableController> PlayableController;
 
 	UPROPERTY(EditAnywhere, Category = "Player Property")
 	float MaxWalkSpeed;
@@ -67,7 +71,4 @@ private:
 	void ReceiveDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType, AController* InstigatorController, AActor* DamageCauser);
 	void SetSprinting(bool bSprinting);
 	void ManageStaminaAmount(float DeltaTime);
-
-	void SetHealthHUD();
-	void SetStaminaHUD();
 };

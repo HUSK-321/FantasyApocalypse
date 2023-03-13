@@ -1,5 +1,4 @@
 #include "PlayableCharacter.h"
-
 #include "PlayableController.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
@@ -33,8 +32,14 @@ void APlayableCharacter::BeginPlay()
 
 	GetCharacterMovement()->MaxWalkSpeed = MaxWalkSpeed;
 
-	SetHealthHUD();
-	SetStaminaHUD();
+	if(auto PlayableController = Cast<APlayableController>(Controller))
+	{
+		// TODO : Controller should do this, not in player
+		PlayableController->SetPlayerEvent(this);
+	}
+	UE_LOG(LogTemp, Warning, TEXT("PostInitializeComponents"));
+	PlayerHealthChangedEvent.Broadcast(CurrentHealth, MaxHealth);
+	PlayerStaminaChangedEvent.Broadcast(CurrentStamina, MaxStamina);
 }
 
 void APlayableCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -141,7 +146,7 @@ void APlayableCharacter::ManageStaminaAmount(float DeltaTime)
 		SetSprinting(false);
 	}
 
-	SetStaminaHUD();
+	PlayerStaminaChangedEvent.Broadcast(CurrentStamina, MaxStamina);
 }
 
 void APlayableCharacter::ReceiveDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType,
@@ -149,19 +154,5 @@ void APlayableCharacter::ReceiveDamage(AActor* DamagedActor, float Damage, const
 {
 	CurrentHealth = FMath::Clamp(CurrentHealth - Damage, 0.f, MaxHealth);
 
-	SetHealthHUD();
-}
-
-void APlayableCharacter::SetHealthHUD()
-{
-	PlayableController = (PlayableController == nullptr) ? Cast<APlayableController>(Controller) : PlayableController;
-	if(PlayableController == nullptr)	return;
-	PlayableController->SetHealthHUD(CurrentHealth, MaxHealth);
-}
-
-void APlayableCharacter::SetStaminaHUD()
-{
-	PlayableController = (PlayableController == nullptr) ? Cast<APlayableController>(Controller) : PlayableController;
-	if(PlayableController == nullptr)	return;
-	PlayableController->SetStaminaHUD(CurrentStamina, MaxStamina);
+	PlayerHealthChangedEvent.Broadcast(CurrentHealth, MaxHealth);
 }

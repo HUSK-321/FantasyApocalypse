@@ -2,6 +2,7 @@
 
 
 #include "PlayableController.h"
+#include "PlayableCharacter.h"
 #include "Components/ProgressBar.h"
 #include "Components/TextBlock.h"
 #include "ProjectFA/HUD/PlayerOverlay.h"
@@ -12,6 +13,13 @@ void APlayableController::BeginPlay()
 	Super::BeginPlay();
 
 	ProjectFAHUD = Cast<AProjectFAHUD>(GetHUD());
+}
+
+void APlayableController::SetPlayerEvent(APlayableCharacter* ControllingPlayer)
+{
+	UE_LOG(LogTemp, Warning, TEXT("SetPlayerEvent"));
+	ControllingPlayer->PlayerHealthChangedEvent.AddDynamic(this, &APlayableController::SetHealthHUD);
+	ControllingPlayer->PlayerStaminaChangedEvent.AddDynamic(this, &APlayableController::SetStaminaHUD);
 }
 
 void APlayableController::SetHealthHUD(const float& CurrentHealth, const float& MaxHealth)

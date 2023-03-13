@@ -9,6 +9,7 @@
 /**
  * 
  */
+class APlayableCharacter;
 class AProjectFAHUD;
 
 UCLASS()
@@ -26,6 +27,10 @@ private:
 
 public:
 
+	void SetPlayerEvent(APlayableCharacter* ControllingPlayer);
+
+	UFUNCTION()
 	void SetHealthHUD(const float& CurrentHealth, const float& MaxHealth);
+	UFUNCTION()
 	void SetStaminaHUD(const float& CurrentStamina, const float& MaxStamina);
 };
