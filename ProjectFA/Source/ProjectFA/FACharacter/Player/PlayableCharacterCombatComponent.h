@@ -8,6 +8,7 @@
 
 
 class APlayableCharacter;
+class AWeapon;
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class PROJECTFA_API UPlayableCharacterCombatComponent : public UActorComponent
@@ -19,13 +20,13 @@ private:
 	UPROPERTY()
 	TObjectPtr<APlayableCharacter> PlayableCharacter;
 	UPROPERTY()
-	TObjectPtr<AActor> EquippedWeapon;
+	TObjectPtr<AWeapon> EquippedWeapon;
 
 public:
 
 	UPlayableCharacterCombatComponent();
 
-	void EquipWeapon(AActor* WeaponToEquip);
+	void EquipWeapon(AWeapon* WeaponToEquip);
 	void Attack();
 	
 protected:

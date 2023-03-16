@@ -2,9 +2,9 @@
 
 
 #include "PlayableCharacterCombatComponent.h"
-
 #include "PlayableCharacter.h"
 #include "Engine/SkeletalMeshSocket.h"
+#include "ProjectFA/InGameItem/Weapon/Weapon.h"
 
 UPlayableCharacterCombatComponent::UPlayableCharacterCombatComponent()
 {
@@ -18,7 +18,7 @@ void UPlayableCharacterCombatComponent::BeginPlay()
 	PlayableCharacter = Cast<APlayableCharacter>(GetOwner());
 }
 
-void UPlayableCharacterCombatComponent::EquipWeapon(AActor* WeaponToEquip)
+void UPlayableCharacterCombatComponent::EquipWeapon(AWeapon* WeaponToEquip)
 {
 	if(PlayableCharacter == nullptr)	return;
 	
