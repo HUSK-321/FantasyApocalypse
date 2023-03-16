@@ -3,17 +3,20 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/Character.h"
+#include "ProjectFA/FACharacter/FACharacter.h"
 #include "PlayableCharacter.generated.h"
 
 class UInputComponent;
 class USpringArmComponent;
 class UCameraComponent;
+class UPlayableCharacterCombatComponent;
+class UInventoryComponent;
+class APickupItem;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FPlayerCurrentMaxDelegate, const float&, CurrentValue, const float&, MaxValue);
 
 UCLASS()
-class PROJECTFA_API APlayableCharacter : public ACharacter
+class PROJECTFA_API APlayableCharacter : public AFACharacter
 {
 	GENERATED_BODY()
 
@@ -28,16 +31,16 @@ private:
 	TObjectPtr<USpringArmComponent> CameraSpringArm;
 	UPROPERTY()
 	TObjectPtr<UCameraComponent> FollowCamera;
+	UPROPERTY()
+	TObjectPtr<UPlayableCharacterCombatComponent> CombatComponent;
+	UPROPERTY()
+	TObjectPtr<UInventoryComponent> InventoryComponent;	
 
 	UPROPERTY(EditAnywhere, Category = "Player Property")
 	float MaxWalkSpeed;
 	UPROPERTY(EditAnywhere, Category = "Player Property")
 	float MaxSprintSpeed;
 	bool bNowSprinting;
-	UPROPERTY(EditAnywhere, Category = "Player Property")
-	float MaxHealth;
-	UPROPERTY(EditAnywhere, Category = "Player Property")
-	float CurrentHealth;
 	UPROPERTY(EditAnywhere, Category = "Player Property")
 	float MaxStamina;
 	UPROPERTY(EditAnywhere, Category = "Player Property")
@@ -47,11 +50,18 @@ private:
 	UPROPERTY(EditAnywhere, Category = "Player Property")
 	float StaminaDecreaseFactor;
 
+	// TODO : change to TArray
+	TObjectPtr<APickupItem> currentPickupItem;
+
 public:
 	
 	APlayableCharacter();
 	virtual void Tick(float DeltaTime) override;
 	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
+
+	void SetCurrentPickupItem(APickupItem* PickupItem);
+
+	FORCEINLINE UPlayableCharacterCombatComponent* GetplayerCombatComponent() const { return CombatComponent; }
 
 protected:
 	
@@ -67,8 +77,8 @@ private:
 	void CrouchButtonPressed();
 	void SprintButtonPressed();
 	void SprintButtonReleased();
-	UFUNCTION()
-	void ReceiveDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType, AController* InstigatorController, AActor* DamageCauser);
+	void InteractionButtonPressed();
+	virtual void ReceiveDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType, AController* InstigatorController, AActor* DamageCauser) override;
 	void SetSprinting(bool bSprinting);
 	void ManageStaminaAmount(float DeltaTime);
 };

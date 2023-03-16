@@ -74,7 +74,7 @@ Plugins/*/Intermediate/*
 DerivedDataCache/*
 
 # Assets from EpicGames
-# Content/[ASSET NAME]/*
-# !Content/[ASSET NAME]/.gitkeep
-Content/InfinityBladeWeapons/*
-!Content/InfinityBladeWeapons/.gitkeep
+# Content/Assets/[ASSET NAME]/*
+# !Content/Assets/[ASSET NAME]/.gitkeep
+Content/Assets/InfinityBladeWeapons/*
+!Content/Assets/InfinityBladeWeapons/.gitkeep
