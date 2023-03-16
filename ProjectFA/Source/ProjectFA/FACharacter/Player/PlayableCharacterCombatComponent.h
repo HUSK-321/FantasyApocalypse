@@ -19,7 +19,7 @@ private:
 
 	UPROPERTY()
 	TObjectPtr<APlayableCharacter> PlayableCharacter;
-	UPROPERTY()
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<AWeapon> EquippedWeapon;
 
 public:

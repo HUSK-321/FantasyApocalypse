@@ -47,12 +47,11 @@ void AEnemy::OnSensingPawn(APawn* OtherPawn)
 void AEnemy::ReceiveDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType,
 	AController* InstigatorController, AActor* DamageCauser)
 {
-	UE_LOG(LogTemp, Warning, TEXT("Enemy Damaged"));
 	CurrentHealth = FMath::Clamp(CurrentHealth - Damage, 0.f, MaxHealth);
 
+	UE_LOG(LogTemp, Warning, TEXT("Enemy Damaged : %f"), Damage);
 	if(CurrentHealth <= 0)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Enemy Dead"));
 	}
 }
-

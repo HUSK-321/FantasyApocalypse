@@ -29,8 +29,3 @@ void AFACharacter::ReceiveDamage(AActor* DamagedActor, float Damage, const UDama
 	AController* InstigatorController, AActor* DamageCauser)
 {
 }
-
-void AFACharacter::DoNormalAttack()
-{
-}
-

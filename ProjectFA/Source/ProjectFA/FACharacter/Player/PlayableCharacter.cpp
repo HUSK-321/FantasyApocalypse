@@ -37,6 +37,8 @@ void APlayableCharacter::BeginPlay()
 
 	GetCharacterMovement()->MaxWalkSpeed = MaxWalkSpeed;
 
+	OnTakeAnyDamage.AddDynamic(this, &APlayableCharacter::ReceiveDamage);
+
 	if(auto PlayableController = Cast<APlayableController>(Controller))
 	{
 		// TODO : Controller should do this, not in player
@@ -55,6 +57,7 @@ void APlayableCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 	PlayerInputComponent->BindAction("Sprint", IE_Pressed, this, &ThisClass::SprintButtonPressed);
 	PlayerInputComponent->BindAction("Sprint", IE_Released, this, &ThisClass::SprintButtonReleased);
 	PlayerInputComponent->BindAction("Interact", IE_Pressed, this, &ThisClass::InteractionButtonPressed);
+	PlayerInputComponent->BindAction("Attack", IE_Pressed, this, &ThisClass::AttackButtonPressed);
 
 	PlayerInputComponent->BindAxis("MoveForward", this, &ThisClass::MoveForward);
 	PlayerInputComponent->BindAxis("MoveRight", this, &ThisClass::MoveRight);
@@ -161,6 +164,7 @@ void APlayableCharacter::ReceiveDamage(AActor* DamagedActor, float Damage, const
 {
 	CurrentHealth = FMath::Clamp(CurrentHealth - Damage, 0.f, MaxHealth);
 
+	UE_LOG(LogTemp, Warning, TEXT("Player Damaged : %f"), Damage);
 	PlayerHealthChangedEvent.Broadcast(CurrentHealth, MaxHealth);
 }
 
@@ -174,4 +178,18 @@ void APlayableCharacter::InteractionButtonPressed()
 	if(currentPickupItem == nullptr)	return;
 
 	InventoryComponent->SetPickupItemToInventory(currentPickupItem);	
+}
+
+void APlayableCharacter::AttackButtonPressed()
+{
+	if(CombatComponent == nullptr)	return;
+	CombatComponent->Attack();
+}
+
+void APlayableCharacter::PlayNormalAttackMontage()
+{
+	if(NormalAttackMontage == nullptr)	return;
+	UAnimInstance* PlayerAnimInstance = GetMesh()->GetAnimInstance();
+	if(PlayerAnimInstance == nullptr)	return;
+	PlayerAnimInstance->Montage_Play(NormalAttackMontage);
 }

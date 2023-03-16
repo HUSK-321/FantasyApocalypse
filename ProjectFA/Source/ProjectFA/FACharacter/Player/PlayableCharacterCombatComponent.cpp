@@ -38,4 +38,6 @@ void UPlayableCharacterCombatComponent::EquipWeapon(AWeapon* WeaponToEquip)
 
 void UPlayableCharacterCombatComponent::Attack()
 {
+	if(EquippedWeapon == nullptr)	return;
+	PlayableCharacter->PlayNormalAttackMontage();
 }
