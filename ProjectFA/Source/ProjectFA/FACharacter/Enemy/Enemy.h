@@ -7,6 +7,8 @@
 #include "Enemy.generated.h"
 
 class UPawnSensingComponent;
+class UBehaviorTree;
+class AEnemyController;
 
 UCLASS()
 class PROJECTFA_API AEnemy : public AFACharacter
@@ -17,11 +19,19 @@ private:
 
 	UPROPERTY(EditAnywhere)
 	TObjectPtr<UPawnSensingComponent> PawnSensingComponent;
-	TObjectPtr<AActor> TargetActor;
+	TObjectPtr<AEnemyController> EnemyController;
+	UPROPERTY(EditAnywhere, Category = "Behaviour Tree", meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UBehaviorTree> EnemyBehaviorTree;
+	UPROPERTY(EditAnywhere, Category = "Behaviour Tree", meta = (AllowPrivateAccess = "true"))
+	FVector PatrolStartPoint;
+	UPROPERTY(EditAnywhere, Category = "Behaviour Tree", meta = (AllowPrivateAccess = "true"))
+	FVector PatrolEndPoint;
 
 public:
 	
 	AEnemy();
+
+	FORCEINLINE UBehaviorTree* GetEnemyBehaviorTree() const { return EnemyBehaviorTree; }
 
 protected:
 	
