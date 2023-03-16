@@ -22,10 +22,15 @@ private:
 	TObjectPtr<USphereComponent> PickupAreaSphere;
 
 protected:
-	
+
+	UPROPERTY(EditDefaultsOnly, Category = "Item Property")
 	FString ItemName;
+	UPROPERTY(EditDefaultsOnly, Category = "Item Property")
 	FString ItemDescription;
+	UPROPERTY(EditDefaultsOnly, Category = "Item Property")
 	float ItemPowerAmount;
+	UPROPERTY(EditDefaultsOnly, Category = "Item Property")
+	float ItemWeight;
 	
 public:
 	
