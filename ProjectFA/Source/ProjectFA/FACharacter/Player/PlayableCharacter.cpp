@@ -1,4 +1,7 @@
 #include "PlayableCharacter.h"
+
+#include "InventoryComponent.h"
+#include "PlayableCharacterCombatComponent.h"
 #include "PlayableController.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
@@ -8,8 +11,10 @@ APlayableCharacter::APlayableCharacter()
 	:
 	CameraSpringArm(CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraSpringArm"))),
 	FollowCamera(CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"))),
+	CombatComponent(CreateDefaultSubobject<UPlayableCharacterCombatComponent>(TEXT("CombatComponent"))),
+	InventoryComponent(CreateDefaultSubobject<UInventoryComponent>(TEXT("InventoryComponent"))),
 	MaxWalkSpeed(400.f), MaxSprintSpeed(700.f), bNowSprinting(false),
-	MaxHealth(100.f), CurrentHealth(100.f), MaxStamina(100.f), CurrentStamina(100.f),
+	MaxStamina(100.f), CurrentStamina(100.f),
 	StaminaIncreaseFactor(10.f), StaminaDecreaseFactor(20.f)
 {
 	PrimaryActorTick.bCanEverTick = true;
@@ -49,6 +54,7 @@ void APlayableCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 	PlayerInputComponent->BindAction("Crouch", IE_Pressed, this, &ThisClass::CrouchButtonPressed);
 	PlayerInputComponent->BindAction("Sprint", IE_Pressed, this, &ThisClass::SprintButtonPressed);
 	PlayerInputComponent->BindAction("Sprint", IE_Released, this, &ThisClass::SprintButtonReleased);
+	PlayerInputComponent->BindAction("Interact", IE_Pressed, this, &ThisClass::InteractionButtonPressed);
 
 	PlayerInputComponent->BindAxis("MoveForward", this, &ThisClass::MoveForward);
 	PlayerInputComponent->BindAxis("MoveRight", this, &ThisClass::MoveRight);
@@ -97,6 +103,8 @@ void APlayableCharacter::LookUp(float Value)
 
 void APlayableCharacter::Jump()
 {
+	const float StaminaComsumeAmount = 20.f;
+	if(CurrentStamina < StaminaComsumeAmount)	return;
 	if(bIsCrouched)
 	{
 		UnCrouch();
@@ -154,4 +162,16 @@ void APlayableCharacter::ReceiveDamage(AActor* DamagedActor, float Damage, const
 	CurrentHealth = FMath::Clamp(CurrentHealth - Damage, 0.f, MaxHealth);
 
 	PlayerHealthChangedEvent.Broadcast(CurrentHealth, MaxHealth);
+}
+
+void APlayableCharacter::SetCurrentPickupItem(APickupItem* PickupItem)
+{
+	currentPickupItem = PickupItem;
+}
+
+void APlayableCharacter::InteractionButtonPressed()
+{
+	if(currentPickupItem == nullptr)	return;
+
+	InventoryComponent->SetPickupItemToInventory(currentPickupItem);	
 }
