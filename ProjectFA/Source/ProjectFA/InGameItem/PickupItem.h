@@ -14,14 +14,12 @@ class PROJECTFA_API APickupItem : public AActor
 {
 	GENERATED_BODY()
 
-private:
-	
+protected:
+
 	UPROPERTY(EditAnywhere)
 	TObjectPtr<USkeletalMeshComponent> PickupItemMesh;
 	UPROPERTY(EditAnywhere)
 	TObjectPtr<USphereComponent> PickupAreaSphere;
-
-protected:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Item Property")
 	FString ItemName;

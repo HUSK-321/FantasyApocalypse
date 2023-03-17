@@ -31,7 +31,7 @@ private:
 	TObjectPtr<USpringArmComponent> CameraSpringArm;
 	UPROPERTY()
 	TObjectPtr<UCameraComponent> FollowCamera;
-	UPROPERTY()
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UPlayableCharacterCombatComponent> CombatComponent;
 	UPROPERTY()
 	TObjectPtr<UInventoryComponent> InventoryComponent;	
@@ -60,8 +60,9 @@ public:
 	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
 
 	void SetCurrentPickupItem(APickupItem* PickupItem);
+	void PlayNormalAttackMontage(FName NormalAttackSectionName);
 
-	FORCEINLINE UPlayableCharacterCombatComponent* GetplayerCombatComponent() const { return CombatComponent; }
+	FORCEINLINE UPlayableCharacterCombatComponent* GetPlayerCombatComponent() const { return CombatComponent; }
 
 protected:
 	
@@ -78,6 +79,7 @@ private:
 	void SprintButtonPressed();
 	void SprintButtonReleased();
 	void InteractionButtonPressed();
+	void AttackButtonPressed();
 	virtual void ReceiveDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType, AController* InstigatorController, AActor* DamageCauser) override;
 	void SetSprinting(bool bSprinting);
 	void ManageStaminaAmount(float DeltaTime);

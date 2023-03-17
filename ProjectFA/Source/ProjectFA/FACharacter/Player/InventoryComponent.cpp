@@ -18,7 +18,7 @@ void UInventoryComponent::BeginPlay()
 	PlayableCharacter = Cast<APlayableCharacter>(GetOwner());
 	if(PlayableCharacter)
 	{
-		PlayerCombatComponent = PlayableCharacter->GetplayerCombatComponent();
+		PlayerCombatComponent = PlayableCharacter->GetPlayerCombatComponent();
 	}
 }
 

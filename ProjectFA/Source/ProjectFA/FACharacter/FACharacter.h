@@ -30,7 +30,6 @@ protected:
 	
 	UFUNCTION()
 	virtual void ReceiveDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType, AController* InstigatorController, AActor* DamageCauser);
-	virtual void DoNormalAttack();
 
 protected:
 
