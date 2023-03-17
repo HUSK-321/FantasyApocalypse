@@ -9,6 +9,7 @@
 class UPawnSensingComponent;
 class UBehaviorTree;
 class AEnemyController;
+class USphereComponent;
 
 UCLASS()
 class PROJECTFA_API AEnemy : public AFACharacter
@@ -19,6 +20,8 @@ private:
 
 	UPROPERTY(EditAnywhere)
 	TObjectPtr<UPawnSensingComponent> PawnSensingComponent;
+	UPROPERTY(EditAnywhere)
+	TObjectPtr<USphereComponent> AttackSphere; 
 	TObjectPtr<AEnemyController> EnemyController;
 	UPROPERTY(EditAnywhere, Category = "Behaviour Tree", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UBehaviorTree> EnemyBehaviorTree;
@@ -38,5 +41,11 @@ protected:
 	virtual void BeginPlay() override;
 	UFUNCTION()
 	void OnSensingPawn(APawn* OtherPawn);
+	UFUNCTION()
+	void AttackSphereOnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp,
+												int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+	UFUNCTION()
+	void AttackSphereOnOverlapEnd(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp,
+												int32 OtherBodyIndex);
 	virtual void ReceiveDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType, AController* InstigatorController, AActor* DamageCauser) override;
 };

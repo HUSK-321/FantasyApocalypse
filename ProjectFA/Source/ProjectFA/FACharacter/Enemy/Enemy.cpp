@@ -2,17 +2,21 @@
 
 
 #include "Enemy.h"
-
 #include "EnemyController.h"
+#include "Components/SphereComponent.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Perception/PawnSensingComponent.h"
 #include "ProjectFA/FACharacter/Player/PlayableCharacter.h"
 
 AEnemy::AEnemy()
 	:
-	PawnSensingComponent(CreateDefaultSubobject<UPawnSensingComponent>(TEXT("PawnSensingComponent")))
+	PawnSensingComponent(CreateDefaultSubobject<UPawnSensingComponent>(TEXT("PawnSensingComponent"))),
+	AttackSphere(CreateDefaultSubobject<USphereComponent>(TEXT("AttackSphere")))
 {
 	PrimaryActorTick.bCanEverTick = false;
+
+	AttackSphere->SetupAttachment(GetRootComponent());
+	GetMesh()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Ignore);
 }
 
 void AEnemy::BeginPlay()
@@ -33,19 +37,39 @@ void AEnemy::BeginPlay()
 	}
 	
 	PawnSensingComponent->OnSeePawn.AddDynamic(this, &AEnemy::OnSensingPawn);
+	AttackSphere->OnComponentBeginOverlap.AddDynamic(this, &AEnemy::AttackSphereOnOverlapBegin);
+	AttackSphere->OnComponentEndOverlap.AddDynamic(this, &AEnemy::AttackSphereOnOverlapEnd);
 	OnTakeAnyDamage.AddDynamic(this, &AEnemy::ReceiveDamage);
 }
 
 void AEnemy::OnSensingPawn(APawn* OtherPawn)
 {
-	auto PlayableCharacter = Cast<APlayableCharacter>(OtherPawn);
+	const auto PlayableCharacter = Cast<APlayableCharacter>(OtherPawn);
 	if(PlayableCharacter == nullptr)	return;
 
 	EnemyController->GetEnemyBlackboardComponent()->SetValueAsObject(TEXT("TargetPlayer"), PlayableCharacter);
 }
 
+void AEnemy::AttackSphereOnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	const auto PlayableCharacter = Cast<APlayableCharacter>(OtherActor);
+	if(PlayableCharacter == nullptr)	return;
+
+	EnemyController->GetEnemyBlackboardComponent()->SetValueAsBool(TEXT("TargetPlayerIsNear"), true);
+}
+
+void AEnemy::AttackSphereOnOverlapEnd(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
+{
+	const auto PlayableCharacter = Cast<APlayableCharacter>(OtherActor);
+	if(PlayableCharacter == nullptr)	return;
+	
+	EnemyController->GetEnemyBlackboardComponent()->SetValueAsBool(TEXT("TargetPlayerIsNear"), false);
+}
+
 void AEnemy::ReceiveDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType,
-	AController* InstigatorController, AActor* DamageCauser)
+                           AController* InstigatorController, AActor* DamageCauser)
 {
 	CurrentHealth = FMath::Clamp(CurrentHealth - Damage, 0.f, MaxHealth);
 
