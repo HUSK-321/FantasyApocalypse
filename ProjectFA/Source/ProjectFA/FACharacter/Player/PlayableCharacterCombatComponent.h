@@ -21,6 +21,10 @@ private:
 	TObjectPtr<APlayableCharacter> PlayableCharacter;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<AWeapon> EquippedWeapon;
+	UPROPERTY(EditDefaultsOnly, Category = "Combat", meta = (AllowPrivateAccess = "true"))
+	TSubclassOf<AWeapon> DefaultPunchWeaponClass;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<AWeapon> DefaultPunchWeapon;
 
 public:
 

@@ -16,6 +16,11 @@ void UPlayableCharacterCombatComponent::BeginPlay()
 	Super::BeginPlay();
 
 	PlayableCharacter = Cast<APlayableCharacter>(GetOwner());
+	if(DefaultPunchWeaponClass)
+	{
+		DefaultPunchWeapon = GetWorld()->SpawnActor<AWeapon>(DefaultPunchWeaponClass);
+		EquipWeapon(DefaultPunchWeapon);
+	}
 }
 
 void UPlayableCharacterCombatComponent::EquipWeapon(AWeapon* WeaponToEquip)
@@ -39,5 +44,5 @@ void UPlayableCharacterCombatComponent::EquipWeapon(AWeapon* WeaponToEquip)
 void UPlayableCharacterCombatComponent::Attack()
 {
 	if(EquippedWeapon == nullptr)	return;
-	PlayableCharacter->PlayNormalAttackMontage();
+	PlayableCharacter->PlayNormalAttackMontage(AWeapon::GetWeaponSectionName(EquippedWeapon));
 }

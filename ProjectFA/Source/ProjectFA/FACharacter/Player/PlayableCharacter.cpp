@@ -186,10 +186,11 @@ void APlayableCharacter::AttackButtonPressed()
 	CombatComponent->Attack();
 }
 
-void APlayableCharacter::PlayNormalAttackMontage()
+void APlayableCharacter::PlayNormalAttackMontage(FName NormalAttackSectionName)
 {
 	if(NormalAttackMontage == nullptr)	return;
 	UAnimInstance* PlayerAnimInstance = GetMesh()->GetAnimInstance();
 	if(PlayerAnimInstance == nullptr)	return;
 	PlayerAnimInstance->Montage_Play(NormalAttackMontage);
+	PlayerAnimInstance->Montage_JumpToSection(NormalAttackSectionName);
 }

@@ -65,3 +65,18 @@ void AWeapon::SetWeaponState(const EWeaponState State)
 		break;
 	}	
 }
+
+FName AWeapon::GetWeaponSectionName(const AWeapon* Weapon)
+{
+	switch (Weapon->WeaponType)
+	{
+	case EWeaponType::EWT_Default:
+		return FName(TEXT("Default"));
+	case EWeaponType::EWT_OneHandSword:
+		return FName(TEXT("OneHandSword"));
+	case EWeaponType::EWT_MagicStaff:
+		return FName(TEXT("MagicStaff"));
+	default:
+		return FName(TEXT("Default"));
+	}
+}
