@@ -24,8 +24,10 @@ void UInventoryComponent::BeginPlay()
 
 void UInventoryComponent::SetPickupItemToInventory(APickupItem* InteractableItem)
 {
+	InteractableItem->SetItemState(EItemState::EIS_InInventory);
 	if(const auto Weapon = Cast<AWeapon>(InteractableItem))
 	{
+		InteractableItem->SetItemState(EItemState::EIS_Equipped);
 		PlayerCombatComponent->EquipWeapon(Weapon);
 	}
 }

@@ -6,6 +6,17 @@
 #include "GameFramework/Actor.h"
 #include "PickupItem.generated.h"
 
+UENUM(BlueprintType)
+enum class EItemState : uint8
+{
+	EIS_Initial		UMETA(DisplayName = "Initial State"),
+	EIS_Equipped	UMETA(DisplayName = "Equipped"),
+	EIS_Dropped		UMETA(DisplayName = "Dropped"),
+	EIS_InInventory	UMETA(DisplayName = "InInventory"),
+
+	EIS_MAX			UMETA(DisplayName = "DefaultMAX")
+};
+
 class USkeletalMeshComponent;
 class USphereComponent;
 
@@ -29,10 +40,13 @@ protected:
 	float ItemPowerAmount;
 	UPROPERTY(EditDefaultsOnly, Category = "Item Property")
 	float ItemWeight;
+
+	EItemState ItemState;
 	
 public:
 	
 	APickupItem();
+	void SetItemState(const EItemState State);
 
 protected:
 	
