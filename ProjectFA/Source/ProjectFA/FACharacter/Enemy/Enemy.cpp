@@ -79,3 +79,11 @@ void AEnemy::ReceiveDamage(AActor* DamagedActor, float Damage, const UDamageType
 		UE_LOG(LogTemp, Warning, TEXT("Enemy Dead"));
 	}
 }
+
+void AEnemy::PlayNormalAttackMontage()
+{
+	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+	if(AnimInstance == nullptr)		return;
+
+	AnimInstance->Montage_Play(NormalAttackMontage);
+}

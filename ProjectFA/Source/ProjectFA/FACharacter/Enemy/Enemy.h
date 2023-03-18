@@ -21,7 +21,8 @@ private:
 	UPROPERTY(EditAnywhere)
 	TObjectPtr<UPawnSensingComponent> PawnSensingComponent;
 	UPROPERTY(EditAnywhere)
-	TObjectPtr<USphereComponent> AttackSphere; 
+	TObjectPtr<USphereComponent> AttackSphere;
+	
 	TObjectPtr<AEnemyController> EnemyController;
 	UPROPERTY(EditAnywhere, Category = "Behaviour Tree", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UBehaviorTree> EnemyBehaviorTree;
@@ -48,4 +49,6 @@ protected:
 	void AttackSphereOnOverlapEnd(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp,
 												int32 OtherBodyIndex);
 	virtual void ReceiveDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType, AController* InstigatorController, AActor* DamageCauser) override;
+	UFUNCTION(BlueprintCallable)
+	void PlayNormalAttackMontage();
 };
