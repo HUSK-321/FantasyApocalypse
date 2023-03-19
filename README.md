@@ -21,3 +21,5 @@
 
 
 ## 사용 에셋
+
+- [Animation from 'Mixamo'](https://www.mixamo.com/#/)
