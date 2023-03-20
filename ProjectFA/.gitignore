@@ -78,3 +78,5 @@ DerivedDataCache/*
 # !Content/Assets/[ASSET NAME]/.gitkeep
 Content/Assets/InfinityBladeWeapons/*
 !Content/Assets/InfinityBladeWeapons/.gitkeep
+Content/Assets/StylizedVillage/*
+!Content/Assets/StylizedVillage/.gitkeep

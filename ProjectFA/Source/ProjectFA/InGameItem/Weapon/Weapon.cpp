@@ -39,33 +39,6 @@ void AWeapon::SetWeaponAttackCollision(bool bEnable)
 	AttackCollision->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, CollisionResponseToPawn);
 }
 
-void AWeapon::SetWeaponState(const EWeaponState State)
-{
-	WeaponState = State;
-	switch (WeaponState)
-	{
-	case EWeaponState::EWS_Equipped:
-		PickupItemMesh->SetSimulatePhysics(false);
-		PickupItemMesh->SetEnableGravity(false);
-		PickupItemMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-		AttackCollision->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Block);
-		AttackCollision->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Overlap);
-		SetWeaponAttackCollision(false);
-		break;
-		
-	case EWeaponState::EWS_Dropped:
-		PickupItemMesh->SetSimulatePhysics(true);
-		PickupItemMesh->SetEnableGravity(true);
-		PickupItemMesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
-		PickupItemMesh->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Block);
-		PickupItemMesh->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Ignore);
-		SetWeaponAttackCollision(false);
-		break;
-	default:
-		break;
-	}	
-}
-
 FName AWeapon::GetWeaponSectionName(const AWeapon* Weapon)
 {
 	switch (Weapon->WeaponType)

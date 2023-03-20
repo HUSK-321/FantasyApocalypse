@@ -10,6 +10,7 @@ class UPawnSensingComponent;
 class UBehaviorTree;
 class AEnemyController;
 class USphereComponent;
+class UBoxComponent;
 
 UCLASS()
 class PROJECTFA_API AEnemy : public AFACharacter
@@ -21,7 +22,10 @@ private:
 	UPROPERTY(EditAnywhere)
 	TObjectPtr<UPawnSensingComponent> PawnSensingComponent;
 	UPROPERTY(EditAnywhere)
-	TObjectPtr<USphereComponent> AttackSphere; 
+	TObjectPtr<USphereComponent> AttackSphere;
+	UPROPERTY(EditAnywhere)
+	TObjectPtr<UBoxComponent> AttackCollision;
+	
 	TObjectPtr<AEnemyController> EnemyController;
 	UPROPERTY(EditAnywhere, Category = "Behaviour Tree", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UBehaviorTree> EnemyBehaviorTree;
@@ -29,10 +33,15 @@ private:
 	FVector PatrolStartPoint;
 	UPROPERTY(EditAnywhere, Category = "Behaviour Tree", meta = (AllowPrivateAccess = "true"))
 	FVector PatrolEndPoint;
+	UPROPERTY(EditAnywhere, Category = "Enemy Properties")
+	TSubclassOf<UDamageType> DamageTypeClass;
 
 public:
 	
 	AEnemy();
+
+	UFUNCTION(BlueprintCallable, Category = "Enemy Attack")
+	void SetAttackCollision(bool bEnabled);
 
 	FORCEINLINE UBehaviorTree* GetEnemyBehaviorTree() const { return EnemyBehaviorTree; }
 
@@ -48,4 +57,9 @@ protected:
 	void AttackSphereOnOverlapEnd(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp,
 												int32 OtherBodyIndex);
 	virtual void ReceiveDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType, AController* InstigatorController, AActor* DamageCauser) override;
+	UFUNCTION(BlueprintCallable)
+	void PlayNormalAttackMontage();
+	UFUNCTION()
+	void AttackCollisionOnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp,
+											int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 };

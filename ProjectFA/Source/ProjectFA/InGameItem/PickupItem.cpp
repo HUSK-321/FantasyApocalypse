@@ -27,6 +27,42 @@ void APickupItem::BeginPlay()
 	
 }
 
+void APickupItem::SetItemState(const EItemState State)
+{
+	ItemState = State;
+	switch (ItemState)
+	{
+	case EItemState::EIS_Equipped:
+		PickupItemMesh->SetVisibility(true);
+		PickupItemMesh->SetSimulatePhysics(false);
+		PickupItemMesh->SetEnableGravity(false);
+		PickupItemMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		PickupAreaSphere->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		break;
+		
+	case EItemState::EIS_InInventory:
+		PickupItemMesh->SetVisibility(false);
+		PickupItemMesh->SetSimulatePhysics(false);
+		PickupItemMesh->SetEnableGravity(false);
+		PickupItemMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		PickupAreaSphere->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		break;
+		
+	case EItemState::EIS_Dropped:
+		PickupItemMesh->SetVisibility(true);
+		PickupItemMesh->SetSimulatePhysics(true);
+		PickupItemMesh->SetEnableGravity(true);
+		PickupItemMesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+		PickupItemMesh->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Block);
+		PickupItemMesh->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Ignore);
+		PickupAreaSphere->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		break;
+		
+	default:
+		break;
+	}	
+}
+
 void APickupItem::PickupAreaBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
