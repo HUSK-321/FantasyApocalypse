@@ -106,13 +106,14 @@ void APlayableCharacter::LookUp(float Value)
 
 void APlayableCharacter::Jump()
 {
-	const float StaminaComsumeAmount = 20.f;
-	if(CurrentStamina < StaminaComsumeAmount)	return;
+	constexpr float StaminaConsumeAmount = 20.f;
+	if(CurrentStamina < StaminaConsumeAmount)	return;
 	if(bIsCrouched)
 	{
 		UnCrouch();
 		return;
 	}
+	CurrentStamina -= StaminaConsumeAmount;
 	Super::Jump();
 }
 
@@ -184,13 +185,4 @@ void APlayableCharacter::AttackButtonPressed()
 {
 	if(CombatComponent == nullptr)	return;
 	CombatComponent->Attack();
-}
-
-void APlayableCharacter::PlayNormalAttackMontage(FName NormalAttackSectionName)
-{
-	if(NormalAttackMontage == nullptr)	return;
-	UAnimInstance* PlayerAnimInstance = GetMesh()->GetAnimInstance();
-	if(PlayerAnimInstance == nullptr)	return;
-	PlayerAnimInstance->Montage_Play(NormalAttackMontage);
-	PlayerAnimInstance->Montage_JumpToSection(NormalAttackSectionName);
 }

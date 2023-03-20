@@ -60,7 +60,6 @@ public:
 	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
 
 	void SetCurrentPickupItem(APickupItem* PickupItem);
-	void PlayNormalAttackMontage(FName NormalAttackSectionName);
 
 	FORCEINLINE UPlayableCharacterCombatComponent* GetPlayerCombatComponent() const { return CombatComponent; }
 

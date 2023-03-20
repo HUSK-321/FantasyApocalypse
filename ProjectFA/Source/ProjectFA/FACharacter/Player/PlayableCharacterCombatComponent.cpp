@@ -34,14 +34,13 @@ void UPlayableCharacterCombatComponent::EquipWeapon(AWeapon* WeaponToEquip)
 	}
 	EquippedWeapon = WeaponToEquip;
 	EquippedWeapon->SetOwner(PlayableCharacter);
-	const auto RightHandSocket = PlayableCharacter->GetMesh()->GetSocketByName("hand_r_weapon_socket");
-	if(RightHandSocket)
+	if(const auto RightHandSocket = PlayableCharacter->GetMesh()->GetSocketByName("hand_r_weapon_socket"))
 	{
 		RightHandSocket->AttachActor(EquippedWeapon, PlayableCharacter->GetMesh());
 	}
 }
 
-void UPlayableCharacterCombatComponent::Attack()
+void UPlayableCharacterCombatComponent::Attack() const
 {
 	if(EquippedWeapon == nullptr)	return;
 	PlayableCharacter->PlayNormalAttackMontage(AWeapon::GetWeaponSectionName(EquippedWeapon));

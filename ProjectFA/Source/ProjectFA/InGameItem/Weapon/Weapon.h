@@ -11,17 +11,6 @@
  */
 
 UENUM(BlueprintType)
-enum class EWeaponState : uint8
-{
-	EWS_Initial		UMETA(DisplayName = "Initial State"),
-	EWS_Equipped	UMETA(DisplayName = "Equipped"),
-	EWS_Dropped		UMETA(DisplayName = "Dropped"),
-	EWS_InInventory	UMETA(DisplayName = "InInventory"),
-
-	EWS_MAX			UMETA(DisplayName = "DefaultMAX")
-};
-
-UENUM(BlueprintType)
 enum class EWeaponType : uint8
 {
 	EWT_Default			UMETA(DisplayName = "Default"),
@@ -45,7 +34,6 @@ private:
 	TObjectPtr<UBoxComponent> AttackCollision;
 	UPROPERTY(EditAnywhere, Category = "Weapon Properties")
 	TSubclassOf<UDamageType> DamageTypeClass;
-	EWeaponState WeaponState;
 	UPROPERTY(EditDefaultsOnly, Category = "Weapon Properties")
 	EWeaponType WeaponType;
 

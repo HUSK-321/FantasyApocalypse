@@ -31,7 +31,7 @@ public:
 	UPlayableCharacterCombatComponent();
 
 	void EquipWeapon(AWeapon* WeaponToEquip);
-	void Attack();
+	void Attack() const;
 	
 protected:
 	

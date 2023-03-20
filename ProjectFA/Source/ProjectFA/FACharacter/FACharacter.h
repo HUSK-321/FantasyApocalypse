@@ -25,11 +25,14 @@ public:
 	
 	virtual void Tick(float DeltaTime) override;
 	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
+	UFUNCTION(BlueprintCallable)
+	virtual void PlayNormalAttackMontage(FName NormalAttackSectionName = FName("Default"));
 
 protected:
 	
 	UFUNCTION()
 	virtual void ReceiveDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType, AController* InstigatorController, AActor* DamageCauser);
+	virtual void CharacterDead();
 
 protected:
 

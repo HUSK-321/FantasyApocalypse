@@ -94,14 +94,6 @@ void AEnemy::ReceiveDamage(AActor* DamagedActor, float Damage, const UDamageType
 	}
 }
 
-void AEnemy::PlayNormalAttackMontage()
-{
-	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
-	if(AnimInstance == nullptr)		return;
-
-	AnimInstance->Montage_Play(NormalAttackMontage);
-}
-
 void AEnemy::SetAttackCollision(bool bEnabled)
 {
 	const auto CollisionEnabled = bEnabled ? ECollisionEnabled::QueryOnly : ECollisionEnabled::NoCollision;

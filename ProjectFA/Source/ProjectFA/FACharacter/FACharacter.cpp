@@ -25,7 +25,20 @@ void AFACharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 }
 
+void AFACharacter::PlayNormalAttackMontage(FName NormalAttackSectionName)
+{
+	if(NormalAttackMontage == nullptr)	return;
+	UAnimInstance* PlayerAnimInstance = GetMesh()->GetAnimInstance();
+	if(PlayerAnimInstance == nullptr)	return;
+	PlayerAnimInstance->Montage_Play(NormalAttackMontage);
+	PlayerAnimInstance->Montage_JumpToSection(NormalAttackSectionName);
+}
+
 void AFACharacter::ReceiveDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType,
-	AController* InstigatorController, AActor* DamageCauser)
+                                 AController* InstigatorController, AActor* DamageCauser)
+{
+}
+
+void AFACharacter::CharacterDead()
 {
 }
