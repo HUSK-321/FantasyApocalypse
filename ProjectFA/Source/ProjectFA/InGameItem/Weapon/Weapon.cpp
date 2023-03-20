@@ -26,14 +26,14 @@ void AWeapon::AttackCollisionOnOverlapBegin(UPrimitiveComponent* OverlappedCompo
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	const APawn* AttackingPawn = Cast<APawn>(GetOwner());
-	if(AttackingPawn == nullptr || DamageTypeClass == nullptr)	return;
+	if(OtherActor == GetOwner() || AttackingPawn == nullptr || DamageTypeClass == nullptr)	return;
 	const auto AttackingInstigator = AttackingPawn->GetController();
 	if(AttackingInstigator == nullptr)	return;
 	
 	UGameplayStatics::ApplyDamage(OtherActor, ItemPowerAmount, AttackingInstigator, this, DamageTypeClass);
 }
 
-void AWeapon::SetWeaponAttackCollision(bool bEnable)
+void AWeapon::SetWeaponAttackCollision(const bool bEnable)
 {
 	const auto CollisionResponseToPawn = (bEnable) ? ECollisionResponse::ECR_Overlap : ECollisionResponse::ECR_Ignore;
 	AttackCollision->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, CollisionResponseToPawn);
