@@ -40,6 +40,8 @@ public:
 	
 	AEnemy();
 
+	virtual void AfterDeath() override;
+
 	UFUNCTION(BlueprintCallable, Category = "Enemy Attack")
 	void SetAttackCollision(bool bEnabled);
 

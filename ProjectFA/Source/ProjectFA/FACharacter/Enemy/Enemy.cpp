@@ -91,6 +91,7 @@ void AEnemy::ReceiveDamage(AActor* DamagedActor, float Damage, const UDamageType
 	if(CurrentHealth <= 0)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Enemy Dead"));
+		CharacterDead();
 	}
 }
 
@@ -108,4 +109,10 @@ void AEnemy::AttackCollisionOnOverlapBegin(UPrimitiveComponent* OverlappedCompon
 	if(AttackingInstigator == nullptr)	return;
 	
 	UGameplayStatics::ApplyDamage(OtherActor, 10.f, AttackingInstigator, this, DamageTypeClass);
+}
+
+void AEnemy::AfterDeath()
+{
+	// TODO : change to mesh or rooting inventory
+	GetMesh()->bPauseAnims = true;
 }

@@ -3,6 +3,8 @@
 
 #include "FACharacter.h"
 
+#include "Components/CapsuleComponent.h"
+
 AFACharacter::AFACharacter()
 	:
 	MaxHealth(100.f), CurrentHealth(100.f)
@@ -28,10 +30,10 @@ void AFACharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 void AFACharacter::PlayNormalAttackMontage(FName NormalAttackSectionName)
 {
 	if(NormalAttackMontage == nullptr)	return;
-	UAnimInstance* PlayerAnimInstance = GetMesh()->GetAnimInstance();
-	if(PlayerAnimInstance == nullptr)	return;
-	PlayerAnimInstance->Montage_Play(NormalAttackMontage);
-	PlayerAnimInstance->Montage_JumpToSection(NormalAttackSectionName);
+	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+	if(AnimInstance == nullptr)	return;
+	AnimInstance->Montage_Play(NormalAttackMontage);
+	AnimInstance->Montage_JumpToSection(NormalAttackSectionName);
 }
 
 void AFACharacter::ReceiveDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType,
@@ -40,5 +42,15 @@ void AFACharacter::ReceiveDamage(AActor* DamagedActor, float Damage, const UDama
 }
 
 void AFACharacter::CharacterDead()
+{
+	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+	if(DieMontage == nullptr || AnimInstance == nullptr)	return;
+	
+	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	AnimInstance->Montage_Play(DieMontage);
+	Controller->UnPossess();
+}
+
+void AFACharacter::AfterDeath()
 {
 }

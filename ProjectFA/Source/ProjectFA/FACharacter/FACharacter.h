@@ -33,6 +33,8 @@ protected:
 	UFUNCTION()
 	virtual void ReceiveDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType, AController* InstigatorController, AActor* DamageCauser);
 	virtual void CharacterDead();
+	UFUNCTION(BlueprintCallable)
+	virtual void AfterDeath();
 
 protected:
 
@@ -43,5 +45,7 @@ protected:
 
 	UPROPERTY(EditAnywhere, Category = "Character Combat")
 	TObjectPtr<UAnimMontage> NormalAttackMontage;
+	UPROPERTY(EditAnywhere, Category = "Character Combat")
+	TObjectPtr<UAnimMontage> DieMontage;
 
 };
