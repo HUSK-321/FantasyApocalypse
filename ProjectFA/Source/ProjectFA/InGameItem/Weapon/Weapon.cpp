@@ -10,7 +10,6 @@ AWeapon::AWeapon()
 	AttackCollision(CreateDefaultSubobject<UBoxComponent>(TEXT("AttackCollision")))
 {
 	AttackCollision->SetupAttachment(GetRootComponent());
-
 	AttackCollision->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
 }
 
@@ -19,7 +18,6 @@ void AWeapon::BeginPlay()
 	Super::BeginPlay();
 
 	AttackCollision->OnComponentBeginOverlap.AddDynamic(this, &AWeapon::AttackCollisionOnOverlapBegin);
-	SetWeaponAttackCollision(false);
 }
 
 void AWeapon::AttackCollisionOnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
@@ -33,18 +31,10 @@ void AWeapon::AttackCollisionOnOverlapBegin(UPrimitiveComponent* OverlappedCompo
 	UGameplayStatics::ApplyDamage(OtherActor, ItemPowerAmount, AttackingInstigator, this, DamageTypeClass);
 }
 
-void AWeapon::SetWeaponAttackCollision(const bool bEnable)
+FName AWeapon::GetNormalAttackMontageSectionName() const
 {
-	const auto CollisionResponseToPawn = (bEnable) ? ECollisionResponse::ECR_Overlap : ECollisionResponse::ECR_Ignore;
-	AttackCollision->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, CollisionResponseToPawn);
-}
-
-FName AWeapon::GetWeaponSectionName(const AWeapon* Weapon)
-{
-	switch (Weapon->WeaponType)
+	switch (WeaponType)
 	{
-	case EWeaponType::EWT_Default:
-		return FName(TEXT("Default"));
 	case EWeaponType::EWT_OneHandSword:
 		return FName(TEXT("OneHandSword"));
 	case EWeaponType::EWT_MagicStaff:
@@ -52,4 +42,11 @@ FName AWeapon::GetWeaponSectionName(const AWeapon* Weapon)
 	default:
 		return FName(TEXT("Default"));
 	}
+}
+
+void AWeapon::SetAttackCollision(bool bEnable)
+{
+	if(AttackCollision == nullptr)	return;
+	const auto CollisionResponseToPawn = (bEnable) ? ECollisionResponse::ECR_Overlap : ECollisionResponse::ECR_Ignore;
+	AttackCollision->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, CollisionResponseToPawn);
 }

@@ -178,7 +178,7 @@ void APlayableCharacter::InteractionButtonPressed()
 {
 	if(currentPickupItem == nullptr)	return;
 
-	InventoryComponent->SetPickupItemToInventory(currentPickupItem);	
+	InventoryComponent->GetItemToInventory(currentPickupItem);	
 }
 
 void APlayableCharacter::AttackButtonPressed()

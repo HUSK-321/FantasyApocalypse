@@ -18,30 +18,42 @@ void UPlayableCharacterCombatComponent::BeginPlay()
 	PlayableCharacter = Cast<APlayableCharacter>(GetOwner());
 	if(DefaultPunchWeaponClass)
 	{
-		DefaultPunchWeapon = GetWorld()->SpawnActor<AWeapon>(DefaultPunchWeaponClass);
-		EquipWeapon(DefaultPunchWeapon);
+		DefaultPunchWeapon = GetWorld()->SpawnActor<APickupItem>(DefaultPunchWeaponClass);
+		EquipItemToCharacter(DefaultPunchWeapon);
 	}
 }
 
-void UPlayableCharacterCombatComponent::EquipWeapon(AWeapon* WeaponToEquip)
+void UPlayableCharacterCombatComponent::EquipItemToCharacter(APickupItem* ItemToEquip)
 {
 	if(PlayableCharacter == nullptr)	return;
 	
-	if(EquippedWeapon)
+	if(EquippedItem)
 	{
 		// TODO : change weapon, not destroy
-		EquippedWeapon->Destroy();
+		EquippedItem->Destroy();
 	}
-	EquippedWeapon = WeaponToEquip;
-	EquippedWeapon->SetOwner(PlayableCharacter);
+	EquippedItem = ItemToEquip;
+	EquippedItem->SetOwner(PlayableCharacter);
 	if(const auto RightHandSocket = PlayableCharacter->GetMesh()->GetSocketByName("hand_r_weapon_socket"))
 	{
-		RightHandSocket->AttachActor(EquippedWeapon, PlayableCharacter->GetMesh());
+		RightHandSocket->AttachActor(EquippedItem, PlayableCharacter->GetMesh());
 	}
 }
 
 void UPlayableCharacterCombatComponent::Attack() const
 {
-	if(EquippedWeapon == nullptr)	return;
-	PlayableCharacter->PlayNormalAttackMontage(AWeapon::GetWeaponSectionName(EquippedWeapon));
+	if(EquippedItem == nullptr)	return;
+	if(auto const WeaponInterface = Cast<IEquipable>(EquippedItem))
+	{
+		PlayableCharacter->PlayNormalAttackMontage(WeaponInterface->GetNormalAttackMontageSectionName());	
+	}
+}
+
+void UPlayableCharacterCombatComponent::SetWeaponAttackCollision(bool bEnabled)
+{
+	if(EquippedItem == nullptr)	return;
+	if(auto const WeaponInterface = Cast<IEquipable>(EquippedItem))
+	{
+		WeaponInterface->SetAttackCollision(bEnabled);
+	}
 }

@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "ProjectFA/InGameItem/Equipable.h"
 #include "ProjectFA/InGameItem/PickupItem.h"
 #include "Weapon.generated.h"
 
@@ -24,7 +25,7 @@ enum class EWeaponType : uint8
 class UBoxComponent;
 
 UCLASS()
-class PROJECTFA_API AWeapon : public APickupItem
+class PROJECTFA_API AWeapon : public APickupItem, public IEquipable
 {
 	GENERATED_BODY()
 
@@ -41,15 +42,13 @@ public:
 
 	AWeapon();
 	
-	static FName GetWeaponSectionName(const AWeapon* Weapon);
-	
-	UFUNCTION(BlueprintCallable)
-	void SetWeaponAttackCollision(bool bEnable);
-	UFUNCTION()
-	void AttackCollisionOnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp,
-												int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+	virtual FName GetNormalAttackMontageSectionName() const override;
+	virtual void SetAttackCollision(bool bEnable) override;
 
 protected:
 	
 	virtual void BeginPlay() override;
+	UFUNCTION()
+	void AttackCollisionOnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp,
+												int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 };

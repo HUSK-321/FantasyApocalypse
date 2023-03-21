@@ -9,6 +9,8 @@
 
 class APlayableCharacter;
 class AWeapon;
+class UEquipable;
+class APickupItem;
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class PROJECTFA_API UPlayableCharacterCombatComponent : public UActorComponent
@@ -20,18 +22,20 @@ private:
 	UPROPERTY()
 	TObjectPtr<APlayableCharacter> PlayableCharacter;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
-	TObjectPtr<AWeapon> EquippedWeapon;
+	TObjectPtr<APickupItem> EquippedItem;
 	UPROPERTY(EditDefaultsOnly, Category = "Combat", meta = (AllowPrivateAccess = "true"))
-	TSubclassOf<AWeapon> DefaultPunchWeaponClass;
+	TSubclassOf<APickupItem> DefaultPunchWeaponClass;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
-	TObjectPtr<AWeapon> DefaultPunchWeapon;
+	TObjectPtr<APickupItem> DefaultPunchWeapon;
 
 public:
 
 	UPlayableCharacterCombatComponent();
 
-	void EquipWeapon(AWeapon* WeaponToEquip);
+	void EquipItemToCharacter(APickupItem* ItemToEquip);
 	void Attack() const;
+	UFUNCTION(BlueprintCallable)
+	void SetWeaponAttackCollision(bool bEnabled);
 	
 protected:
 	
