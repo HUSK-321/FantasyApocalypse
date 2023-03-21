@@ -54,3 +54,8 @@ void AFACharacter::CharacterDead()
 void AFACharacter::AfterDeath()
 {
 }
+
+bool AFACharacter::CharacterCannotMove()
+{
+	return false;
+}

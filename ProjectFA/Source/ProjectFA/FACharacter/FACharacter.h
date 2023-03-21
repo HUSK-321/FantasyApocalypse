@@ -35,6 +35,8 @@ protected:
 	virtual void CharacterDead();
 	UFUNCTION(BlueprintCallable)
 	virtual void AfterDeath();
+	UFUNCTION(BlueprintCallable)
+	virtual bool CharacterCannotMove();
 
 protected:
 

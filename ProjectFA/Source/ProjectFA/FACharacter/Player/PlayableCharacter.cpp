@@ -106,14 +106,13 @@ void APlayableCharacter::LookUp(float Value)
 
 void APlayableCharacter::Jump()
 {
-	constexpr float StaminaConsumeAmount = 20.f;
-	if(CurrentStamina < StaminaConsumeAmount)	return;
+	if(CurrentStamina < JumpStaminaConsume)	return;
 	if(bIsCrouched)
 	{
 		UnCrouch();
 		return;
 	}
-	CurrentStamina -= StaminaConsumeAmount;
+	CurrentStamina = FMath::Clamp(CurrentStamina - JumpStaminaConsume, 0.f, MaxStamina);
 	Super::Jump();
 }
 
@@ -156,7 +155,6 @@ void APlayableCharacter::ManageStaminaAmount(float DeltaTime)
 	{
 		SetSprinting(false);
 	}
-
 	PlayerStaminaChangedEvent.Broadcast(CurrentStamina, MaxStamina);
 }
 
@@ -164,21 +162,18 @@ void APlayableCharacter::ReceiveDamage(AActor* DamagedActor, float Damage, const
                                        AController* InstigatorController, AActor* DamageCauser)
 {
 	CurrentHealth = FMath::Clamp(CurrentHealth - Damage, 0.f, MaxHealth);
-
-	UE_LOG(LogTemp, Warning, TEXT("Player Damaged : %f"), Damage);
 	PlayerHealthChangedEvent.Broadcast(CurrentHealth, MaxHealth);
 }
 
 void APlayableCharacter::SetCurrentPickupItem(APickupItem* PickupItem)
 {
-	currentPickupItem = PickupItem;
+	CurrentlyNearItem = PickupItem;
 }
 
 void APlayableCharacter::InteractionButtonPressed()
 {
-	if(currentPickupItem == nullptr)	return;
-
-	InventoryComponent->GetItemToInventory(currentPickupItem);	
+	if(CurrentlyNearItem == nullptr)	return;
+	InventoryComponent->GetItemToInventory(CurrentlyNearItem);	
 }
 
 void APlayableCharacter::AttackButtonPressed()
