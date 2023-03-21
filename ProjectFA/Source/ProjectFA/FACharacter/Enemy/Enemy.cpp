@@ -22,7 +22,6 @@ AEnemy::AEnemy()
 	AttackSphere->SetupAttachment(GetRootComponent());
 	GetMesh()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Ignore);
 	GetMesh()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECollisionResponse::ECR_Ignore);
-
 	GetCapsuleComponent()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECollisionResponse::ECR_Ignore);
 
 	AttackCollision->SetupAttachment(GetMesh(), FName("AttackCollisionSocket"));
@@ -37,7 +36,6 @@ void AEnemy::BeginPlay()
 	Super::BeginPlay();
 
 	EnemyController = Cast<AEnemyController>(GetController());
-	
 	if(EnemyController)
 	{
 		const FVector WorldPatrolStartPoint = UKismetMathLibrary::TransformLocation(GetActorTransform(), PatrolStartPoint);
@@ -86,20 +84,12 @@ void AEnemy::ReceiveDamage(AActor* DamagedActor, float Damage, const UDamageType
                            AController* InstigatorController, AActor* DamageCauser)
 {
 	CurrentHealth = FMath::Clamp(CurrentHealth - Damage, 0.f, MaxHealth);
-
-	UE_LOG(LogTemp, Warning, TEXT("Enemy Damaged : %f"), Damage);
+	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("Enemy Damaged : %f"), Damage));
 	if(CurrentHealth <= 0)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Enemy Dead"));
+		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Enemy Dead"));
+		CharacterDead();
 	}
-}
-
-void AEnemy::PlayNormalAttackMontage()
-{
-	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
-	if(AnimInstance == nullptr)		return;
-
-	AnimInstance->Montage_Play(NormalAttackMontage);
 }
 
 void AEnemy::SetAttackCollision(bool bEnabled)
@@ -116,4 +106,10 @@ void AEnemy::AttackCollisionOnOverlapBegin(UPrimitiveComponent* OverlappedCompon
 	if(AttackingInstigator == nullptr)	return;
 	
 	UGameplayStatics::ApplyDamage(OtherActor, 10.f, AttackingInstigator, this, DamageTypeClass);
+}
+
+void AEnemy::AfterDeath()
+{
+	// TODO : change to mesh or rooting inventory
+	GetMesh()->bPauseAnims = true;
 }

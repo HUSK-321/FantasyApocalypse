@@ -41,6 +41,7 @@ private:
 	UPROPERTY(EditAnywhere, Category = "Player Property")
 	float MaxSprintSpeed;
 	bool bNowSprinting;
+	
 	UPROPERTY(EditAnywhere, Category = "Player Property")
 	float MaxStamina;
 	UPROPERTY(EditAnywhere, Category = "Player Property")
@@ -49,9 +50,12 @@ private:
 	float StaminaIncreaseFactor;
 	UPROPERTY(EditAnywhere, Category = "Player Property")
 	float StaminaDecreaseFactor;
+	UPROPERTY(EditAnywhere, Category = "Player Property")
+	float JumpStaminaConsume;
 
 	// TODO : change to TArray
-	TObjectPtr<APickupItem> currentPickupItem;
+	UPROPERTY()
+	TObjectPtr<APickupItem> CurrentlyNearItem;
 
 public:
 	
@@ -60,7 +64,6 @@ public:
 	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
 
 	void SetCurrentPickupItem(APickupItem* PickupItem);
-	void PlayNormalAttackMontage(FName NormalAttackSectionName);
 
 	FORCEINLINE UPlayableCharacterCombatComponent* GetPlayerCombatComponent() const { return CombatComponent; }
 

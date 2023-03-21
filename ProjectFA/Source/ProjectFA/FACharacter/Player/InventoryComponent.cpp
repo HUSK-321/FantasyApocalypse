@@ -4,7 +4,9 @@
 #include "InventoryComponent.h"
 #include "PlayableCharacter.h"
 #include "PlayableCharacterCombatComponent.h"
-#include "ProjectFA/InGameItem/Weapon/Weapon.h"
+#include "Kismet/KismetSystemLibrary.h"
+#include "ProjectFA/InGameItem/Equipable.h"
+#include "ProjectFA/InGameItem/PickupItem.h"
 
 UInventoryComponent::UInventoryComponent()
 {
@@ -15,19 +17,18 @@ void UInventoryComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
-	PlayableCharacter = Cast<APlayableCharacter>(GetOwner());
-	if(PlayableCharacter)
+	if(const auto PlayableCharacter = Cast<APlayableCharacter>(GetOwner()))
 	{
 		PlayerCombatComponent = PlayableCharacter->GetPlayerCombatComponent();
 	}
 }
 
-void UInventoryComponent::SetPickupItemToInventory(APickupItem* InteractableItem)
+void UInventoryComponent::GetItemToInventory(APickupItem* InteractableItem)
 {
 	InteractableItem->SetItemState(EItemState::EIS_InInventory);
-	if(const auto Weapon = Cast<AWeapon>(InteractableItem))
+	if(UKismetSystemLibrary::DoesImplementInterface(InteractableItem, UEquipable::StaticClass()))
 	{
 		InteractableItem->SetItemState(EItemState::EIS_Equipped);
-		PlayerCombatComponent->EquipWeapon(Weapon);
+		PlayerCombatComponent->EquipItemToCharacter(InteractableItem);
 	}
 }

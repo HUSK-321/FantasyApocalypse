@@ -10,7 +10,6 @@ AWeapon::AWeapon()
 	AttackCollision(CreateDefaultSubobject<UBoxComponent>(TEXT("AttackCollision")))
 {
 	AttackCollision->SetupAttachment(GetRootComponent());
-
 	AttackCollision->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
 }
 
@@ -19,32 +18,23 @@ void AWeapon::BeginPlay()
 	Super::BeginPlay();
 
 	AttackCollision->OnComponentBeginOverlap.AddDynamic(this, &AWeapon::AttackCollisionOnOverlapBegin);
-	SetWeaponAttackCollision(false);
 }
 
 void AWeapon::AttackCollisionOnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	const APawn* AttackingPawn = Cast<APawn>(GetOwner());
-	if(AttackingPawn == nullptr || DamageTypeClass == nullptr)	return;
+	if(OtherActor == GetOwner() || AttackingPawn == nullptr || DamageTypeClass == nullptr)	return;
 	const auto AttackingInstigator = AttackingPawn->GetController();
 	if(AttackingInstigator == nullptr)	return;
 	
 	UGameplayStatics::ApplyDamage(OtherActor, ItemPowerAmount, AttackingInstigator, this, DamageTypeClass);
 }
 
-void AWeapon::SetWeaponAttackCollision(bool bEnable)
+FName AWeapon::GetNormalAttackMontageSectionName() const
 {
-	const auto CollisionResponseToPawn = (bEnable) ? ECollisionResponse::ECR_Overlap : ECollisionResponse::ECR_Ignore;
-	AttackCollision->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, CollisionResponseToPawn);
-}
-
-FName AWeapon::GetWeaponSectionName(const AWeapon* Weapon)
-{
-	switch (Weapon->WeaponType)
+	switch (WeaponType)
 	{
-	case EWeaponType::EWT_Default:
-		return FName(TEXT("Default"));
 	case EWeaponType::EWT_OneHandSword:
 		return FName(TEXT("OneHandSword"));
 	case EWeaponType::EWT_MagicStaff:
@@ -52,4 +42,11 @@ FName AWeapon::GetWeaponSectionName(const AWeapon* Weapon)
 	default:
 		return FName(TEXT("Default"));
 	}
+}
+
+void AWeapon::SetAttackCollision(bool bEnable)
+{
+	if(AttackCollision == nullptr)	return;
+	const auto CollisionResponseToPawn = (bEnable) ? ECollisionResponse::ECR_Overlap : ECollisionResponse::ECR_Ignore;
+	AttackCollision->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, CollisionResponseToPawn);
 }

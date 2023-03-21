@@ -6,7 +6,6 @@
 #include "Components/ActorComponent.h"
 #include "InventoryComponent.generated.h"
 
-class APlayableCharacter;
 class UPlayableCharacterCombatComponent;
 class APickupItem;
 
@@ -18,8 +17,6 @@ class PROJECTFA_API UInventoryComponent : public UActorComponent
 private:
 
 	UPROPERTY()
-	TObjectPtr<APlayableCharacter> PlayableCharacter;
-	UPROPERTY()
 	TObjectPtr<UPlayableCharacterCombatComponent> PlayerCombatComponent;
 	UPROPERTY()
 	TArray<APickupItem*> ItemList;
@@ -27,7 +24,7 @@ private:
 public:
 	
 	UInventoryComponent();
-	void SetPickupItemToInventory(APickupItem* InteractableItem);
+	void GetItemToInventory(APickupItem* InteractableItem);
 
 protected:
 	

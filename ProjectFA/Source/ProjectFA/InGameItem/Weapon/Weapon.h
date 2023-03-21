@@ -3,23 +3,13 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "ProjectFA/InGameItem/Equipable.h"
 #include "ProjectFA/InGameItem/PickupItem.h"
 #include "Weapon.generated.h"
 
 /**
  * 
  */
-
-UENUM(BlueprintType)
-enum class EWeaponState : uint8
-{
-	EWS_Initial		UMETA(DisplayName = "Initial State"),
-	EWS_Equipped	UMETA(DisplayName = "Equipped"),
-	EWS_Dropped		UMETA(DisplayName = "Dropped"),
-	EWS_InInventory	UMETA(DisplayName = "InInventory"),
-
-	EWS_MAX			UMETA(DisplayName = "DefaultMAX")
-};
 
 UENUM(BlueprintType)
 enum class EWeaponType : uint8
@@ -35,7 +25,7 @@ enum class EWeaponType : uint8
 class UBoxComponent;
 
 UCLASS()
-class PROJECTFA_API AWeapon : public APickupItem
+class PROJECTFA_API AWeapon : public APickupItem, public IEquipable
 {
 	GENERATED_BODY()
 
@@ -45,7 +35,6 @@ private:
 	TObjectPtr<UBoxComponent> AttackCollision;
 	UPROPERTY(EditAnywhere, Category = "Weapon Properties")
 	TSubclassOf<UDamageType> DamageTypeClass;
-	EWeaponState WeaponState;
 	UPROPERTY(EditDefaultsOnly, Category = "Weapon Properties")
 	EWeaponType WeaponType;
 
@@ -53,15 +42,13 @@ public:
 
 	AWeapon();
 	
-	static FName GetWeaponSectionName(const AWeapon* Weapon);
-	
-	UFUNCTION(BlueprintCallable)
-	void SetWeaponAttackCollision(bool bEnable);
-	UFUNCTION()
-	void AttackCollisionOnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp,
-												int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+	virtual FName GetNormalAttackMontageSectionName() const override;
+	virtual void SetAttackCollision(bool bEnable) override;
 
 protected:
 	
 	virtual void BeginPlay() override;
+	UFUNCTION()
+	void AttackCollisionOnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp,
+												int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 };
