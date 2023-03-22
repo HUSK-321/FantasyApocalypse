@@ -8,8 +8,7 @@
 void UPickupItemListElement::NativeOnListItemObjectSet(UObject* ListItemObject)
 {
 	IUserObjectListEntry::NativeOnListItemObjectSet(ListItemObject);
-
-	auto Item = Cast<APickupItem>(ListItemObject);
+	const APickupItem* Item = Cast<APickupItem>(ListItemObject);
 	if(Item == nullptr)	return;
 
 	ItemName->SetText(FText::FromString(Item->GetItemName()));

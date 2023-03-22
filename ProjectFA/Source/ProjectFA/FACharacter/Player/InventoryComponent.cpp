@@ -32,7 +32,7 @@ void UInventoryComponent::AddNearbyItem(APickupItem* Item)
 void UInventoryComponent::DeleteNearbyItem(APickupItem* Item)
 {
 	NearbyItemList.Remove(Item);
-	NEarbyItemDeleteEvent.Broadcast(Item);
+	NearbyItemDeleteEvent.Broadcast(Item);
 }
 
 void UInventoryComponent::SetNearbyItemToInventory()

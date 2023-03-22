@@ -19,7 +19,7 @@ class PROJECTFA_API UInventoryComponent : public UActorComponent
 public:
 
 	FOneItemChangedEvnet NearbyItemAddEvent;
-	FOneItemChangedEvnet NEarbyItemDeleteEvent;
+	FOneItemChangedEvnet NearbyItemDeleteEvent;
 
 private:
 

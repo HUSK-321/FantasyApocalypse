@@ -23,10 +23,6 @@ protected:
 
 	virtual void BeginPlay() override;
 
-private:
-
-	TObjectPtr<AProjectFAHUD> ProjectFAHUD;
-
 public:
 
 	void SetPlayerEvent(APlayableCharacter* ControllingPlayer);
@@ -40,4 +36,14 @@ public:
 	void SetHealthHUD(const float& CurrentHealth, const float& MaxHealth);
 	UFUNCTION()
 	void SetStaminaHUD(const float& CurrentStamina, const float& MaxStamina);
+
+private:
+	
+	bool PlayerHealthOverlayNotValid() const;
+	bool NearbyItemListNotValid() const;
+	bool PlayerStaminaOverlayNotValid() const;
+
+private:
+
+	TObjectPtr<AProjectFAHUD> ProjectFAHUD;
 };

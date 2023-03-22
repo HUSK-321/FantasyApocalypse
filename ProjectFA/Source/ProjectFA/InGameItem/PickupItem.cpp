@@ -14,8 +14,10 @@ APickupItem::APickupItem()
 
 	SetRootComponent(PickupItemMesh);
 	PickupItemMesh->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Block);
+	PickupItemMesh->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECollisionResponse::ECR_Ignore);
 	
 	PickupAreaSphere->SetupAttachment(GetRootComponent());
+	PickupAreaSphere->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECollisionResponse::ECR_Ignore);
 }
 
 void APickupItem::BeginPlay()
@@ -24,7 +26,6 @@ void APickupItem::BeginPlay()
 
 	PickupAreaSphere->OnComponentBeginOverlap.AddDynamic(this, &APickupItem::PickupAreaBeginOverlap);
 	PickupAreaSphere->OnComponentEndOverlap.AddDynamic(this, &APickupItem::PickupAreaEndOverlap);
-	
 }
 
 void APickupItem::SetItemState(const EItemState State)
