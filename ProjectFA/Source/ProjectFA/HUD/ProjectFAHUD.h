@@ -28,6 +28,7 @@ public:
 
 	UPROPERTY(EditAnywhere, Category = "HUD")
 	TSubclassOf<UPlayerOverlay> PlayerOverlayClass;
+	UPROPERTY(EditAnywhere, Category = "HUD")
 	TObjectPtr<UPlayerOverlay> PlayerOverlay;
 	
 };

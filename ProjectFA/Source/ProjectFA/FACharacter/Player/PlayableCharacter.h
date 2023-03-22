@@ -53,17 +53,14 @@ private:
 	UPROPERTY(EditAnywhere, Category = "Player Property")
 	float JumpStaminaConsume;
 
-	// TODO : change to TArray
-	UPROPERTY()
-	TObjectPtr<APickupItem> CurrentlyNearItem;
-
 public:
 	
 	APlayableCharacter();
 	virtual void Tick(float DeltaTime) override;
 	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
 
-	void SetCurrentPickupItem(APickupItem* PickupItem);
+	void SetNearbyItem(APickupItem* PickupItem);
+	void UnsetNearbyItem(APickupItem* PickupItem);
 
 	FORCEINLINE UPlayableCharacterCombatComponent* GetPlayerCombatComponent() const { return CombatComponent; }
 

@@ -9,22 +9,34 @@
 class UPlayableCharacterCombatComponent;
 class APickupItem;
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FItemListChangeEvent, const TArray<APickupItem*>&, ItemLst);
+
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class PROJECTFA_API UInventoryComponent : public UActorComponent
 {
 	GENERATED_BODY()
 
+public:
+
+	FItemListChangeEvent NearbyItemListChangeEvent;
+
 private:
 
 	UPROPERTY()
 	TObjectPtr<UPlayableCharacterCombatComponent> PlayerCombatComponent;
+	UPROPERTY(EditAnywhere)
+	int8 InventoryCapacity;
 	UPROPERTY()
-	TArray<APickupItem*> ItemList;
+	TArray<APickupItem*> NearbyItemList;
+	UPROPERTY()
+	TArray<APickupItem*> InventoryItemList;
 
 public:
 	
 	UInventoryComponent();
-	void GetItemToInventory(APickupItem* InteractableItem);
+	void AddNearbyItem(APickupItem* Item);
+	void DeleteNearbyItem(APickupItem* Item);
+	void SetNearbyItemToInventory();
 
 protected:
 	

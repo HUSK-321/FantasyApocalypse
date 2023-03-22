@@ -66,15 +66,17 @@ void APickupItem::SetItemState(const EItemState State)
 void APickupItem::PickupAreaBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	auto Player = Cast<APlayableCharacter>(OtherActor);
-	if(Player == nullptr)	return;
-	Player->SetCurrentPickupItem(this);
+	if(APlayableCharacter* PlayableCharacter = Cast<APlayableCharacter>(OtherActor))
+	{
+		PlayableCharacter->SetNearbyItem(this);
+	}
 }
 
 void APickupItem::PickupAreaEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
-	auto Player = Cast<APlayableCharacter>(OtherActor);
-	if(Player == nullptr)	return;
-	Player->SetCurrentPickupItem(this);
+	if(APlayableCharacter* PlayableCharacter = Cast<APlayableCharacter>(OtherActor))
+	{
+		PlayableCharacter->UnsetNearbyItem(this);
+	}
 }
