@@ -4,6 +4,7 @@
 #include "ProjectFAHUD.h"
 #include "Blueprint/UserWidget.h"
 #include "PlayerOverlay.h"
+#include "PickupItemListWidget/PickupItemList.h"
 
 void AProjectFAHUD::BeginPlay()
 {
@@ -14,6 +15,8 @@ void AProjectFAHUD::BeginPlay()
 	{
 		PlayerOverlay = CreateWidget<UPlayerOverlay>(PlayerController, PlayerOverlayClass);
 		PlayerOverlay->AddToViewport();
+		PickupItemList = CreateWidget<UPickupItemList>(PlayerController, PickupItemListCLass);
+		PickupItemList->AddToViewport();
 	}
 }
 

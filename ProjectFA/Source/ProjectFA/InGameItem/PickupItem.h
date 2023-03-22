@@ -48,6 +48,8 @@ public:
 	APickupItem();
 	void SetItemState(const EItemState State);
 
+	FORCEINLINE FString GetItemName() const { return ItemName; }
+
 protected:
 	
 	virtual void BeginPlay() override;

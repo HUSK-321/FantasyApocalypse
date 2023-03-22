@@ -10,6 +10,7 @@
  * 
  */
 class UPlayerOverlay;
+class UPickupItemList;
 
 UCLASS()
 class PROJECTFA_API AProjectFAHUD : public AHUD
@@ -30,5 +31,9 @@ public:
 	TSubclassOf<UPlayerOverlay> PlayerOverlayClass;
 	UPROPERTY(EditAnywhere, Category = "HUD")
 	TObjectPtr<UPlayerOverlay> PlayerOverlay;
+	UPROPERTY(EditAnywhere, Category = "HUD")
+	TSubclassOf<UPickupItemList> PickupItemListCLass;
+	UPROPERTY(EditAnywhere, Category = "HUD")
+	TObjectPtr<UPickupItemList> PickupItemList;
 	
 };

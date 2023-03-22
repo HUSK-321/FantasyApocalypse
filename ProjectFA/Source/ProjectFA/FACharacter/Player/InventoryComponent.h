@@ -9,7 +9,7 @@
 class UPlayableCharacterCombatComponent;
 class APickupItem;
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FItemListChangeEvent, const TArray<APickupItem*>&, ItemLst);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOneItemChangedEvnet, UObject*, Item);
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class PROJECTFA_API UInventoryComponent : public UActorComponent
@@ -18,7 +18,8 @@ class PROJECTFA_API UInventoryComponent : public UActorComponent
 
 public:
 
-	FItemListChangeEvent NearbyItemListChangeEvent;
+	FOneItemChangedEvnet NearbyItemAddEvent;
+	FOneItemChangedEvnet NEarbyItemDeleteEvent;
 
 private:
 

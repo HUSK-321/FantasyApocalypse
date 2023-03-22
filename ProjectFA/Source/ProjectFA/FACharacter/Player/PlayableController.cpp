@@ -2,11 +2,15 @@
 
 
 #include "PlayableController.h"
+#include "InventoryComponent.h"
 #include "PlayableCharacter.h"
+#include "Components/ListView.h"
 #include "Components/ProgressBar.h"
 #include "Components/TextBlock.h"
 #include "ProjectFA/HUD/PlayerOverlay.h"
 #include "ProjectFA/HUD/ProjectFAHUD.h"
+#include "ProjectFA/HUD/PickupItemListWidget/PickupItemList.h"
+#include "ProjectFA/InGameItem/PickupItem.h"
 
 void APlayableController::BeginPlay()
 {
@@ -21,9 +25,14 @@ void APlayableController::SetPlayerEvent(APlayableCharacter* ControllingPlayer)
 	ControllingPlayer->PlayerStaminaChangedEvent.AddDynamic(this, &APlayableController::SetStaminaHUD);
 }
 
+void APlayableController::SetInventoryEvent(UInventoryComponent* InventoryComponent)
+{
+	InventoryComponent->NearbyItemAddEvent.AddDynamic(this, &APlayableController::AddNearbyItem);
+	InventoryComponent->NEarbyItemDeleteEvent.AddDynamic(this, &APlayableController::DeleteNearbyItem);
+}
+
 void APlayableController::SetHealthHUD(const float& CurrentHealth, const float& MaxHealth)
 {
-	ProjectFAHUD = (ProjectFAHUD == nullptr) ? Cast<AProjectFAHUD>(GetHUD()) : ProjectFAHUD;
 	const bool bHealthUIIsNull = ProjectFAHUD == nullptr || ProjectFAHUD->PlayerOverlay == nullptr || ProjectFAHUD->PlayerOverlay->HealthText == nullptr || ProjectFAHUD->PlayerOverlay->HealthBar == nullptr;
 	if(bHealthUIIsNull)	return;
 
@@ -36,10 +45,23 @@ void APlayableController::SetHealthHUD(const float& CurrentHealth, const float& 
 
 void APlayableController::SetStaminaHUD(const float& CurrentStamina, const float& MaxStamina)
 {
-	ProjectFAHUD = (ProjectFAHUD == nullptr) ? Cast<AProjectFAHUD>(GetHUD()) : ProjectFAHUD;
 	const bool bHealthUIIsNull = ProjectFAHUD == nullptr || ProjectFAHUD->PlayerOverlay == nullptr || ProjectFAHUD->PlayerOverlay->StaminaBar == nullptr;
 	if(bHealthUIIsNull)	return;
 
 	const float StaminaPercent = CurrentStamina / MaxStamina;
 	ProjectFAHUD->PlayerOverlay->StaminaBar->SetPercent(StaminaPercent);
+}
+
+void APlayableController::AddNearbyItem(UObject* Item)
+{
+	const bool bItemListIsNull = ProjectFAHUD == nullptr || ProjectFAHUD->PickupItemList == nullptr || ProjectFAHUD->PickupItemList->NearbyItemList == nullptr;
+	if(bItemListIsNull)	return;
+	ProjectFAHUD->PickupItemList->NearbyItemList->AddItem(Item);
+}
+
+void APlayableController::DeleteNearbyItem(UObject* Item)
+{
+	const bool bItemListIsNull = ProjectFAHUD == nullptr || ProjectFAHUD->PickupItemList == nullptr || ProjectFAHUD->PickupItemList->NearbyItemList == nullptr;
+	if(bItemListIsNull)	return;
+	ProjectFAHUD->PickupItemList->NearbyItemList->RemoveItem(Item);
 }

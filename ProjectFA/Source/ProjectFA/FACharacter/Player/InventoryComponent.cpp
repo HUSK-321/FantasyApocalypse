@@ -26,13 +26,13 @@ void UInventoryComponent::BeginPlay()
 void UInventoryComponent::AddNearbyItem(APickupItem* Item)
 {
 	NearbyItemList.Add(Item);
-	NearbyItemListChangeEvent.Broadcast(NearbyItemList);
+	NearbyItemAddEvent.Broadcast(Item);
 }
 
 void UInventoryComponent::DeleteNearbyItem(APickupItem* Item)
 {
 	NearbyItemList.Remove(Item);
-	NearbyItemListChangeEvent.Broadcast(NearbyItemList);
+	NEarbyItemDeleteEvent.Broadcast(Item);
 }
 
 void UInventoryComponent::SetNearbyItemToInventory()

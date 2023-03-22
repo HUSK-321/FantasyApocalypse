@@ -43,6 +43,7 @@ void APlayableCharacter::BeginPlay()
 	{
 		// TODO : Controller should do this, not in player
 		PlayableController->SetPlayerEvent(this);
+		PlayableController->SetInventoryEvent(InventoryComponent);
 	}
 	PlayerHealthChangedEvent.Broadcast(CurrentHealth, MaxHealth);
 	PlayerStaminaChangedEvent.Broadcast(CurrentStamina, MaxStamina);

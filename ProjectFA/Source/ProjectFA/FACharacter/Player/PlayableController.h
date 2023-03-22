@@ -10,7 +10,9 @@
  * 
  */
 class APlayableCharacter;
+class UInventoryComponent;
 class AProjectFAHUD;
+class APickupItem;
 
 UCLASS()
 class PROJECTFA_API APlayableController : public APlayerController
@@ -28,6 +30,11 @@ private:
 public:
 
 	void SetPlayerEvent(APlayableCharacter* ControllingPlayer);
+	void SetInventoryEvent(UInventoryComponent* InventoryComponent);
+	UFUNCTION()
+	void AddNearbyItem(UObject* Item);
+	UFUNCTION()
+	void DeleteNearbyItem(UObject* Item);
 
 	UFUNCTION()
 	void SetHealthHUD(const float& CurrentHealth, const float& MaxHealth);
