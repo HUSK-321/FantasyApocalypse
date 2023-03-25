@@ -32,13 +32,13 @@ protected:
 	UPROPERTY(EditAnywhere)
 	TObjectPtr<USphereComponent> PickupAreaSphere;
 
-	UPROPERTY(EditDefaultsOnly, Category = "Item Property")
+	UPROPERTY(EditAnywhere, Category = "Item Property")
 	FString ItemName;
-	UPROPERTY(EditDefaultsOnly, Category = "Item Property")
+	UPROPERTY(EditAnywhere, Category = "Item Property")
 	FString ItemDescription;
-	UPROPERTY(EditDefaultsOnly, Category = "Item Property")
+	UPROPERTY(EditAnywhere, Category = "Item Property")
 	float ItemPowerAmount;
-	UPROPERTY(EditDefaultsOnly, Category = "Item Property")
+	UPROPERTY(EditAnywhere, Category = "Item Property")
 	float ItemWeight;
 
 	EItemState ItemState;
@@ -47,6 +47,8 @@ public:
 	
 	APickupItem();
 	void SetItemState(const EItemState State);
+
+	FORCEINLINE FString GetItemName() const { return ItemName; }
 
 protected:
 	

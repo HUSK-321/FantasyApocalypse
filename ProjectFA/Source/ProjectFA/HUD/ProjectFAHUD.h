@@ -10,6 +10,9 @@
  * 
  */
 class UPlayerOverlay;
+class UPickupItemList;
+class UInventoryWidget;
+class UInventorySlot;
 
 UCLASS()
 class PROJECTFA_API AProjectFAHUD : public AHUD
@@ -28,6 +31,14 @@ public:
 
 	UPROPERTY(EditAnywhere, Category = "HUD")
 	TSubclassOf<UPlayerOverlay> PlayerOverlayClass;
+	UPROPERTY(EditAnywhere, Category = "HUD")
 	TObjectPtr<UPlayerOverlay> PlayerOverlay;
-	
+	UPROPERTY(EditAnywhere, Category = "HUD")
+	TSubclassOf<UPickupItemList> PickupItemListClass;
+	UPROPERTY(EditAnywhere, Category = "HUD")
+	TObjectPtr<UPickupItemList> PickupItemList;
+	UPROPERTY(EditAnywhere, Category = "HUD")
+	TSubclassOf<UInventoryWidget> InventoryWidgetClass;
+	UPROPERTY(EditAnywhere, Category = "HUD")
+	TObjectPtr<UInventoryWidget> Inventory;	
 };

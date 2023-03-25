@@ -23,12 +23,32 @@ void UInventoryComponent::BeginPlay()
 	}
 }
 
-void UInventoryComponent::GetItemToInventory(APickupItem* InteractableItem)
+void UInventoryComponent::AddNearbyItem(APickupItem* Item)
 {
-	InteractableItem->SetItemState(EItemState::EIS_InInventory);
-	if(UKismetSystemLibrary::DoesImplementInterface(InteractableItem, UEquipable::StaticClass()))
+	NearbyItemList.Add(Item);
+	NearbyItemAddEvent.Broadcast(Item);
+}
+
+void UInventoryComponent::DeleteNearbyItem(APickupItem* Item)
+{
+	NearbyItemList.Remove(Item);
+	NearbyItemDeleteEvent.Broadcast(Item);
+}
+
+void UInventoryComponent::SetNearbyItemToInventory()
+{
+	if(NearbyItemList.IsEmpty())	return;
+
+	APickupItem* ItemToGetIn = NearbyItemList[0];
+	DeleteNearbyItem(ItemToGetIn);
+	ItemToGetIn->SetItemState(EItemState::EIS_InInventory);
+	InventoryItemList.Add(ItemToGetIn);
+	
+	InventoryChangedEvent.Broadcast(InventoryItemList);
+	
+	if(UKismetSystemLibrary::DoesImplementInterface(ItemToGetIn, UEquipable::StaticClass()))
 	{
-		InteractableItem->SetItemState(EItemState::EIS_Equipped);
-		PlayerCombatComponent->EquipItemToCharacter(InteractableItem);
+		ItemToGetIn->SetItemState(EItemState::EIS_Equipped);
+		PlayerCombatComponent->EquipItemToCharacter(ItemToGetIn);
 	}
 }
