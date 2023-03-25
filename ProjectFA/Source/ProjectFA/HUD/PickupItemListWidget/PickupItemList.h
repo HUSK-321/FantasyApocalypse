@@ -11,7 +11,6 @@
  */
 
 class UListView;
-class APickupItem;
 
 UCLASS()
 class PROJECTFA_API UPickupItemList : public UUserWidget
