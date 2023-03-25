@@ -51,6 +51,7 @@ void APlayableController::AddNearbyItem(UObject* Item)
 {
 	if(NearbyItemListNotValid())	return;
 	ProjectFAHUD->PickupItemList->NearbyItemList->AddItem(Item);
+	ProjectFAHUD->PickupItemList->SetVisibility(ESlateVisibility::Visible);
 }
 
 
@@ -58,6 +59,10 @@ void APlayableController::DeleteNearbyItem(UObject* Item)
 {
 	if(NearbyItemListNotValid())	return;
 	ProjectFAHUD->PickupItemList->NearbyItemList->RemoveItem(Item);
+	if(ProjectFAHUD->PickupItemList->NearbyItemList->GetNumItems() == 0)
+	{
+		ProjectFAHUD->PickupItemList->SetVisibility(ESlateVisibility::Hidden);
+	}
 }
 
 bool APlayableController::PlayerHealthOverlayNotValid() const
