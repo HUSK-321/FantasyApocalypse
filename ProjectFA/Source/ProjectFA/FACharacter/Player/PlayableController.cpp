@@ -69,7 +69,7 @@ void APlayableController::DeleteNearbyItem(UObject* Item)
 
 void APlayableController::AddInventoryItem(const TArray<APickupItem*> ItemList)
 {
-	if(ProjectFAHUD == nullptr || ProjectFAHUD->Inventory == nullptr)	return;
+	if(InventoryWidgetNotValid())	return;
 	ProjectFAHUD->Inventory->SetInventoryWidgetList(ItemList);
 }
 
@@ -86,4 +86,8 @@ bool APlayableController::NearbyItemListNotValid() const
 bool APlayableController::PlayerStaminaOverlayNotValid() const
 {
 	return ProjectFAHUD == nullptr || ProjectFAHUD->PlayerOverlay == nullptr || ProjectFAHUD->PlayerOverlay->StaminaBar == nullptr;
+}
+bool APlayableController::InventoryWidgetNotValid() const
+{
+	return ProjectFAHUD == nullptr || ProjectFAHUD->Inventory == nullptr;
 }

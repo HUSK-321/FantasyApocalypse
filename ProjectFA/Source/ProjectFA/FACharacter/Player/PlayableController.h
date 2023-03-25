@@ -45,6 +45,7 @@ private:
 	bool PlayerHealthOverlayNotValid() const;
 	bool NearbyItemListNotValid() const;
 	bool PlayerStaminaOverlayNotValid() const;
+	bool InventoryWidgetNotValid() const;
 
 private:
 
