@@ -1,10 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
-
-
 #include "ProjectFAHUD.h"
 #include "Blueprint/UserWidget.h"
 #include "PlayerOverlay.h"
-#include "InventoryWidget/InventorySlot.h"
 #include "InventoryWidget/InventoryWidget.h"
 #include "PickupItemListWidget/PickupItemList.h"
 
@@ -27,17 +24,4 @@ void AProjectFAHUD::BeginPlay()
 void AProjectFAHUD::DrawHUD()
 {
 	Super::DrawHUD();
-}
-
-UInventorySlot* AProjectFAHUD::CreateInventorySlot()
-{
-	const auto PlayerController = GetOwningPlayerController();
-	if(PlayerController == nullptr)	return nullptr;
-	
-	if(InventorySlotClass)
-	{
-		auto InventorySlotWidget = CreateWidget<UInventorySlot>(PlayerController, InventorySlotClass);
-		return InventorySlotWidget;
-	}
-	return nullptr;
 }

@@ -10,7 +10,7 @@ class UPlayableCharacterCombatComponent;
 class APickupItem;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOneItemChangedEvnet, UObject*, Item);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FInventoryChangedEvent);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FInventoryChangedEvent, const TArray<APickupItem*>, ItemList);
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class PROJECTFA_API UInventoryComponent : public UActorComponent

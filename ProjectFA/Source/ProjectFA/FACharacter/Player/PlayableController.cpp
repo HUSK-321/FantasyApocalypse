@@ -7,10 +7,8 @@
 #include "Components/ListView.h"
 #include "Components/ProgressBar.h"
 #include "Components/TextBlock.h"
-#include "Components/WrapBox.h"
 #include "ProjectFA/HUD/PlayerOverlay.h"
 #include "ProjectFA/HUD/ProjectFAHUD.h"
-#include "ProjectFA/HUD/InventoryWidget/InventorySlot.h"
 #include "ProjectFA/HUD/InventoryWidget/InventoryWidget.h"
 #include "ProjectFA/HUD/PickupItemListWidget/PickupItemList.h"
 
@@ -69,11 +67,10 @@ void APlayableController::DeleteNearbyItem(UObject* Item)
 	}
 }
 
-void APlayableController::AddInventoryItem()
+void APlayableController::AddInventoryItem(const TArray<APickupItem*> ItemList)
 {
-	if(ProjectFAHUD == nullptr || ProjectFAHUD->Inventory == nullptr || ProjectFAHUD->Inventory->ItemList == nullptr)	return;
-	auto temp = ProjectFAHUD->CreateInventorySlot();
-	ProjectFAHUD->Inventory->ItemList->AddChildToWrapBox(temp);
+	if(ProjectFAHUD == nullptr || ProjectFAHUD->Inventory == nullptr)	return;
+	ProjectFAHUD->Inventory->SetInventoryWidgetList(ItemList);
 }
 
 bool APlayableController::PlayerHealthOverlayNotValid() const

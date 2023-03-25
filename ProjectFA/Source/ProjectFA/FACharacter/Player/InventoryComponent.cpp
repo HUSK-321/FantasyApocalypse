@@ -43,7 +43,9 @@ void UInventoryComponent::SetNearbyItemToInventory()
 	DeleteNearbyItem(ItemToGetIn);
 	ItemToGetIn->SetItemState(EItemState::EIS_InInventory);
 	InventoryItemList.Add(ItemToGetIn);
-	InventoryChangedEvent.Broadcast();
+	
+	InventoryChangedEvent.Broadcast(InventoryItemList);
+	
 	if(UKismetSystemLibrary::DoesImplementInterface(ItemToGetIn, UEquipable::StaticClass()))
 	{
 		ItemToGetIn->SetItemState(EItemState::EIS_Equipped);

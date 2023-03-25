@@ -13,11 +13,16 @@
 class UButton;
 class UTextBlock;
 class UImage;
+class APickupItem;
 
 UCLASS()
 class PROJECTFA_API UInventorySlot : public UUserWidget
 {
 	GENERATED_BODY()
+
+public:
+
+	void InitializeInventorySlot(APickupItem* Item);
 
 public:
 

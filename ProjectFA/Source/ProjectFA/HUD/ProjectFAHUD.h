@@ -22,7 +22,6 @@ class PROJECTFA_API AProjectFAHUD : public AHUD
 public:
 
 	virtual void DrawHUD() override;
-	UInventorySlot* CreateInventorySlot();
 
 protected:
 
@@ -41,8 +40,5 @@ public:
 	UPROPERTY(EditAnywhere, Category = "HUD")
 	TSubclassOf<UInventoryWidget> InventoryWidgetClass;
 	UPROPERTY(EditAnywhere, Category = "HUD")
-	TObjectPtr<UInventoryWidget> Inventory;
-	UPROPERTY(EditAnywhere, Category = "HUD")
-	TSubclassOf<UInventorySlot> InventorySlotClass;
-	
+	TObjectPtr<UInventoryWidget> Inventory;	
 };

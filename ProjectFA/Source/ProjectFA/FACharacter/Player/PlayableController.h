@@ -38,7 +38,7 @@ public:
 	void SetStaminaHUD(const float& CurrentStamina, const float& MaxStamina);
 
 	UFUNCTION()
-	void AddInventoryItem();
+	void AddInventoryItem(const TArray<APickupItem*> ItemList);
 
 private:
 	

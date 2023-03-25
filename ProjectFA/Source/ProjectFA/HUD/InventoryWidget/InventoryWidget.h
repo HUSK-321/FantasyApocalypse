@@ -10,6 +10,8 @@
  * 
  */
 class UWrapBox;
+class APickupItem;
+class UInventorySlot;
 
 UCLASS()
 class PROJECTFA_API UInventoryWidget : public UUserWidget
@@ -18,6 +20,12 @@ class PROJECTFA_API UInventoryWidget : public UUserWidget
 
 public:
 
+	void SetInventoryWidgetList(const TArray<APickupItem*>& ItemList);
+
+public:
+
 	UPROPERTY(meta=(BindWidget))
-	TObjectPtr<UWrapBox> ItemList;
+	TObjectPtr<UWrapBox> ItemWrapBox;
+	UPROPERTY(EditAnywhere, Category = "Inventory HUD")
+	TSubclassOf<UInventorySlot> InventorySlotClass;
 };
