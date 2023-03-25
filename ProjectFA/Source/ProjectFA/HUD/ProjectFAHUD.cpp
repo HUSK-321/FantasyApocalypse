@@ -4,6 +4,8 @@
 #include "ProjectFAHUD.h"
 #include "Blueprint/UserWidget.h"
 #include "PlayerOverlay.h"
+#include "InventoryWidget/InventorySlot.h"
+#include "InventoryWidget/InventoryWidget.h"
 #include "PickupItemListWidget/PickupItemList.h"
 
 void AProjectFAHUD::BeginPlay()
@@ -11,16 +13,31 @@ void AProjectFAHUD::BeginPlay()
 	Super::BeginPlay();
 	
 	const auto PlayerController = GetOwningPlayerController();
-	if(PlayerController && PlayerOverlayClass)
+	if(PlayerController && PlayerOverlayClass && PickupItemListClass && InventoryWidgetClass)
 	{
 		PlayerOverlay = CreateWidget<UPlayerOverlay>(PlayerController, PlayerOverlayClass);
 		PlayerOverlay->AddToViewport();
-		PickupItemList = CreateWidget<UPickupItemList>(PlayerController, PickupItemListCLass);
+		PickupItemList = CreateWidget<UPickupItemList>(PlayerController, PickupItemListClass);
 		PickupItemList->AddToViewport();
+		Inventory = CreateWidget<UInventoryWidget>(PlayerController, InventoryWidgetClass);
+		Inventory->AddToViewport();
 	}
 }
 
 void AProjectFAHUD::DrawHUD()
 {
 	Super::DrawHUD();
+}
+
+UInventorySlot* AProjectFAHUD::CreateInventorySlot()
+{
+	const auto PlayerController = GetOwningPlayerController();
+	if(PlayerController == nullptr)	return nullptr;
+	
+	if(InventorySlotClass)
+	{
+		auto InventorySlotWidget = CreateWidget<UInventorySlot>(PlayerController, InventorySlotClass);
+		return InventorySlotWidget;
+	}
+	return nullptr;
 }

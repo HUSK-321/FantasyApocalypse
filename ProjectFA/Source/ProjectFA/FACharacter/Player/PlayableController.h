@@ -37,6 +37,9 @@ public:
 	UFUNCTION()
 	void SetStaminaHUD(const float& CurrentStamina, const float& MaxStamina);
 
+	UFUNCTION()
+	void AddInventoryItem();
+
 private:
 	
 	bool PlayerHealthOverlayNotValid() const;

@@ -7,8 +7,11 @@
 #include "Components/ListView.h"
 #include "Components/ProgressBar.h"
 #include "Components/TextBlock.h"
+#include "Components/WrapBox.h"
 #include "ProjectFA/HUD/PlayerOverlay.h"
 #include "ProjectFA/HUD/ProjectFAHUD.h"
+#include "ProjectFA/HUD/InventoryWidget/InventorySlot.h"
+#include "ProjectFA/HUD/InventoryWidget/InventoryWidget.h"
 #include "ProjectFA/HUD/PickupItemListWidget/PickupItemList.h"
 
 void APlayableController::BeginPlay()
@@ -28,6 +31,7 @@ void APlayableController::SetInventoryEvent(UInventoryComponent* InventoryCompon
 {
 	InventoryComponent->NearbyItemAddEvent.AddDynamic(this, &APlayableController::AddNearbyItem);
 	InventoryComponent->NearbyItemDeleteEvent.AddDynamic(this, &APlayableController::DeleteNearbyItem);
+	InventoryComponent->InventoryChangedEvent.AddDynamic(this, &APlayableController::AddInventoryItem);
 }
 
 void APlayableController::SetHealthHUD(const float& CurrentHealth, const float& MaxHealth)
@@ -63,6 +67,13 @@ void APlayableController::DeleteNearbyItem(UObject* Item)
 	{
 		ProjectFAHUD->PickupItemList->SetVisibility(ESlateVisibility::Hidden);
 	}
+}
+
+void APlayableController::AddInventoryItem()
+{
+	if(ProjectFAHUD == nullptr || ProjectFAHUD->Inventory == nullptr || ProjectFAHUD->Inventory->ItemList == nullptr)	return;
+	auto temp = ProjectFAHUD->CreateInventorySlot();
+	ProjectFAHUD->Inventory->ItemList->AddChildToWrapBox(temp);
 }
 
 bool APlayableController::PlayerHealthOverlayNotValid() const

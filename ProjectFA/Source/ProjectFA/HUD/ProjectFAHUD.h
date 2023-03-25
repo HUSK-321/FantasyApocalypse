@@ -11,6 +11,8 @@
  */
 class UPlayerOverlay;
 class UPickupItemList;
+class UInventoryWidget;
+class UInventorySlot;
 
 UCLASS()
 class PROJECTFA_API AProjectFAHUD : public AHUD
@@ -20,6 +22,7 @@ class PROJECTFA_API AProjectFAHUD : public AHUD
 public:
 
 	virtual void DrawHUD() override;
+	UInventorySlot* CreateInventorySlot();
 
 protected:
 
@@ -32,8 +35,14 @@ public:
 	UPROPERTY(EditAnywhere, Category = "HUD")
 	TObjectPtr<UPlayerOverlay> PlayerOverlay;
 	UPROPERTY(EditAnywhere, Category = "HUD")
-	TSubclassOf<UPickupItemList> PickupItemListCLass;
+	TSubclassOf<UPickupItemList> PickupItemListClass;
 	UPROPERTY(EditAnywhere, Category = "HUD")
 	TObjectPtr<UPickupItemList> PickupItemList;
+	UPROPERTY(EditAnywhere, Category = "HUD")
+	TSubclassOf<UInventoryWidget> InventoryWidgetClass;
+	UPROPERTY(EditAnywhere, Category = "HUD")
+	TObjectPtr<UInventoryWidget> Inventory;
+	UPROPERTY(EditAnywhere, Category = "HUD")
+	TSubclassOf<UInventorySlot> InventorySlotClass;
 	
 };
