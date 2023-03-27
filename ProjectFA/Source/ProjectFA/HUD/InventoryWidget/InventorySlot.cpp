@@ -2,10 +2,12 @@
 
 
 #include "InventorySlot.h"
+#include "Components/Button.h"
 #include "Components/TextBlock.h"
 #include "ProjectFA/InGameItem/PickupItem.h"
 
 void UInventorySlot::InitializeInventorySlot(APickupItem* Item)
 {
+	SlotItem = Item;
 	ItemName->SetText(FText::FromString(Item->GetItemName()));
 }

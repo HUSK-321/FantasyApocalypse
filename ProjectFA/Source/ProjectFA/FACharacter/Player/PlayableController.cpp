@@ -56,7 +56,6 @@ void APlayableController::AddNearbyItem(UObject* Item)
 	ProjectFAHUD->PickupItemList->SetVisibility(ESlateVisibility::Visible);
 }
 
-
 void APlayableController::DeleteNearbyItem(UObject* Item)
 {
 	if(NearbyItemListNotValid())	return;
@@ -71,6 +70,15 @@ void APlayableController::AddInventoryItem(const TArray<APickupItem*> ItemList)
 {
 	if(InventoryWidgetNotValid())	return;
 	ProjectFAHUD->Inventory->SetInventoryWidgetList(ItemList);
+}
+
+void APlayableController::ToggleInventoryWidget()
+{
+	if(InventoryWidgetNotValid())	return;
+	const auto bIsVisible = ProjectFAHUD->Inventory->GetVisibility() == ESlateVisibility::Visible;
+	const auto Visibility = bIsVisible ? ESlateVisibility::Hidden : ESlateVisibility::Visible;
+	ProjectFAHUD->Inventory->SetVisibility(Visibility);
+	Visibility == ESlateVisibility::Visible ? SetInputModeGameAndUI() : SetInputModeGameOnly();
 }
 
 bool APlayableController::PlayerHealthOverlayNotValid() const
@@ -90,4 +98,18 @@ bool APlayableController::PlayerStaminaOverlayNotValid() const
 bool APlayableController::InventoryWidgetNotValid() const
 {
 	return ProjectFAHUD == nullptr || ProjectFAHUD->Inventory == nullptr;
+}
+
+void APlayableController::SetInputModeGameAndUI()
+{
+	FInputModeGameAndUI InputModeGameAndUI;
+	SetInputMode(InputModeGameAndUI);
+	bShowMouseCursor = true;
+}
+
+void APlayableController::SetInputModeGameOnly()
+{
+	FInputModeGameOnly InputModeGameOnly;
+	SetInputMode(InputModeGameOnly);
+	bShowMouseCursor = false;
 }

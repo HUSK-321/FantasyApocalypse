@@ -16,8 +16,10 @@ void AProjectFAHUD::BeginPlay()
 		PlayerOverlay->AddToViewport();
 		PickupItemList = CreateWidget<UPickupItemList>(PlayerController, PickupItemListClass);
 		PickupItemList->AddToViewport();
+		PickupItemList->SetVisibility(ESlateVisibility::Hidden);
 		Inventory = CreateWidget<UInventoryWidget>(PlayerController, InventoryWidgetClass);
 		Inventory->AddToViewport();
+		Inventory->SetVisibility(ESlateVisibility::Hidden);
 	}
 }
 

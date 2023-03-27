@@ -39,6 +39,8 @@ public:
 
 	UFUNCTION()
 	void AddInventoryItem(const TArray<APickupItem*> ItemList);
+	UFUNCTION()
+	void ToggleInventoryWidget();
 
 private:
 	
@@ -46,6 +48,9 @@ private:
 	bool NearbyItemListNotValid() const;
 	bool PlayerStaminaOverlayNotValid() const;
 	bool InventoryWidgetNotValid() const;
+
+	void SetInputModeGameAndUI();
+	void SetInputModeGameOnly();
 
 private:
 

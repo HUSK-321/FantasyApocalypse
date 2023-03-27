@@ -32,4 +32,9 @@ public:
 	TObjectPtr<UImage> ItemImage;
 	UPROPERTY(meta=(BindWidget))
 	TObjectPtr<UTextBlock> ItemName;
+
+private:
+
+	UPROPERTY(BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	TWeakObjectPtr<APickupItem> SlotItem;
 };

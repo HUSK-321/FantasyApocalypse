@@ -80,6 +80,7 @@ private:
 	void SprintButtonReleased();
 	void InteractionButtonPressed();
 	void AttackButtonPressed();
+	void InventoryButtonPressed();
 	virtual void ReceiveDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType, AController* InstigatorController, AActor* DamageCauser) override;
 	void SetSprinting(bool bSprinting);
 	void ManageStaminaAmount(float DeltaTime);
