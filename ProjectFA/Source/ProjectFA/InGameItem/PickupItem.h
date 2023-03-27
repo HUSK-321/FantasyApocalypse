@@ -32,9 +32,9 @@ protected:
 	UPROPERTY(EditAnywhere)
 	TObjectPtr<USphereComponent> PickupAreaSphere;
 
-	UPROPERTY(EditAnywhere, Category = "Item Property")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item Property")
 	FString ItemName;
-	UPROPERTY(EditAnywhere, Category = "Item Property")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item Property")
 	FString ItemDescription;
 	UPROPERTY(EditAnywhere, Category = "Item Property")
 	float ItemPowerAmount;

@@ -35,6 +35,6 @@ public:
 
 private:
 
-	UPROPERTY(BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	TWeakObjectPtr<APickupItem> SlotItem;
 };
