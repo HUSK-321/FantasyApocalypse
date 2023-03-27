@@ -40,9 +40,11 @@ void UInventoryComponent::SetNearbyItemToInventory()
 	if(NearbyItemList.IsEmpty())	return;
 
 	APickupItem* ItemToGetIn = NearbyItemList[0];
-	DeleteNearbyItem(ItemToGetIn);
+	ItemToGetIn->SetOwner(GetOwner());
 	ItemToGetIn->SetItemState(EItemState::EIS_InInventory);
+	ItemToGetIn->ItemRemovedEvent.AddDynamic(this, &UInventoryComponent::RemoveItem);
 	InventoryItemList.Add(ItemToGetIn);
+	DeleteNearbyItem(ItemToGetIn);
 	
 	InventoryChangedEvent.Broadcast(InventoryItemList);
 	
@@ -51,4 +53,12 @@ void UInventoryComponent::SetNearbyItemToInventory()
 		ItemToGetIn->SetItemState(EItemState::EIS_Equipped);
 		PlayerCombatComponent->EquipItemToCharacter(ItemToGetIn);
 	}
+}
+
+void UInventoryComponent::RemoveItem(APickupItem* Item)
+{
+	Item->SetItemState(EItemState::EIS_MAX);
+	Item->SetOwner(nullptr);
+	InventoryItemList.Remove(Item);
+	InventoryChangedEvent.Broadcast(InventoryItemList);
 }

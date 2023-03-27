@@ -31,7 +31,7 @@ private:
 	int8 InventoryCapacity;
 	UPROPERTY()
 	TArray<APickupItem*> NearbyItemList;
-	UPROPERTY()
+	UPROPERTY(VisibleAnywhere)
 	TArray<APickupItem*> InventoryItemList;
 
 public:
@@ -40,6 +40,8 @@ public:
 	void AddNearbyItem(APickupItem* Item);
 	void DeleteNearbyItem(APickupItem* Item);
 	void SetNearbyItemToInventory();
+	UFUNCTION()
+	void RemoveItem(APickupItem* Item);
 
 protected:
 	

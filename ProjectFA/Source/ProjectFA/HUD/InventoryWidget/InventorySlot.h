@@ -24,6 +24,11 @@ public:
 
 	void InitializeInventorySlot(APickupItem* Item);
 
+private:
+
+	UFUNCTION()
+	void DoSlotItemAction();
+
 public:
 
 	UPROPERTY(meta=(BindWidget))

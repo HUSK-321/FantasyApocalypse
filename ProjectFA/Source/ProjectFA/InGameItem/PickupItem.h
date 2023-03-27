@@ -20,10 +20,16 @@ enum class EItemState : uint8
 class USkeletalMeshComponent;
 class USphereComponent;
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FItemRemovedEvent, APickupItem*, Item);
+
 UCLASS()
 class PROJECTFA_API APickupItem : public AActor
 {
 	GENERATED_BODY()
+
+public:
+
+	FItemRemovedEvent ItemRemovedEvent;
 
 protected:
 
@@ -40,19 +46,22 @@ protected:
 	float ItemPowerAmount;
 	UPROPERTY(EditAnywhere, Category = "Item Property")
 	float ItemWeight;
-
+	UPROPERTY()
 	EItemState ItemState;
 	
 public:
 	
 	APickupItem();
 	void SetItemState(const EItemState State);
+	
+	virtual void SetOwner(AActor* NewOwner) override;
 
 	FORCEINLINE FString GetItemName() const { return ItemName; }
 
 protected:
 	
 	virtual void BeginPlay() override;
+	virtual void Destroyed() override;
 
 private:
 
