@@ -42,7 +42,7 @@ void UInventoryComponent::SetNearbyItemToInventory()
 	APickupItem* ItemToGetIn = NearbyItemList[0];
 	ItemToGetIn->SetOwner(GetOwner());
 	ItemToGetIn->SetItemState(EItemState::EIS_InInventory);
-	ItemToGetIn->ItemRemovedEvent.AddDynamic(this, &UInventoryComponent::RemoveItem);
+	ItemToGetIn->ItemRemovedFromInventoryEvent.AddDynamic(this, &UInventoryComponent::RemoveItem);
 	InventoryItemList.Add(ItemToGetIn);
 	DeleteNearbyItem(ItemToGetIn);
 	

@@ -32,7 +32,7 @@ void APickupItem::Destroyed()
 {
 	Super::Destroyed();
 
-	ItemRemovedEvent.Broadcast(this);
+	ItemRemovedFromInventoryEvent.Broadcast(this);
 }
 
 void APickupItem::SetOwner(AActor* NewOwner)
@@ -40,7 +40,7 @@ void APickupItem::SetOwner(AActor* NewOwner)
 	Super::SetOwner(NewOwner);
 	if(NewOwner == nullptr)
 	{
-		ItemRemovedEvent.Clear();
+		ItemRemovedFromInventoryEvent.Clear();
 	}
 }
 

@@ -29,7 +29,7 @@ class PROJECTFA_API APickupItem : public AActor
 
 public:
 
-	FItemRemovedEvent ItemRemovedEvent;
+	FItemRemovedEvent ItemRemovedFromInventoryEvent;
 
 protected:
 
