@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "ProjectFA/FACharacter/FACharacter.h"
+#include "InputActionValue.h"
 #include "PlayableCharacter.generated.h"
 
 class UInputComponent;
@@ -12,6 +13,8 @@ class UCameraComponent;
 class UPlayableCharacterCombatComponent;
 class UInventoryComponent;
 class APickupItem;
+class UInputMappingContext;
+class UInputAction;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FPlayerCurrentMaxDelegate, const float&, CurrentValue, const float&, MaxValue);
 
@@ -34,7 +37,14 @@ private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UPlayableCharacterCombatComponent> CombatComponent;
 	UPROPERTY(VisibleAnywhere)
-	TObjectPtr<UInventoryComponent> InventoryComponent;	
+	TObjectPtr<UInventoryComponent> InventoryComponent;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UInputMappingContext> PlayableCharacterMappingContext;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UInputAction> MoveAction;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UInputAction> CameraAction;
 
 	UPROPERTY(EditAnywhere, Category = "Player Property")
 	float MaxWalkSpeed;
@@ -70,10 +80,8 @@ protected:
 
 private:
 
-	void MoveForward(float Value);
-	void MoveRight(float Value);
-	void TurnRight(float Value);
-	void LookUp(float Value);
+	void CharacterMove(const FInputActionValue& Value);
+	void CameraMove(const FInputActionValue& Value);
 	virtual void Jump() override;
 	void CrouchButtonPressed();
 	void SprintButtonPressed();

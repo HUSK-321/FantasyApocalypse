@@ -1,11 +1,14 @@
 #include "PlayableCharacter.h"
-
+#include "EnhancedInputSubsystems.h"
 #include "InventoryComponent.h"
 #include "PlayableCharacterCombatComponent.h"
 #include "PlayableController.h"
 #include "Camera/CameraComponent.h"
+#include "Components/InputComponent.h"
+#include "EnhancedInputComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
+#include "ProjectFA/HUD/InventoryWidget/InventorySlotWidget.h"
 
 APlayableCharacter::APlayableCharacter()
 	:
@@ -39,11 +42,14 @@ void APlayableCharacter::BeginPlay()
 
 	OnTakeAnyDamage.AddDynamic(this, &APlayableCharacter::ReceiveDamage);
 
-	if(auto PlayableController = Cast<APlayableController>(Controller))
+	if(const auto PlayableController = Cast<APlayableController>(GetController()))
 	{
-		// TODO : Controller should do this, not in player
 		PlayableController->SetPlayerEvent(this);
 		PlayableController->SetInventoryEvent(InventoryComponent);
+		if(const auto Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayableController->GetLocalPlayer()))
+		{
+			Subsystem->AddMappingContext(PlayableCharacterMappingContext, 0);
+		}
 	}
 	PlayerHealthChangedEvent.Broadcast(CurrentHealth, MaxHealth);
 	PlayerStaminaChangedEvent.Broadcast(CurrentStamina, MaxStamina);
@@ -53,6 +59,12 @@ void APlayableCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
+	if(const auto EnhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerInputComponent))
+	{
+		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &APlayableCharacter::CharacterMove);
+		EnhancedInputComponent->BindAction(CameraAction, ETriggerEvent::Triggered, this, &APlayableCharacter::CameraMove);
+	}
+
 	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ThisClass::Jump);
 	PlayerInputComponent->BindAction("Crouch", IE_Pressed, this, &ThisClass::CrouchButtonPressed);
 	PlayerInputComponent->BindAction("Sprint", IE_Pressed, this, &ThisClass::SprintButtonPressed);
@@ -60,11 +72,6 @@ void APlayableCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 	PlayerInputComponent->BindAction("Interact", IE_Pressed, this, &ThisClass::InteractionButtonPressed);
 	PlayerInputComponent->BindAction("Attack", IE_Pressed, this, &ThisClass::AttackButtonPressed);
 	PlayerInputComponent->BindAction("Inventory", IE_Pressed, this, &ThisClass::InventoryButtonPressed);
-
-	PlayerInputComponent->BindAxis("MoveForward", this, &ThisClass::MoveForward);
-	PlayerInputComponent->BindAxis("MoveRight", this, &ThisClass::MoveRight);
-	PlayerInputComponent->BindAxis("LookUp", this, &ThisClass::LookUp);
-	PlayerInputComponent->BindAxis("TurnRight", this, &ThisClass::TurnRight);
 }
 
 void APlayableCharacter::Tick(float DeltaTime)
@@ -74,36 +81,25 @@ void APlayableCharacter::Tick(float DeltaTime)
 	ManageStaminaAmount(DeltaTime);
 }
 
-void APlayableCharacter::MoveForward(float Value)
+void APlayableCharacter::CharacterMove(const FInputActionValue& Value)
 {
-	if(Controller == nullptr || Value == 0.f)	return;
-
+	if(GetController() == nullptr)	return;
+	
+	const auto MoveVector = Value.Get<FVector2D>();
 	const FRotator YawRotation{ 0.f, Controller->GetControlRotation().Yaw, 0.f };
-	const FVector Direction{ FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X) };
-	AddMovementInput(Direction, Value);
+	const FVector ForwardDirection{ FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X) };
+	const FVector RightDirection{ FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y) };
+	AddMovementInput(ForwardDirection, MoveVector.Y);
+	AddMovementInput(RightDirection, MoveVector.X);
 }
 
-void APlayableCharacter::MoveRight(float Value)
+void APlayableCharacter::CameraMove(const FInputActionValue& Value)
 {
-	if(Controller == nullptr || Value == 0.f)	return;
-
-	const FRotator YawRotation{ 0.f, Controller->GetControlRotation().Yaw, 0.f };
-	const FVector Direction{ FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y) };
-	AddMovementInput(Direction, Value);
-}
-
-void APlayableCharacter::TurnRight(float Value)
-{
-	if(Controller == nullptr || Value == 0.f)	return;
-
-	AddControllerYawInput(Value);
-}
-
-void APlayableCharacter::LookUp(float Value)
-{
-	if(Controller == nullptr || Value == 0.f)	return;
-
-	AddControllerPitchInput(Value);
+	if(GetController() == nullptr)	return;
+	
+	const auto LookAxisValue = Value.Get<FVector2D>();
+	AddControllerYawInput(LookAxisValue.X);
+	AddControllerPitchInput(LookAxisValue.Y);
 }
 
 void APlayableCharacter::Jump()
