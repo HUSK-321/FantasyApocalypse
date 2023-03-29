@@ -57,6 +57,8 @@ public:
 	virtual void SetOwner(AActor* NewOwner) override;
 
 	FORCEINLINE FString GetItemName() const { return ItemName; }
+	FORCEINLINE FString GetItemDescription() const { return ItemDescription; }
+	FORCEINLINE float GetItemWeight() const { return ItemWeight; }
 
 protected:
 	

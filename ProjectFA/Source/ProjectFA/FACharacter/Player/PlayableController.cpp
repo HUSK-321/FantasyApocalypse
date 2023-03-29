@@ -30,6 +30,7 @@ void APlayableController::SetInventoryEvent(UInventoryComponent* InventoryCompon
 	InventoryComponent->NearbyItemAddEvent.AddDynamic(this, &APlayableController::AddNearbyItem);
 	InventoryComponent->NearbyItemDeleteEvent.AddDynamic(this, &APlayableController::DeleteNearbyItem);
 	InventoryComponent->InventoryChangedEvent.AddDynamic(this, &APlayableController::AddInventoryItem);
+	InventoryComponent->InventoryWeightChangedEvent.AddDynamic(this, &APlayableController::SetInventoryWeight);
 }
 
 void APlayableController::SetHealthHUD(const float& CurrentHealth, const float& MaxHealth)
@@ -81,6 +82,13 @@ void APlayableController::ToggleInventoryWidget()
 	Visibility == ESlateVisibility::Visible ? SetInputModeGameAndUI() : SetInputModeGameOnly();
 }
 
+void APlayableController::SetInventoryWeight(const float& Weight)
+{
+	if(InventoryWidgetNotValid() || ProjectFAHUD->Inventory->TotalWeight == nullptr)	return;
+	const FString WeightTextString = FString::Printf(TEXT("Total Weight : %.2fKG"), Weight); 
+	ProjectFAHUD->Inventory->TotalWeight->SetText(FText::FromString(WeightTextString));
+}
+
 bool APlayableController::PlayerHealthOverlayNotValid() const
 {
 	return ProjectFAHUD == nullptr || ProjectFAHUD->PlayerOverlay == nullptr || ProjectFAHUD->PlayerOverlay->HealthText == nullptr || ProjectFAHUD->PlayerOverlay->HealthBar == nullptr;
@@ -95,6 +103,7 @@ bool APlayableController::PlayerStaminaOverlayNotValid() const
 {
 	return ProjectFAHUD == nullptr || ProjectFAHUD->PlayerOverlay == nullptr || ProjectFAHUD->PlayerOverlay->StaminaBar == nullptr;
 }
+
 bool APlayableController::InventoryWidgetNotValid() const
 {
 	return ProjectFAHUD == nullptr || ProjectFAHUD->Inventory == nullptr;
@@ -102,14 +111,14 @@ bool APlayableController::InventoryWidgetNotValid() const
 
 void APlayableController::SetInputModeGameAndUI()
 {
-	FInputModeGameAndUI InputModeGameAndUI;
+	const FInputModeGameAndUI InputModeGameAndUI;
 	SetInputMode(InputModeGameAndUI);
 	bShowMouseCursor = true;
 }
 
 void APlayableController::SetInputModeGameOnly()
 {
-	FInputModeGameOnly InputModeGameOnly;
+	const FInputModeGameOnly InputModeGameOnly;
 	SetInputMode(InputModeGameOnly);
 	bShowMouseCursor = false;
 }

@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include "ProjectFA/InGameItem/PickupItem.h"
 #include "InventoryComponent.generated.h"
 
 class UPlayableCharacterCombatComponent;
@@ -11,6 +12,7 @@ class APickupItem;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOneItemChangedEvent, UObject*, Item);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FInventoryChangedEvent, const TArray<APickupItem*>, ItemList);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FInventoryWeightChangedEvent, const float&, InventoryWeight);
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class PROJECTFA_API UInventoryComponent : public UActorComponent
@@ -22,6 +24,7 @@ public:
 	FOneItemChangedEvent NearbyItemAddEvent;
 	FOneItemChangedEvent NearbyItemDeleteEvent;
 	FInventoryChangedEvent InventoryChangedEvent;
+	FInventoryWeightChangedEvent InventoryWeightChangedEvent;
 
 private:
 
@@ -29,6 +32,8 @@ private:
 	TObjectPtr<UPlayableCharacterCombatComponent> PlayerCombatComponent;
 	UPROPERTY(EditAnywhere)
 	int8 InventoryCapacity;
+	UPROPERTY(VisibleAnywhere)
+	float InventoryItemTotalWeight;
 	UPROPERTY()
 	TArray<APickupItem*> NearbyItemList;
 	UPROPERTY(VisibleAnywhere)
@@ -37,13 +42,24 @@ private:
 public:
 	
 	UInventoryComponent();
+	UFUNCTION()
 	void AddNearbyItem(APickupItem* Item);
+	UFUNCTION()
 	void DeleteNearbyItem(APickupItem* Item);
 	void SetNearbyItemToInventory();
 	UFUNCTION()
 	void RemoveItem(APickupItem* Item);
 
+	FORCEINLINE float GetInventoryTotalWeight() const { return InventoryItemTotalWeight; }
+
 protected:
 	
 	virtual void BeginPlay() override;
+
+private:
+
+	void AddInventoryWeight(const float& ItemWeightToIn);
+	void SubtractInventoryWeight(const float& ItemWeightToOut);
+	void AddItemToInventory(APickupItem* ItemToIn);
+	void DeleteItemFromInventory(APickupItem* ItemToOut);
 };

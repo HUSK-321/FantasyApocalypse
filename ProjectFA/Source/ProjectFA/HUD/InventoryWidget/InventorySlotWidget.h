@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
-#include "InventorySlot.generated.h"
+#include "InventorySlotWidget.generated.h"
 
 /**
  * 
@@ -16,7 +16,7 @@ class UImage;
 class APickupItem;
 
 UCLASS()
-class PROJECTFA_API UInventorySlot : public UUserWidget
+class PROJECTFA_API UInventorySlotWidget : public UUserWidget
 {
 	GENERATED_BODY()
 

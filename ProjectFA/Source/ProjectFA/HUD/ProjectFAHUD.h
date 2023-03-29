@@ -12,7 +12,7 @@
 class UPlayerOverlay;
 class UPickupItemList;
 class UInventoryWidget;
-class UInventorySlot;
+class UInventorySlotWidget;
 
 UCLASS()
 class PROJECTFA_API AProjectFAHUD : public AHUD

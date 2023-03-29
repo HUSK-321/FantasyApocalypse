@@ -2,7 +2,7 @@
 
 
 #include "InventoryWidget.h"
-#include "InventorySlot.h"
+#include "InventorySlotWidget.h"
 #include "Components/WrapBox.h"
 
 void UInventoryWidget::SetInventoryWidgetList(const TArray<APickupItem*>& ItemList)
@@ -13,7 +13,7 @@ void UInventoryWidget::SetInventoryWidgetList(const TArray<APickupItem*>& ItemLi
 	
 	for(auto Item : ItemList)
 	{
-		auto InventorySlotWidget = CreateWidget<UInventorySlot>(PlayerController, InventorySlotClass);
+		auto InventorySlotWidget = CreateWidget<UInventorySlotWidget>(PlayerController, InventorySlotClass);
 		InventorySlotWidget->InitializeInventorySlot(Item);
 		ItemWrapBox->AddChildToWrapBox(InventorySlotWidget);
 	}

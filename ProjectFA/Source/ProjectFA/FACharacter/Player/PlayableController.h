@@ -43,6 +43,9 @@ public:
 	void ToggleInventoryWidget();
 
 private:
+
+	UFUNCTION()
+	void SetInventoryWeight(const float& Weight);
 	
 	bool PlayerHealthOverlayNotValid() const;
 	bool NearbyItemListNotValid() const;

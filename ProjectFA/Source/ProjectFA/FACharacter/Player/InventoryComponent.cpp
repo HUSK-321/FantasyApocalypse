@@ -9,6 +9,8 @@
 #include "ProjectFA/InGameItem/PickupItem.h"
 
 UInventoryComponent::UInventoryComponent()
+	:
+	InventoryItemTotalWeight(0.f)
 {
 	PrimaryComponentTick.bCanEverTick = false;
 }
@@ -23,6 +25,58 @@ void UInventoryComponent::BeginPlay()
 	}
 }
 
+void UInventoryComponent::SetNearbyItemToInventory()
+{
+	if(NearbyItemList.IsEmpty())	return;
+
+	APickupItem* ItemToGetIn = NearbyItemList[0];
+	AddItemToInventory(ItemToGetIn);
+}
+
+void UInventoryComponent::RemoveItem(APickupItem* Item)
+{
+	Item->SetItemState(EItemState::EIS_MAX);
+	Item->SetOwner(nullptr);
+	DeleteItemFromInventory(Item);
+}
+
+void UInventoryComponent::AddInventoryWeight(const float& ItemWeightToIn)
+{
+	InventoryItemTotalWeight += ItemWeightToIn;
+	InventoryWeightChangedEvent.Broadcast(InventoryItemTotalWeight);
+}
+
+void UInventoryComponent::SubtractInventoryWeight(const float& ItemWeightToOut)
+{
+	InventoryItemTotalWeight -= ItemWeightToOut;
+	InventoryWeightChangedEvent.Broadcast(InventoryItemTotalWeight);
+}
+
+void UInventoryComponent::AddItemToInventory(APickupItem* ItemToIn)
+{
+	ItemToIn->SetOwner(GetOwner());
+	ItemToIn->SetItemState(EItemState::EIS_InInventory);
+	ItemToIn->ItemRemovedFromInventoryEvent.AddDynamic(this, &UInventoryComponent::RemoveItem);
+	InventoryItemList.Add(ItemToIn);
+	DeleteNearbyItem(ItemToIn);
+	InventoryChangedEvent.Broadcast(InventoryItemList);
+	AddInventoryWeight(ItemToIn->GetItemWeight());
+
+		
+	if(UKismetSystemLibrary::DoesImplementInterface(ItemToIn, UEquipable::StaticClass()))
+	{
+		ItemToIn->SetItemState(EItemState::EIS_Equipped);
+		PlayerCombatComponent->EquipItemToCharacter(ItemToIn);
+	}
+}
+
+void UInventoryComponent::DeleteItemFromInventory(APickupItem* ItemToOut)
+{
+	InventoryItemList.Remove(ItemToOut);
+	InventoryChangedEvent.Broadcast(InventoryItemList);
+	SubtractInventoryWeight(ItemToOut->GetItemWeight());
+}
+
 void UInventoryComponent::AddNearbyItem(APickupItem* Item)
 {
 	NearbyItemList.Add(Item);
@@ -33,32 +87,4 @@ void UInventoryComponent::DeleteNearbyItem(APickupItem* Item)
 {
 	NearbyItemList.Remove(Item);
 	NearbyItemDeleteEvent.Broadcast(Item);
-}
-
-void UInventoryComponent::SetNearbyItemToInventory()
-{
-	if(NearbyItemList.IsEmpty())	return;
-
-	APickupItem* ItemToGetIn = NearbyItemList[0];
-	ItemToGetIn->SetOwner(GetOwner());
-	ItemToGetIn->SetItemState(EItemState::EIS_InInventory);
-	ItemToGetIn->ItemRemovedFromInventoryEvent.AddDynamic(this, &UInventoryComponent::RemoveItem);
-	InventoryItemList.Add(ItemToGetIn);
-	DeleteNearbyItem(ItemToGetIn);
-	
-	InventoryChangedEvent.Broadcast(InventoryItemList);
-	
-	if(UKismetSystemLibrary::DoesImplementInterface(ItemToGetIn, UEquipable::StaticClass()))
-	{
-		ItemToGetIn->SetItemState(EItemState::EIS_Equipped);
-		PlayerCombatComponent->EquipItemToCharacter(ItemToGetIn);
-	}
-}
-
-void UInventoryComponent::RemoveItem(APickupItem* Item)
-{
-	Item->SetItemState(EItemState::EIS_MAX);
-	Item->SetOwner(nullptr);
-	InventoryItemList.Remove(Item);
-	InventoryChangedEvent.Broadcast(InventoryItemList);
 }
