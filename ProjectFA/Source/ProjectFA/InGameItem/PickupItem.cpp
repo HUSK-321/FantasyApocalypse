@@ -28,6 +28,22 @@ void APickupItem::BeginPlay()
 	PickupAreaSphere->OnComponentEndOverlap.AddDynamic(this, &APickupItem::PickupAreaEndOverlap);
 }
 
+void APickupItem::Destroyed()
+{
+	Super::Destroyed();
+
+	ItemRemovedFromInventoryEvent.Broadcast(this);
+}
+
+void APickupItem::SetOwner(AActor* NewOwner)
+{
+	Super::SetOwner(NewOwner);
+	if(NewOwner == nullptr)
+	{
+		ItemRemovedFromInventoryEvent.Clear();
+	}
+}
+
 void APickupItem::SetItemState(const EItemState State)
 {
 	ItemState = State;
@@ -50,6 +66,7 @@ void APickupItem::SetItemState(const EItemState State)
 		break;
 		
 	case EItemState::EIS_Dropped:
+		SetOwner(nullptr);
 		PickupItemMesh->SetVisibility(true);
 		PickupItemMesh->SetSimulatePhysics(true);
 		PickupItemMesh->SetEnableGravity(true);

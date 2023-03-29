@@ -30,7 +30,7 @@ void UPlayableCharacterCombatComponent::EquipItemToCharacter(APickupItem* ItemTo
 	if(EquippedItem)
 	{
 		// TODO : change weapon, not destroy
-		EquippedItem->Destroy();
+		EquippedItem->SetItemState(EItemState::EIS_InInventory);
 	}
 	EquippedItem = ItemToEquip;
 	EquippedItem->SetOwner(PlayableCharacter);

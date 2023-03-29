@@ -29,6 +29,7 @@ void AWeapon::AttackCollisionOnOverlapBegin(UPrimitiveComponent* OverlappedCompo
 	if(AttackingInstigator == nullptr)	return;
 	
 	UGameplayStatics::ApplyDamage(OtherActor, ItemPowerAmount, AttackingInstigator, this, DamageTypeClass);
+	SetAttackCollision(false);
 }
 
 FName AWeapon::GetNormalAttackMontageSectionName() const

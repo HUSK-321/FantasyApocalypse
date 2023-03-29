@@ -30,6 +30,7 @@ void APlayableController::SetInventoryEvent(UInventoryComponent* InventoryCompon
 	InventoryComponent->NearbyItemAddEvent.AddDynamic(this, &APlayableController::AddNearbyItem);
 	InventoryComponent->NearbyItemDeleteEvent.AddDynamic(this, &APlayableController::DeleteNearbyItem);
 	InventoryComponent->InventoryChangedEvent.AddDynamic(this, &APlayableController::AddInventoryItem);
+	InventoryComponent->InventoryWeightChangedEvent.AddDynamic(this, &APlayableController::SetInventoryWeight);
 }
 
 void APlayableController::SetHealthHUD(const float& CurrentHealth, const float& MaxHealth)
@@ -56,7 +57,6 @@ void APlayableController::AddNearbyItem(UObject* Item)
 	ProjectFAHUD->PickupItemList->SetVisibility(ESlateVisibility::Visible);
 }
 
-
 void APlayableController::DeleteNearbyItem(UObject* Item)
 {
 	if(NearbyItemListNotValid())	return;
@@ -73,6 +73,22 @@ void APlayableController::AddInventoryItem(const TArray<APickupItem*> ItemList)
 	ProjectFAHUD->Inventory->SetInventoryWidgetList(ItemList);
 }
 
+void APlayableController::ToggleInventoryWidget()
+{
+	if(InventoryWidgetNotValid())	return;
+	const auto bIsVisible = ProjectFAHUD->Inventory->GetVisibility() == ESlateVisibility::Visible;
+	const auto Visibility = bIsVisible ? ESlateVisibility::Hidden : ESlateVisibility::Visible;
+	ProjectFAHUD->Inventory->SetVisibility(Visibility);
+	Visibility == ESlateVisibility::Visible ? SetInputModeGameAndUI() : SetInputModeGameOnly();
+}
+
+void APlayableController::SetInventoryWeight(const float& Weight)
+{
+	if(InventoryWidgetNotValid() || ProjectFAHUD->Inventory->TotalWeight == nullptr)	return;
+	const FString WeightTextString = FString::Printf(TEXT("Total Weight : %.2fKG"), Weight); 
+	ProjectFAHUD->Inventory->TotalWeight->SetText(FText::FromString(WeightTextString));
+}
+
 bool APlayableController::PlayerHealthOverlayNotValid() const
 {
 	return ProjectFAHUD == nullptr || ProjectFAHUD->PlayerOverlay == nullptr || ProjectFAHUD->PlayerOverlay->HealthText == nullptr || ProjectFAHUD->PlayerOverlay->HealthBar == nullptr;
@@ -87,7 +103,22 @@ bool APlayableController::PlayerStaminaOverlayNotValid() const
 {
 	return ProjectFAHUD == nullptr || ProjectFAHUD->PlayerOverlay == nullptr || ProjectFAHUD->PlayerOverlay->StaminaBar == nullptr;
 }
+
 bool APlayableController::InventoryWidgetNotValid() const
 {
 	return ProjectFAHUD == nullptr || ProjectFAHUD->Inventory == nullptr;
+}
+
+void APlayableController::SetInputModeGameAndUI()
+{
+	const FInputModeGameAndUI InputModeGameAndUI;
+	SetInputMode(InputModeGameAndUI);
+	bShowMouseCursor = true;
+}
+
+void APlayableController::SetInputModeGameOnly()
+{
+	const FInputModeGameOnly InputModeGameOnly;
+	SetInputMode(InputModeGameOnly);
+	bShowMouseCursor = false;
 }

@@ -20,10 +20,16 @@ enum class EItemState : uint8
 class USkeletalMeshComponent;
 class USphereComponent;
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FItemRemovedEvent, APickupItem*, Item);
+
 UCLASS()
 class PROJECTFA_API APickupItem : public AActor
 {
 	GENERATED_BODY()
+
+public:
+
+	FItemRemovedEvent ItemRemovedFromInventoryEvent;
 
 protected:
 
@@ -32,27 +38,32 @@ protected:
 	UPROPERTY(EditAnywhere)
 	TObjectPtr<USphereComponent> PickupAreaSphere;
 
-	UPROPERTY(EditAnywhere, Category = "Item Property")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item Property")
 	FString ItemName;
-	UPROPERTY(EditAnywhere, Category = "Item Property")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item Property")
 	FString ItemDescription;
 	UPROPERTY(EditAnywhere, Category = "Item Property")
 	float ItemPowerAmount;
 	UPROPERTY(EditAnywhere, Category = "Item Property")
 	float ItemWeight;
-
+	UPROPERTY()
 	EItemState ItemState;
 	
 public:
 	
 	APickupItem();
 	void SetItemState(const EItemState State);
+	
+	virtual void SetOwner(AActor* NewOwner) override;
 
 	FORCEINLINE FString GetItemName() const { return ItemName; }
+	FORCEINLINE FString GetItemDescription() const { return ItemDescription; }
+	FORCEINLINE float GetItemWeight() const { return ItemWeight; }
 
 protected:
 	
 	virtual void BeginPlay() override;
+	virtual void Destroyed() override;
 
 private:
 

@@ -59,6 +59,7 @@ void APlayableCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 	PlayerInputComponent->BindAction("Sprint", IE_Released, this, &ThisClass::SprintButtonReleased);
 	PlayerInputComponent->BindAction("Interact", IE_Pressed, this, &ThisClass::InteractionButtonPressed);
 	PlayerInputComponent->BindAction("Attack", IE_Pressed, this, &ThisClass::AttackButtonPressed);
+	PlayerInputComponent->BindAction("Inventory", IE_Pressed, this, &ThisClass::InventoryButtonPressed);
 
 	PlayerInputComponent->BindAxis("MoveForward", this, &ThisClass::MoveForward);
 	PlayerInputComponent->BindAxis("MoveRight", this, &ThisClass::MoveRight);
@@ -188,4 +189,12 @@ void APlayableCharacter::AttackButtonPressed()
 {
 	if(CombatComponent == nullptr)	return;
 	CombatComponent->Attack();
+}
+
+void APlayableCharacter::InventoryButtonPressed()
+{
+	if(const auto PlayableController = Cast<APlayableController>(Controller))
+	{
+		PlayableController->ToggleInventoryWidget();
+	}
 }

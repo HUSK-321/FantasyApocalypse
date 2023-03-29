@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
-#include "InventorySlot.generated.h"
+#include "InventorySlotWidget.generated.h"
 
 /**
  * 
@@ -16,13 +16,18 @@ class UImage;
 class APickupItem;
 
 UCLASS()
-class PROJECTFA_API UInventorySlot : public UUserWidget
+class PROJECTFA_API UInventorySlotWidget : public UUserWidget
 {
 	GENERATED_BODY()
 
 public:
 
 	void InitializeInventorySlot(APickupItem* Item);
+
+private:
+
+	UFUNCTION()
+	void DoSlotItemAction();
 
 public:
 
@@ -32,4 +37,9 @@ public:
 	TObjectPtr<UImage> ItemImage;
 	UPROPERTY(meta=(BindWidget))
 	TObjectPtr<UTextBlock> ItemName;
+
+private:
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	TWeakObjectPtr<APickupItem> SlotItem;
 };
