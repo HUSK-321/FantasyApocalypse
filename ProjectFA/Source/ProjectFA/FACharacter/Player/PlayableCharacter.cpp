@@ -65,7 +65,8 @@ void APlayableCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 		EnhancedInputComponent->BindAction(CameraAction, ETriggerEvent::Triggered, this, &APlayableCharacter::CameraMove);
 		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Started, this, &APlayableCharacter::Jump);
 		EnhancedInputComponent->BindAction(InteractAction, ETriggerEvent::Started, this, &APlayableCharacter::InteractionButtonPressed);
-		EnhancedInputComponent->BindAction(AttackAction, ETriggerEvent::Triggered, this, &APlayableCharacter::AttackButtonPressed);
+		EnhancedInputComponent->BindAction(AttackAction, ETriggerEvent::Started, this, &APlayableCharacter::AttackButtonPressed);
+		EnhancedInputComponent->BindAction(AttackAction, ETriggerEvent::Completed, this, &APlayableCharacter::AttackButtonReleased);
 		EnhancedInputComponent->BindAction(CrouchAction, ETriggerEvent::Started, this, &APlayableCharacter::CrouchButtonPressed);
 		EnhancedInputComponent->BindAction(SprintAction, ETriggerEvent::Started, this, &APlayableCharacter::SprintButtonPressed);
 		EnhancedInputComponent->BindAction(SprintAction, ETriggerEvent::Completed, this, &APlayableCharacter::SprintButtonReleased);
@@ -82,7 +83,7 @@ void APlayableCharacter::Tick(float DeltaTime)
 
 void APlayableCharacter::CharacterMove(const FInputActionValue& Value)
 {
-	if(GetController() == nullptr)	return;
+	if(GetController() == nullptr || CharacterCannotMove())	return;
 	
 	const auto MoveVector = Value.Get<FVector2D>();
 	const FRotator YawRotation{ 0.f, Controller->GetControlRotation().Yaw, 0.f };
@@ -103,7 +104,7 @@ void APlayableCharacter::CameraMove(const FInputActionValue& Value)
 
 void APlayableCharacter::Jump()
 {
-	if(CurrentStamina < JumpStaminaConsume)	return;
+	if(CurrentStamina < JumpStaminaConsume || CharacterCannotMove())	return;
 	if(bIsCrouched)
 	{
 		UnCrouch();
@@ -115,12 +116,13 @@ void APlayableCharacter::Jump()
 
 void APlayableCharacter::CrouchButtonPressed()
 {
-	if(bNowSprinting)	return;
-	bIsCrouched  ? UnCrouch() : Crouch();
+	if(bNowSprinting || CharacterCannotMove())	return;
+	bIsCrouched ? UnCrouch() : Crouch();
 }
 
 void APlayableCharacter::SprintButtonPressed()
 {
+	if(CharacterCannotMove())	return;
 	if(bIsCrouched)
 	{
 		UnCrouch();
@@ -177,8 +179,14 @@ void APlayableCharacter::InteractionButtonPressed()
 
 void APlayableCharacter::AttackButtonPressed()
 {
-	if(CombatComponent == nullptr)	return;
+	if(CombatComponent == nullptr || CharacterCannotAttack())	return;
 	CombatComponent->Attack();
+}
+
+void APlayableCharacter::AttackButtonReleased()
+{
+	if(CombatComponent == nullptr)	return;
+	CombatComponent->ShouldStopAttack();
 }
 
 void APlayableCharacter::InventoryButtonPressed()
@@ -187,4 +195,15 @@ void APlayableCharacter::InventoryButtonPressed()
 	{
 		PlayableController->ToggleInventoryWidget();
 	}
+}
+
+bool APlayableCharacter::CharacterCannotMove()
+{
+	if(CombatComponent == nullptr)	return  false;
+	return CombatComponent->GetNowAttacking();
+}
+
+bool APlayableCharacter::CharacterCannotAttack()
+{
+	return bIsCrouched || bPressedJump; // TODO : resolve Jump
 }

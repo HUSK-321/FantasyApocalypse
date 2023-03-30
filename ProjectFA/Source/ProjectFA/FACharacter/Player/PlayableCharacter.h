@@ -88,6 +88,9 @@ protected:
 	
 	virtual void BeginPlay() override;
 
+	virtual bool CharacterCannotMove() override;
+	virtual bool CharacterCannotAttack() override;
+
 private:
 
 	void CharacterMove(const FInputActionValue& Value);
@@ -98,6 +101,7 @@ private:
 	void SprintButtonReleased();
 	void InteractionButtonPressed();
 	void AttackButtonPressed();
+	void AttackButtonReleased();
 	void InventoryButtonPressed();
 	virtual void ReceiveDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType, AController* InstigatorController, AActor* DamageCauser) override;
 	void SetSprinting(bool bSprinting);

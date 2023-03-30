@@ -8,6 +8,7 @@
 
 
 class APlayableCharacter;
+class AFACharacter;
 class AWeapon;
 class UEquipable;
 class APickupItem;
@@ -20,22 +21,30 @@ class PROJECTFA_API UPlayableCharacterCombatComponent : public UActorComponent
 private:
 
 	UPROPERTY()
-	TObjectPtr<APlayableCharacter> PlayableCharacter;
+	TObjectPtr<AFACharacter> Character;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<APickupItem> EquippedItem;
 	UPROPERTY(EditDefaultsOnly, Category = "Combat", meta = (AllowPrivateAccess = "true"))
 	TSubclassOf<APickupItem> DefaultPunchWeaponClass;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<APickupItem> DefaultPunchWeapon;
+	
+	bool bNowAttacking;
+	bool bShouldStopAttack;
 
 public:
 
 	UPlayableCharacterCombatComponent();
 
 	void EquipItemToCharacter(APickupItem* ItemToEquip);
-	void Attack() const;
+	void Attack();
+	void ShouldStopAttack();
 	UFUNCTION(BlueprintCallable)
 	void SetWeaponAttackCollision(bool bEnabled);
+	UFUNCTION(BlueprintCallable)
+	void CheckShouldStopAttack();
+
+	FORCEINLINE bool GetNowAttacking() const { return bNowAttacking; }
 	
 protected:
 	

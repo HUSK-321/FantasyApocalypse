@@ -36,6 +36,14 @@ void AFACharacter::PlayNormalAttackMontage(FName NormalAttackSectionName)
 	AnimInstance->Montage_JumpToSection(NormalAttackSectionName);
 }
 
+void AFACharacter::StopNormalAttackMontage()
+{
+	if(NormalAttackMontage == nullptr)	return;
+	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+	if(AnimInstance == nullptr)	return;
+	AnimInstance->Montage_Stop(0.f, NormalAttackMontage);
+}
+
 void AFACharacter::ReceiveDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType,
                                  AController* InstigatorController, AActor* DamageCauser)
 {
@@ -56,6 +64,11 @@ void AFACharacter::AfterDeath()
 }
 
 bool AFACharacter::CharacterCannotMove()
+{
+	return false;
+}
+
+bool AFACharacter::CharacterCannotAttack()
 {
 	return false;
 }
