@@ -10,9 +10,11 @@
 
 UInventoryComponent::UInventoryComponent()
 	:
-	InventoryItemTotalWeight(0.f)
+	InventoryCapacity(15), InventoryItemTotalWeight(0.f)
 {
 	PrimaryComponentTick.bCanEverTick = false;
+
+	InventoryItemList.Reserve(InventoryCapacity);
 }
 
 void UInventoryComponent::BeginPlay()
@@ -28,7 +30,6 @@ void UInventoryComponent::BeginPlay()
 void UInventoryComponent::SetNearbyItemToInventory()
 {
 	if(NearbyItemList.IsEmpty())	return;
-
 	APickupItem* ItemToGetIn = NearbyItemList[0];
 	AddItemToInventory(ItemToGetIn);
 }
@@ -54,6 +55,8 @@ void UInventoryComponent::SubtractInventoryWeight(const float& ItemWeightToOut)
 
 void UInventoryComponent::AddItemToInventory(APickupItem* ItemToIn)
 {
+	if(InventoryItemList.Num() > InventoryCapacity)	return;
+	
 	ItemToIn->SetOwner(GetOwner());
 	ItemToIn->SetItemState(EItemState::EIS_InInventory);
 	ItemToIn->ItemRemovedFromInventoryEvent.AddDynamic(this, &UInventoryComponent::RemoveItem);
@@ -61,7 +64,6 @@ void UInventoryComponent::AddItemToInventory(APickupItem* ItemToIn)
 	DeleteNearbyItem(ItemToIn);
 	InventoryChangedEvent.Broadcast(InventoryItemList);
 	AddInventoryWeight(ItemToIn->GetItemWeight());
-
 		
 	if(UKismetSystemLibrary::DoesImplementInterface(ItemToIn, UEquipable::StaticClass()))
 	{
