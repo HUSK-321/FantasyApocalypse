@@ -10,8 +10,7 @@ void UInventoryWidget::SetInventoryWidgetList(const TArray<APickupItem*>& ItemLi
 	ItemWrapBox->ClearChildren();
 	const auto PlayerController = GetOwningPlayer();
 	if(PlayerController == nullptr || !InventorySlotClass)	return;
-	
-	for(auto Item : ItemList)
+	for(const auto Item : ItemList)
 	{
 		auto InventorySlotWidget = CreateWidget<UInventorySlotWidget>(PlayerController, InventorySlotClass);
 		InventorySlotWidget->InitializeInventorySlot(Item);

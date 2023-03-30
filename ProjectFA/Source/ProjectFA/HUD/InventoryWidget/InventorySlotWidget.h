@@ -35,8 +35,6 @@ public:
 	TObjectPtr<UButton> ItemButton;
 	UPROPERTY(meta=(BindWidget))
 	TObjectPtr<UImage> ItemImage;
-	UPROPERTY(meta=(BindWidget))
-	TObjectPtr<UTextBlock> ItemName;
 
 private:
 

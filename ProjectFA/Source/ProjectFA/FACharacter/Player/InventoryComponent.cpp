@@ -29,7 +29,7 @@ void UInventoryComponent::BeginPlay()
 
 void UInventoryComponent::SetNearbyItemToInventory()
 {
-	if(NearbyItemList.IsEmpty())	return;
+	if(NearbyItemList.IsEmpty() || InventoryItemList.Num() >= InventoryCapacity)	return;
 	APickupItem* ItemToGetIn = NearbyItemList[0];
 	AddItemToInventory(ItemToGetIn);
 }
@@ -54,9 +54,7 @@ void UInventoryComponent::SubtractInventoryWeight(const float& ItemWeightToOut)
 }
 
 void UInventoryComponent::AddItemToInventory(APickupItem* ItemToIn)
-{
-	if(InventoryItemList.Num() > InventoryCapacity)	return;
-	
+{	
 	ItemToIn->SetOwner(GetOwner());
 	ItemToIn->SetItemState(EItemState::EIS_InInventory);
 	ItemToIn->ItemRemovedFromInventoryEvent.AddDynamic(this, &UInventoryComponent::RemoveItem);
