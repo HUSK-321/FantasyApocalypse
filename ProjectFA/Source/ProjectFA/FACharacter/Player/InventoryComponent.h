@@ -43,9 +43,9 @@ public:
 	
 	UInventoryComponent();
 	UFUNCTION()
-	void AddNearbyItem(APickupItem* Item);
+	void AddNearbyItem(AActor* Item);
 	UFUNCTION()
-	void DeleteNearbyItem(APickupItem* Item);
+	void DeleteNearbyItem(AActor* Item);
 	void SetNearbyItemToInventory();
 	UFUNCTION()
 	void RemoveItem(APickupItem* Item);

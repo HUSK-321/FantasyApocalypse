@@ -159,13 +159,13 @@ void APlayableCharacter::ReceiveDamage(AActor* DamagedActor, float Damage, const
 	PlayerHealthChangedEvent.Broadcast(CurrentHealth, MaxHealth);
 }
 
-void APlayableCharacter::SetNearbyItem(APickupItem* PickupItem)
+void APlayableCharacter::SetNearbyItem(AActor* PickupItem)
 {
 	if(InventoryComponent == nullptr)	return;
 	InventoryComponent->AddNearbyItem(PickupItem);
 }
 
-void APlayableCharacter::UnsetNearbyItem(APickupItem* PickupItem)
+void APlayableCharacter::UnsetNearbyItem(AActor* PickupItem)
 {
 	if(InventoryComponent == nullptr)	return;
 	InventoryComponent->DeleteNearbyItem(PickupItem);

@@ -3,7 +3,7 @@
 
 #include "PickupItem.h"
 #include "Components/SphereComponent.h"
-#include "ProjectFA/FACharacter/Player/PlayableCharacter.h"
+#include "ProjectFA/FACharacter/PickupableCharacter.h"
 
 APickupItem::APickupItem()
 	:
@@ -84,17 +84,17 @@ void APickupItem::SetItemState(const EItemState State)
 void APickupItem::PickupAreaBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	if(APlayableCharacter* PlayableCharacter = Cast<APlayableCharacter>(OtherActor))
+	if(IPickupableCharacter* PickupableCharacter = Cast<IPickupableCharacter>(OtherActor))
 	{
-		PlayableCharacter->SetNearbyItem(this);
+		PickupableCharacter->SetNearbyItem(this);
 	}
 }
 
 void APickupItem::PickupAreaEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
-	if(APlayableCharacter* PlayableCharacter = Cast<APlayableCharacter>(OtherActor))
+	if(IPickupableCharacter* PickupableCharacter = Cast<IPickupableCharacter>(OtherActor))
 	{
-		PlayableCharacter->UnsetNearbyItem(this);
+		PickupableCharacter->UnsetNearbyItem(this);
 	}
 }

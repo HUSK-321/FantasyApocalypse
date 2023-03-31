@@ -77,14 +77,18 @@ void UInventoryComponent::DeleteItemFromInventory(APickupItem* ItemToOut)
 	SubtractInventoryWeight(ItemToOut->GetItemWeight());
 }
 
-void UInventoryComponent::AddNearbyItem(APickupItem* Item)
+void UInventoryComponent::AddNearbyItem(AActor* Item)
 {
-	NearbyItemList.Add(Item);
-	NearbyItemAddEvent.Broadcast(Item);
+	const auto PickupItemActor = Cast<APickupItem>(Item);
+	if(PickupItemActor == nullptr)	return;
+	NearbyItemList.Add(PickupItemActor);
+	NearbyItemAddEvent.Broadcast(PickupItemActor);
 }
 
-void UInventoryComponent::DeleteNearbyItem(APickupItem* Item)
+void UInventoryComponent::DeleteNearbyItem(AActor* Item)
 {
-	NearbyItemList.Remove(Item);
-	NearbyItemDeleteEvent.Broadcast(Item);
+	const auto PickupItemActor = Cast<APickupItem>(Item);
+	if(PickupItemActor == nullptr)	return;
+	NearbyItemList.Remove(PickupItemActor);
+	NearbyItemDeleteEvent.Broadcast(PickupItemActor);
 }

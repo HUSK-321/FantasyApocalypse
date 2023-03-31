@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "ProjectFA/FACharacter/FACharacter.h"
 #include "InputActionValue.h"
+#include "ProjectFA/FACharacter/PickupableCharacter.h"
 #include "PlayableCharacter.generated.h"
 
 class UInputComponent;
@@ -12,14 +13,13 @@ class USpringArmComponent;
 class UCameraComponent;
 class UPlayableCharacterCombatComponent;
 class UInventoryComponent;
-class APickupItem;
 class UInputMappingContext;
 class UInputAction;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FPlayerCurrentMaxDelegate, const float&, CurrentValue, const float&, MaxValue);
 
 UCLASS()
-class PROJECTFA_API APlayableCharacter : public AFACharacter
+class PROJECTFA_API APlayableCharacter : public AFACharacter, public IPickupableCharacter
 {
 	GENERATED_BODY()
 
@@ -79,8 +79,8 @@ public:
 	virtual void Tick(float DeltaTime) override;
 	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
 
-	void SetNearbyItem(APickupItem* PickupItem);
-	void UnsetNearbyItem(APickupItem* PickupItem);
+	virtual void SetNearbyItem(AActor* PickupItem) override;
+	virtual void UnsetNearbyItem(AActor* PickupItem) override;
 
 	FORCEINLINE UPlayableCharacterCombatComponent* GetPlayerCombatComponent() const { return CombatComponent; }
 
