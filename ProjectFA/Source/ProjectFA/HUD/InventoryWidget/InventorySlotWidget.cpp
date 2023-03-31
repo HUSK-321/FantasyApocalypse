@@ -3,14 +3,13 @@
 
 #include "InventorySlotWidget.h"
 #include "Components/Button.h"
-#include "Components/TextBlock.h"
 #include "ProjectFA/InGameItem/InventoryUsable.h"
 #include "ProjectFA/InGameItem/PickupItem.h"
 
 void UInventorySlotWidget::InitializeInventorySlot(APickupItem* Item)
 {
+	if(Item == nullptr)	return;
 	SlotItem = Item;
-	ItemName->SetText(FText::FromString(Item->GetItemName()));
 	ItemButton->OnClicked.Clear();
 	ItemButton->OnClicked.AddDynamic(this, &UInventorySlotWidget::DoSlotItemAction);
 }

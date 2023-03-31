@@ -42,6 +42,8 @@ protected:
 	FString ItemName;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item Property")
 	FString ItemDescription;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item Property")
+	TObjectPtr<UTexture2D> ItemIcon;
 	UPROPERTY(EditAnywhere, Category = "Item Property")
 	float ItemPowerAmount;
 	UPROPERTY(EditAnywhere, Category = "Item Property")
@@ -59,6 +61,7 @@ public:
 	FORCEINLINE FString GetItemName() const { return ItemName; }
 	FORCEINLINE FString GetItemDescription() const { return ItemDescription; }
 	FORCEINLINE float GetItemWeight() const { return ItemWeight; }
+	FORCEINLINE UTexture2D* GetItemIcon() const { return ItemIcon; }
 
 protected:
 	

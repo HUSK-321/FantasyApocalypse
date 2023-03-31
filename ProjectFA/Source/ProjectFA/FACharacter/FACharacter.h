@@ -27,6 +27,8 @@ public:
 	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
 	UFUNCTION(BlueprintCallable)
 	virtual void PlayNormalAttackMontage(FName NormalAttackSectionName = FName("Default"));
+	UFUNCTION(BlueprintCallable)
+	void StopNormalAttackMontage();
 
 protected:
 	
@@ -37,6 +39,8 @@ protected:
 	virtual void AfterDeath();
 	UFUNCTION(BlueprintCallable)
 	virtual bool CharacterCannotMove();
+	UFUNCTION(BlueprintCallable)
+	virtual bool CharacterCannotAttack();
 
 protected:
 

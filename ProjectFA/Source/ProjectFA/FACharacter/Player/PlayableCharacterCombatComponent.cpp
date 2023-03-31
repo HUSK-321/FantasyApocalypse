@@ -2,11 +2,13 @@
 
 
 #include "PlayableCharacterCombatComponent.h"
-#include "PlayableCharacter.h"
 #include "Engine/SkeletalMeshSocket.h"
+#include "ProjectFA/FACharacter/FACharacter.h"
 #include "ProjectFA/InGameItem/Weapon/Weapon.h"
 
 UPlayableCharacterCombatComponent::UPlayableCharacterCombatComponent()
+	:
+	bNowAttacking(false), bShouldStopAttack(false)
 {
 	PrimaryComponentTick.bCanEverTick = false;
 }
@@ -15,7 +17,7 @@ void UPlayableCharacterCombatComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
-	PlayableCharacter = Cast<APlayableCharacter>(GetOwner());
+	Character = Cast<AFACharacter>(GetOwner());
 	if(DefaultPunchWeaponClass)
 	{
 		DefaultPunchWeapon = GetWorld()->SpawnActor<APickupItem>(DefaultPunchWeaponClass);
@@ -25,7 +27,7 @@ void UPlayableCharacterCombatComponent::BeginPlay()
 
 void UPlayableCharacterCombatComponent::EquipItemToCharacter(APickupItem* ItemToEquip)
 {
-	if(PlayableCharacter == nullptr)	return;
+	if(Character == nullptr)	return;
 	
 	if(EquippedItem)
 	{
@@ -33,20 +35,35 @@ void UPlayableCharacterCombatComponent::EquipItemToCharacter(APickupItem* ItemTo
 		EquippedItem->SetItemState(EItemState::EIS_InInventory);
 	}
 	EquippedItem = ItemToEquip;
-	EquippedItem->SetOwner(PlayableCharacter);
-	if(const auto RightHandSocket = PlayableCharacter->GetMesh()->GetSocketByName("hand_r_weapon_socket"))
+	EquippedItem->SetOwner(Character);
+	if(const auto RightHandSocket = Character->GetMesh()->GetSocketByName("hand_r_weapon_socket"))
 	{
-		RightHandSocket->AttachActor(EquippedItem, PlayableCharacter->GetMesh());
+		RightHandSocket->AttachActor(EquippedItem, Character->GetMesh());
 	}
 }
 
-void UPlayableCharacterCombatComponent::Attack() const
+void UPlayableCharacterCombatComponent::Attack()
 {
 	if(EquippedItem == nullptr)	return;
 	if(auto const WeaponInterface = Cast<IEquipable>(EquippedItem))
 	{
-		PlayableCharacter->PlayNormalAttackMontage(WeaponInterface->GetNormalAttackMontageSectionName());	
+		bNowAttacking = true;
+		Character->PlayNormalAttackMontage(WeaponInterface->GetNormalAttackMontageSectionName());
 	}
+}
+
+void UPlayableCharacterCombatComponent::ShouldStopAttack()
+{
+	bShouldStopAttack = true;
+}
+
+void UPlayableCharacterCombatComponent::CheckShouldStopAttack()
+{
+	if(bShouldStopAttack == false) return;
+
+	bNowAttacking = false;
+	bShouldStopAttack = false;
+	Character->StopNormalAttackMontage();
 }
 
 void UPlayableCharacterCombatComponent::SetWeaponAttackCollision(bool bEnabled)

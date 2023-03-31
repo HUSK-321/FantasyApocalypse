@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "ProjectFA/FACharacter/FACharacter.h"
+#include "InputActionValue.h"
 #include "PlayableCharacter.generated.h"
 
 class UInputComponent;
@@ -12,6 +13,8 @@ class UCameraComponent;
 class UPlayableCharacterCombatComponent;
 class UInventoryComponent;
 class APickupItem;
+class UInputMappingContext;
+class UInputAction;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FPlayerCurrentMaxDelegate, const float&, CurrentValue, const float&, MaxValue);
 
@@ -34,7 +37,24 @@ private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UPlayableCharacterCombatComponent> CombatComponent;
 	UPROPERTY(VisibleAnywhere)
-	TObjectPtr<UInventoryComponent> InventoryComponent;	
+	TObjectPtr<UInventoryComponent> InventoryComponent;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UInputMappingContext> PlayableCharacterMappingContext;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UInputAction> MoveAction;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UInputAction> CameraAction;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UInputAction> JumpAction;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UInputAction> InteractAction;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UInputAction> AttackAction;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UInputAction> CrouchAction;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UInputAction> SprintAction;
 
 	UPROPERTY(EditAnywhere, Category = "Player Property")
 	float MaxWalkSpeed;
@@ -68,18 +88,20 @@ protected:
 	
 	virtual void BeginPlay() override;
 
+	virtual bool CharacterCannotMove() override;
+	virtual bool CharacterCannotAttack() override;
+
 private:
 
-	void MoveForward(float Value);
-	void MoveRight(float Value);
-	void TurnRight(float Value);
-	void LookUp(float Value);
+	void CharacterMove(const FInputActionValue& Value);
+	void CameraMove(const FInputActionValue& Value);
 	virtual void Jump() override;
 	void CrouchButtonPressed();
 	void SprintButtonPressed();
 	void SprintButtonReleased();
 	void InteractionButtonPressed();
 	void AttackButtonPressed();
+	void AttackButtonReleased();
 	void InventoryButtonPressed();
 	virtual void ReceiveDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType, AController* InstigatorController, AActor* DamageCauser) override;
 	void SetSprinting(bool bSprinting);
