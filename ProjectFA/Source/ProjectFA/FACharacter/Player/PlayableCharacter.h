@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "ProjectFA/FACharacter/FACharacter.h"
 #include "InputActionValue.h"
+#include "ProjectFA/FACharacter/CombatableCharacter.h"
 #include "ProjectFA/FACharacter/PickupableCharacter.h"
 #include "PlayableCharacter.generated.h"
 
@@ -19,7 +20,7 @@ class UInputAction;
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FPlayerCurrentMaxDelegate, const float&, CurrentValue, const float&, MaxValue);
 
 UCLASS()
-class PROJECTFA_API APlayableCharacter : public AFACharacter, public IPickupableCharacter
+class PROJECTFA_API APlayableCharacter : public AFACharacter, public IPickupableCharacter, public ICombatableCharacter
 {
 	GENERATED_BODY()
 
@@ -72,6 +73,8 @@ private:
 	float StaminaDecreaseFactor;
 	UPROPERTY(EditAnywhere, Category = "Player Property")
 	float JumpStaminaConsume;
+	
+	float InventoryWeightFactor;
 
 public:
 	
@@ -82,7 +85,7 @@ public:
 	virtual void SetNearbyItem(AActor* PickupItem) override;
 	virtual void UnsetNearbyItem(AActor* PickupItem) override;
 
-	FORCEINLINE UPlayableCharacterCombatComponent* GetPlayerCombatComponent() const { return CombatComponent; }
+	virtual UActorComponent* GetCombatComponent() const override;
 
 protected:
 	
@@ -106,4 +109,6 @@ private:
 	virtual void ReceiveDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType, AController* InstigatorController, AActor* DamageCauser) override;
 	void SetSprinting(bool bSprinting);
 	void ManageStaminaAmount(float DeltaTime);
+	UFUNCTION()
+	void SetInventoryWeightSpeedFactor(const float& InventoryTotalWeight);
 };

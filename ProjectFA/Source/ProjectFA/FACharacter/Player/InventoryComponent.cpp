@@ -20,10 +20,10 @@ UInventoryComponent::UInventoryComponent()
 void UInventoryComponent::BeginPlay()
 {
 	Super::BeginPlay();
-
-	if(const auto PlayableCharacter = Cast<APlayableCharacter>(GetOwner()))
+	
+	if(const auto PlayableCharacter = Cast<ICombatableCharacter>(GetOwner()))
 	{
-		PlayerCombatComponent = PlayableCharacter->GetPlayerCombatComponent();
+		PlayerCombatComponent = Cast<UPlayableCharacterCombatComponent>(PlayableCharacter->GetCombatComponent());
 	}
 }
 
