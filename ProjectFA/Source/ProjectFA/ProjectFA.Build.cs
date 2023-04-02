@@ -11,7 +11,9 @@ public class ProjectFA : ModuleRules
 		PublicDependencyModuleNames.AddRange(new string[]
 		{
 			"Core", "CoreUObject", "Engine", "InputCore", "HeadMountedDisplay", "AIModule", "NavigationSystem", "EnhancedInput",
-			"GameplayTasks"
+			"GameplayTasks", "UMG"
 		});
+		
+		PrivateDependencyModuleNames.AddRange(new string[] { "Slate", "SlateCore" });
 	}
 }

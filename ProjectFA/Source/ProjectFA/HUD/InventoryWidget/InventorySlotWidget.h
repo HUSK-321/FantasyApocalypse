@@ -14,6 +14,7 @@ class UButton;
 class UTextBlock;
 class UImage;
 class APickupItem;
+class UInventorySlotActionWidget;
 
 UCLASS()
 class PROJECTFA_API UInventorySlotWidget : public UUserWidget
@@ -23,6 +24,10 @@ class PROJECTFA_API UInventorySlotWidget : public UUserWidget
 public:
 
 	void InitializeInventorySlot(APickupItem* Item);
+
+protected:
+
+	virtual FReply NativeOnPreviewMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
 
 private:
 
@@ -40,4 +45,6 @@ private:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	TWeakObjectPtr<APickupItem> SlotItem;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	TSubclassOf<UInventorySlotActionWidget> SlotActionWidgetClass;
 };
