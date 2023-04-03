@@ -50,7 +50,7 @@ void UInventoryComponent::AddItemToInventory(APickupItem* ItemToIn)
 {	
 	ItemToIn->SetOwner(GetOwner());
 	ItemToIn->SetItemState(EItemState::EIS_InInventory);
-	ItemToIn->ItemRemovedFromInventoryEvent.AddDynamic(this, &UInventoryComponent::DeleteItemFromInventory);
+	ItemToIn->ItemDroppedEvent.AddDynamic(this, &UInventoryComponent::DropItemFromInventory);
 	InventoryItemList.Add(ItemToIn);
 	DeleteNearbyItem(ItemToIn);
 	InventoryChangedEvent.Broadcast(InventoryItemList);
@@ -64,10 +64,9 @@ void UInventoryComponent::AddItemToInventory(APickupItem* ItemToIn)
 	}
 }
 
-void UInventoryComponent::DeleteItemFromInventory(APickupItem* ItemToOut)
+void UInventoryComponent::DropItemFromInventory(APickupItem* ItemToOut)
 {
 	ItemToOut->SetOwner(nullptr);
-	ItemToOut->SetItemState(EItemState::EIS_Dropped);
 	InventoryItemList.Remove(ItemToOut);
 	InventoryChangedEvent.Broadcast(InventoryItemList);
 	SubtractInventoryWeight(ItemToOut->GetItemWeight());

@@ -60,7 +60,7 @@ private:
 	void SubtractInventoryWeight(const float& ItemWeightToOut);
 	void AddItemToInventory(APickupItem* ItemToIn);
 	UFUNCTION()
-	void DeleteItemFromInventory(APickupItem* ItemToOut);
+	void DropItemFromInventory(APickupItem* ItemToOut);
 	UFUNCTION()
 	void EquipItem(APickupItem* Item);
 };

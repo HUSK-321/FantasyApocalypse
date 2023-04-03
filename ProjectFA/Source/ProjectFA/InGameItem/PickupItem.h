@@ -20,7 +20,7 @@ enum class EItemState : uint8
 class USkeletalMeshComponent;
 class USphereComponent;
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FItemRemovedEvent, APickupItem*, Item);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FItemDroppedEvent, APickupItem*, Item);
 
 UCLASS()
 class PROJECTFA_API APickupItem : public AActor
@@ -29,7 +29,7 @@ class PROJECTFA_API APickupItem : public AActor
 
 public:
 
-	FItemRemovedEvent ItemRemovedFromInventoryEvent;
+	FItemDroppedEvent ItemDroppedEvent;
 
 protected:
 
@@ -50,6 +50,8 @@ protected:
 	float ItemWeight;
 	UPROPERTY()
 	EItemState ItemState;
+
+	FTimerHandle DropTimer;
 	
 public:
 	
@@ -78,4 +80,5 @@ private:
 	UFUNCTION()
 	void PickupAreaEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 							UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
+	void DropEnd();
 };
