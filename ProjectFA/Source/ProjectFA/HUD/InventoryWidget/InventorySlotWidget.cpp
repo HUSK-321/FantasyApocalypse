@@ -11,7 +11,6 @@ void UInventorySlotWidget::InitializeInventorySlot(APickupItem* Item)
 	if(Item == nullptr)	return;
 	SlotItem = Item;
 	ItemButton->OnClicked.Clear();
-	ItemButton->OnClicked.AddDynamic(this, &UInventorySlotWidget::DoSlotItemAction);
 }
 
 FReply UInventorySlotWidget::NativeOnPreviewMouseButtonDown(const FGeometry& InGeometry,
