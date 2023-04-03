@@ -4,7 +4,9 @@
 #include "Components/Button.h"
 #include "ProjectFA/InGameItem/InventoryUsable.h"
 #include "ProjectFA/InGameItem/PickupItem.h"
+#include "ItemTooltipWidget.h"
 #include "InventorySlotActionWidget.h"
+#include "Components/MultiLineEditableText.h"
 
 void UInventorySlotWidget::InitializeInventorySlot(APickupItem* Item)
 {
@@ -13,8 +15,15 @@ void UInventorySlotWidget::InitializeInventorySlot(APickupItem* Item)
 	ItemButton->OnClicked.Clear();
 }
 
-FReply UInventorySlotWidget::NativeOnPreviewMouseButtonDown(const FGeometry& InGeometry,
-	const FPointerEvent& InMouseEvent)
+void UInventorySlotWidget::NativeConstruct()
+{
+	Super::NativeConstruct();
+
+	InventoryToolTipWidget = CreateWidget<UItemTooltipWidget>(this, InventoryToolTipClass);
+	ItemButton->SetToolTip(GetToolTipWidget());
+}
+
+FReply UInventorySlotWidget::NativeOnPreviewMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
 {
 	if(SlotActionWidgetClass == nullptr || InMouseEvent.IsMouseButtonDown(EKeys::RightMouseButton))
 	{
@@ -45,4 +54,15 @@ void UInventorySlotWidget::DropItemAction()
 	{
 		ItemToInventoryAction->RemoveFromInventoryAction_Implementation();
 	}	
+}
+
+UUserWidget* UInventorySlotWidget::GetToolTipWidget()
+{
+	if(InventoryToolTipWidget == nullptr)	return nullptr;
+	if(const auto Item = SlotItem.Get())
+	{
+		const auto ItemDescriptionText = FText::FromString(Item->GetItemDescription()); 
+		InventoryToolTipWidget->ItemDescription->SetText(ItemDescriptionText);
+	}
+	return InventoryToolTipWidget;
 }
