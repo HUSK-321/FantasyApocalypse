@@ -28,8 +28,7 @@ void UPlayableCharacterCombatComponent::BeginPlay()
 void UPlayableCharacterCombatComponent::EquipItemToCharacter(APickupItem* ItemToEquip)
 {
 	if(Character == nullptr)	return;
-
-	if(const auto Equipable = Cast<IEquipable>(ItemToEquip))
+	if(const auto Equipable = Cast<IEquipable>(EquippedItem))
 	{
 		Equipable->UnEquip();
 	}
