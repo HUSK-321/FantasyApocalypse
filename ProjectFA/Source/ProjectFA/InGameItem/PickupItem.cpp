@@ -84,8 +84,7 @@ void APickupItem::SetItemState(const EItemState State)
 		PickupItemMesh->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
 		PickupItemMesh->SetCollisionResponseToChannel(ECollisionChannel::ECC_WorldStatic, ECollisionResponse::ECR_Block);
 		
-		PickupAreaSphere->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
-		PickupAreaSphere->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Overlap);
+		PickupAreaSphere->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 		break;
 		
 	default:
