@@ -17,10 +17,18 @@ void UInventorySlotWidget::InitializeInventorySlot(APickupItem* Item)
 FReply UInventorySlotWidget::NativeOnPreviewMouseButtonDown(const FGeometry& InGeometry,
 	const FPointerEvent& InMouseEvent)
 {
-	if(SlotActionWidgetClass == nullptr || InMouseEvent.IsMouseButtonDown(EKeys::RightMouseButton))	return Super::NativeOnPreviewMouseButtonDown(InGeometry, InMouseEvent);
+	if(SlotActionWidgetClass == nullptr || InMouseEvent.IsMouseButtonDown(EKeys::RightMouseButton))
+	{
+		return Super::NativeOnPreviewMouseButtonDown(InGeometry, InMouseEvent);
+	}
+	
 	const auto ActionWidget = CreateWidget<UInventorySlotActionWidget>(this, SlotActionWidgetClass);
 	if(ActionWidget == nullptr)	return  Super::NativeOnPreviewMouseButtonDown(InGeometry, InMouseEvent);
+
 	ActionWidget->AddToViewport();
+	ActionWidget->ActionButton->OnClicked.AddDynamic(this, &UInventorySlotWidget::DoSlotItemAction);
+	ActionWidget->DropButton->OnClicked.AddDynamic(this, &UInventorySlotWidget::DropItemAction);
+	
 	return Super::NativeOnPreviewMouseButtonDown(InGeometry, InMouseEvent);
 }
 
@@ -30,4 +38,12 @@ void UInventorySlotWidget::DoSlotItemAction()
 	{
 		ItemToInventoryAction->InventoryAction_Implementation();
 	}
+}
+
+void UInventorySlotWidget::DropItemAction()
+{
+	if(const auto ItemToInventoryAction = Cast<IInventoryUsable>(SlotItem))
+	{
+		ItemToInventoryAction->RemoveFromInventoryAction_Implementation();
+	}	
 }

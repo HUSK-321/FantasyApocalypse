@@ -54,6 +54,8 @@ protected:
 public:
 	
 	APickupItem();
+	
+	void DropItem();
 	void SetItemState(const EItemState State);
 	
 	virtual void SetOwner(AActor* NewOwner) override;

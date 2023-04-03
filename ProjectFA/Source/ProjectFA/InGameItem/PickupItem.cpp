@@ -18,6 +18,7 @@ APickupItem::APickupItem()
 	
 	PickupAreaSphere->SetupAttachment(GetRootComponent());
 	PickupAreaSphere->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECollisionResponse::ECR_Ignore);
+	PickupAreaSphere->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Overlap);
 }
 
 void APickupItem::BeginPlay()
@@ -30,9 +31,8 @@ void APickupItem::BeginPlay()
 
 void APickupItem::Destroyed()
 {
-	Super::Destroyed();
-
 	ItemRemovedFromInventoryEvent.Broadcast(this);
+	Super::Destroyed();
 }
 
 void APickupItem::SetOwner(AActor* NewOwner)
@@ -73,12 +73,19 @@ void APickupItem::SetItemState(const EItemState State)
 		PickupItemMesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 		PickupItemMesh->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Block);
 		PickupItemMesh->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Ignore);
-		PickupAreaSphere->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		PickupAreaSphere->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+		PickupAreaSphere->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Overlap);
 		break;
 		
 	default:
 		break;
 	}	
+}
+
+void APickupItem::DropItem()
+{
+	ItemRemovedFromInventoryEvent.Broadcast(this);
+	SetItemState(EItemState::EIS_Dropped);
 }
 
 void APickupItem::PickupAreaBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,

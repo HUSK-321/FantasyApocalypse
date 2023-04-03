@@ -33,6 +33,8 @@ private:
 
 	UFUNCTION()
 	void DoSlotItemAction();
+	UFUNCTION()
+	void DropItemAction();
 
 public:
 

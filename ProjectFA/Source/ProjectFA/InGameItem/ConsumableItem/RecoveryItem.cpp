@@ -10,3 +10,8 @@ void ARecoveryItem::InventoryAction_Implementation()
 	UGameplayStatics::ApplyDamage(GetOwner(), -ItemPowerAmount, GetOwner()->GetInstigatorController(), this, UDamageType::StaticClass());
 	Destroy();
 }
+
+void ARecoveryItem::RemoveFromInventoryAction_Implementation()
+{
+	DropItem();
+}

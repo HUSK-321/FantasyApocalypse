@@ -6,6 +6,8 @@
 #include "UObject/Interface.h"
 #include "Equipable.generated.h"
 
+class APickupItem;
+
 UINTERFACE(MinimalAPI)
 class UEquipable : public UInterface
 {
@@ -15,6 +17,9 @@ class UEquipable : public UInterface
 /**
  * 
  */
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FEquipItemEvent, APickupItem*, Item);
+
 class PROJECTFA_API IEquipable
 {
 	GENERATED_BODY()
@@ -22,5 +27,7 @@ class PROJECTFA_API IEquipable
 public:
 
 	virtual FName GetNormalAttackMontageSectionName() const = 0;
+	virtual void UnEquip() = 0;
 	virtual void SetAttackCollision(bool bEnable) = 0;
+	virtual void SetEquipItemEvent(const FEquipItemEvent& Event) = 0;
 };

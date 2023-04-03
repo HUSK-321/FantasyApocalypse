@@ -47,8 +47,6 @@ public:
 	UFUNCTION()
 	void DeleteNearbyItem(AActor* Item);
 	void SetNearbyItemToInventory();
-	UFUNCTION()
-	void RemoveItem(APickupItem* Item);
 
 	FORCEINLINE float GetInventoryTotalWeight() const { return InventoryItemTotalWeight; }
 
@@ -61,5 +59,8 @@ private:
 	void AddInventoryWeight(const float& ItemWeightToIn);
 	void SubtractInventoryWeight(const float& ItemWeightToOut);
 	void AddItemToInventory(APickupItem* ItemToIn);
+	UFUNCTION()
 	void DeleteItemFromInventory(APickupItem* ItemToOut);
+	UFUNCTION()
+	void EquipItem(APickupItem* Item);
 };

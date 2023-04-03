@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "ProjectFA/InGameItem/Equipable.h"
+#include "ProjectFA/InGameItem/InventoryUsable.h"
 #include "ProjectFA/InGameItem/PickupItem.h"
 #include "Weapon.generated.h"
 
@@ -24,9 +25,13 @@ enum class EWeaponType : uint8
 class UBoxComponent;
 
 UCLASS()
-class PROJECTFA_API AWeapon : public APickupItem, public IEquipable
+class PROJECTFA_API AWeapon : public APickupItem, public IEquipable, public IInventoryUsable
 {
 	GENERATED_BODY()
+
+public:
+
+	FEquipItemEvent EquipItemEvent;
 
 private:
 	
@@ -42,7 +47,12 @@ public:
 	AWeapon();
 	
 	virtual FName GetNormalAttackMontageSectionName() const override;
+	virtual void UnEquip() override;
 	virtual void SetAttackCollision(bool bEnable) override;
+	virtual void SetEquipItemEvent(const FEquipItemEvent& Event) override;
+
+	virtual void InventoryAction_Implementation() override;
+	virtual void RemoveFromInventoryAction_Implementation() override;
 
 protected:
 	
