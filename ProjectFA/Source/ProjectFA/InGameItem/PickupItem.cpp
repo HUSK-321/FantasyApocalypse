@@ -37,8 +37,11 @@ void APickupItem::Destroyed()
 
 void APickupItem::SetOwner(AActor* NewOwner)
 {
-	ItemDroppedEvent.Clear();
 	Super::SetOwner(NewOwner);
+	if(NewOwner == nullptr)
+	{
+		ItemDroppedEvent.Clear();
+	}
 }
 
 void APickupItem::SetItemState(const EItemState State)
