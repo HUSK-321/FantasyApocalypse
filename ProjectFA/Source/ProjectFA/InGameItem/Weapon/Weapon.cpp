@@ -61,6 +61,7 @@ void AWeapon::SetAttackCollision(bool bEnable)
 
 void AWeapon::SetEquipItemEvent(const FEquipItemEvent& Event)
 {
+	EquipItemEvent.Clear();
 	EquipItemEvent = Event;
 }
 

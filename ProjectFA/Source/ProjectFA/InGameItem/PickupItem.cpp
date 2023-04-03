@@ -100,20 +100,16 @@ void APickupItem::DropItem()
 	if(GetOwner() == nullptr)	return;
 	
 	SetActorLocation(GetOwner()->GetActorLocation());
+	const FRotator MeshRotation{ 0.f, GetOwner()->GetActorRotation().Yaw, 0.f };
+	SetActorRotation(MeshRotation, ETeleportType::TeleportPhysics);
 	SetItemState(EItemState::EIS_Dropped);
 	
-	const FRotator MeshRotation{ 0.f, GetOwner()->GetActorRotation().Yaw, 0.f };
-	PickupItemMesh->SetWorldRotation(MeshRotation, false, nullptr, ETeleportType::TeleportPhysics);
+	FVector ImpulseDirection = GetActorForwardVector();
+	const float RandomRotation = FMath::FRandRange(-40.f, 40.f);
+	ImpulseDirection = ImpulseDirection.RotateAngleAxis(RandomRotation, FVector::UpVector);
+	PickupItemMesh->AddImpulse(ImpulseDirection * 1000.f);
 	
-	const FVector MeshForward{ PickupItemMesh->GetForwardVector() };
-	const FVector MeshRight{ PickupItemMesh->GetRightVector() };
-	FVector ImpulseDirection = MeshRight.RotateAngleAxis(-20.f, MeshForward);
-	const float RandomRotation{ FMath::FRandRange(-30.f, 30.f) };
-	ImpulseDirection = ImpulseDirection.RotateAngleAxis(RandomRotation, FVector(0.f, 0.f, 1.f));
-	ImpulseDirection *= 1000.f;
-	PickupItemMesh->AddImpulse(ImpulseDirection);
 	GetWorldTimerManager().SetTimer(DropTimer, this, &APickupItem::DropEnd, 2.0f);
-	
 	ItemDroppedEvent.Broadcast(this);
 }
 

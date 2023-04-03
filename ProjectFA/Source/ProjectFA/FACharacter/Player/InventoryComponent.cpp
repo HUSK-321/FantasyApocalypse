@@ -34,18 +34,6 @@ void UInventoryComponent::SetNearbyItemToInventory()
 	AddItemToInventory(ItemToGetIn);
 }
 
-void UInventoryComponent::AddInventoryWeight(const float& ItemWeightToIn)
-{
-	InventoryItemTotalWeight += ItemWeightToIn;
-	InventoryWeightChangedEvent.Broadcast(InventoryItemTotalWeight);
-}
-
-void UInventoryComponent::SubtractInventoryWeight(const float& ItemWeightToOut)
-{
-	InventoryItemTotalWeight -= ItemWeightToOut;
-	InventoryWeightChangedEvent.Broadcast(InventoryItemTotalWeight);
-}
-
 void UInventoryComponent::AddItemToInventory(APickupItem* ItemToIn)
 {	
 	ItemToIn->SetOwner(GetOwner());
@@ -70,6 +58,18 @@ void UInventoryComponent::DropItemFromInventory(APickupItem* ItemToOut)
 	InventoryItemList.Remove(ItemToOut);
 	InventoryChangedEvent.Broadcast(InventoryItemList);
 	SubtractInventoryWeight(ItemToOut->GetItemWeight());
+}
+
+void UInventoryComponent::AddInventoryWeight(const float& ItemWeightToIn)
+{
+	InventoryItemTotalWeight += ItemWeightToIn;
+	InventoryWeightChangedEvent.Broadcast(InventoryItemTotalWeight);
+}
+
+void UInventoryComponent::SubtractInventoryWeight(const float& ItemWeightToOut)
+{
+	InventoryItemTotalWeight -= ItemWeightToOut;
+	InventoryWeightChangedEvent.Broadcast(InventoryItemTotalWeight);
 }
 
 void UInventoryComponent::AddNearbyItem(AActor* Item)

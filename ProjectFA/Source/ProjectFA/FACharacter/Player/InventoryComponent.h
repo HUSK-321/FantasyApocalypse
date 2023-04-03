@@ -20,14 +20,12 @@ class PROJECTFA_API UInventoryComponent : public UActorComponent
 	GENERATED_BODY()
 
 public:
-
 	FOneItemChangedEvent NearbyItemAddEvent;
 	FOneItemChangedEvent NearbyItemDeleteEvent;
 	FInventoryChangedEvent InventoryChangedEvent;
 	FInventoryWeightChangedEvent InventoryWeightChangedEvent;
 
 private:
-
 	UPROPERTY()
 	TObjectPtr<UPlayableCharacterCombatComponent> PlayerCombatComponent;
 	UPROPERTY(EditAnywhere)
@@ -40,7 +38,6 @@ private:
 	TArray<APickupItem*> InventoryItemList;
 
 public:
-	
 	UInventoryComponent();
 	UFUNCTION()
 	void AddNearbyItem(AActor* Item);
@@ -51,11 +48,9 @@ public:
 	FORCEINLINE float GetInventoryTotalWeight() const { return InventoryItemTotalWeight; }
 
 protected:
-	
 	virtual void BeginPlay() override;
 
 private:
-
 	void AddInventoryWeight(const float& ItemWeightToIn);
 	void SubtractInventoryWeight(const float& ItemWeightToOut);
 	void AddItemToInventory(APickupItem* ItemToIn);
