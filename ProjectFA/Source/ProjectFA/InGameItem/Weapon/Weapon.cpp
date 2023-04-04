@@ -50,6 +50,7 @@ void AWeapon::UnEquip()
 	const FDetachmentTransformRules DetachRules{ EDetachmentRule::KeepWorld, true };
 	PickupItemMesh->DetachFromComponent(DetachRules);
 	SetItemState(EItemState::EIS_InInventory);
+	UnEquipEvent.Broadcast(this);
 }
 
 void AWeapon::SetAttackCollision(bool bEnable)
@@ -63,6 +64,11 @@ void AWeapon::SetEquipItemEvent(const FEquipItemEvent& Event)
 {
 	EquipItemEvent.Clear();
 	EquipItemEvent = Event;
+}
+
+void AWeapon::SetUnEquipEvent(const FEquipItemEvent& Event)
+{
+	UnEquipEvent = Event;	
 }
 
 void AWeapon::InventoryAction_Implementation()
