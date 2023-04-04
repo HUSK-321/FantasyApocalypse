@@ -16,7 +16,7 @@ APlayableCharacter::APlayableCharacter()
 	FollowCamera(CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"))),
 	CombatComponent(CreateDefaultSubobject<UPlayableCharacterCombatComponent>(TEXT("CombatComponent"))),
 	InventoryComponent(CreateDefaultSubobject<UInventoryComponent>(TEXT("InventoryComponent"))),
-	MaxWalkSpeed(400.f), MaxSprintSpeed(700.f), bNowSprinting(false),
+	MaxWalkSpeed(400.f), MaxSprintSpeed(700.f), MaxCrouchSpeed(300.f), bNowSprinting(false),
 	MaxStamina(100.f), CurrentStamina(100.f),
 	StaminaIncreaseFactor(10.f), StaminaDecreaseFactor(20.f), JumpStaminaConsume(20.f),
 	InventoryWeightFactor(0.f)
@@ -40,7 +40,7 @@ void APlayableCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
-	GetCharacterMovement()->MaxWalkSpeed = MaxWalkSpeed - InventoryWeightFactor;
+	SetCharacterMoveSpeed();
 
 	OnTakeAnyDamage.AddDynamic(this, &APlayableCharacter::ReceiveDamage);
 	InventoryComponent->InventoryWeightChangedEvent.AddDynamic(this, &APlayableCharacter::SetInventoryWeightSpeedFactor);
@@ -141,7 +141,7 @@ void APlayableCharacter::SprintButtonReleased()
 void APlayableCharacter::SetSprinting(bool bSprinting)
 {
 	bNowSprinting = bSprinting;
-	GetCharacterMovement()->MaxWalkSpeed = bNowSprinting ? MaxSprintSpeed - InventoryWeightFactor : MaxWalkSpeed - InventoryWeightFactor;
+	SetCharacterMoveSpeed();
 }
 
 void APlayableCharacter::ManageStaminaAmount(float DeltaTime)
@@ -153,6 +153,18 @@ void APlayableCharacter::ManageStaminaAmount(float DeltaTime)
 		SetSprinting(false);
 	}
 	PlayerStaminaChangedEvent.Broadcast(CurrentStamina, MaxStamina);
+}
+
+void APlayableCharacter::SetCharacterMoveSpeed()
+{
+	if(GetCharacterMovement() == nullptr)	return;
+	
+	const float DecreaseFactors = InventoryWeightFactor;
+	const float CurrentSpeed = (bNowSprinting) ? MaxSprintSpeed - DecreaseFactors :
+												 MaxWalkSpeed - DecreaseFactors;
+	const float CurrentCrouchSpeed = MaxCrouchSpeed - DecreaseFactors;
+	GetCharacterMovement()->MaxWalkSpeed = CurrentSpeed;
+	GetCharacterMovement()->MaxWalkSpeedCrouched = CurrentCrouchSpeed;
 }
 
 void APlayableCharacter::SetInventoryWeightSpeedFactor(const float& InventoryTotalWeight)

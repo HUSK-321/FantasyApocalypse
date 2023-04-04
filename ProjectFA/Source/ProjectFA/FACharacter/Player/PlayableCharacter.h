@@ -61,6 +61,8 @@ private:
 	float MaxWalkSpeed;
 	UPROPERTY(EditAnywhere, Category = "Player Property")
 	float MaxSprintSpeed;
+	UPROPERTY(EditAnywhere, Category = "Player Property")
+	float MaxCrouchSpeed;
 	bool bNowSprinting;
 	
 	UPROPERTY(EditAnywhere, Category = "Player Property")
@@ -109,6 +111,8 @@ private:
 	virtual void ReceiveDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType, AController* InstigatorController, AActor* DamageCauser) override;
 	void SetSprinting(bool bSprinting);
 	void ManageStaminaAmount(float DeltaTime);
+
+	void SetCharacterMoveSpeed();
 	UFUNCTION()
 	void SetInventoryWeightSpeedFactor(const float& InventoryTotalWeight);
 };
