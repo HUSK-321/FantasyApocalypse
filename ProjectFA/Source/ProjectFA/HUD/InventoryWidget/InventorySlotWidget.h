@@ -40,13 +40,14 @@ private:
 
 public:
 	void InitializeInventorySlot(APickupItem* Item);
-	UUserWidget* GetToolTipWidget();
 
 protected:
 	virtual void NativeConstruct() override;
 	virtual FReply NativeOnPreviewMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent) override;
 
 private:
+	void SetToolTipWidget();
+	
 	UFUNCTION()
 	void DoSlotItemAction();
 	UFUNCTION()

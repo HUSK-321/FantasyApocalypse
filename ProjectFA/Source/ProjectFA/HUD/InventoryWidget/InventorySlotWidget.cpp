@@ -19,8 +19,7 @@ void UInventorySlotWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
 
-	InventoryToolTipWidget = CreateWidget<UItemTooltipWidget>(this, InventoryToolTipClass);
-	ItemButton->SetToolTip(GetToolTipWidget());
+	SetToolTipWidget();
 }
 
 FReply UInventorySlotWidget::NativeOnPreviewMouseButtonDown(const FGeometry& InGeometry, const FPointerEvent& InMouseEvent)
@@ -40,6 +39,19 @@ FReply UInventorySlotWidget::NativeOnPreviewMouseButtonDown(const FGeometry& InG
 	return Super::NativeOnPreviewMouseButtonDown(InGeometry, InMouseEvent);
 }
 
+void UInventorySlotWidget::SetToolTipWidget()
+{
+	if(InventoryToolTipClass == nullptr)	return;
+	InventoryToolTipWidget = CreateWidget<UItemTooltipWidget>(this, InventoryToolTipClass);
+	if(InventoryToolTipWidget == nullptr)	return;
+	if(const auto Item = SlotItem.Get())
+	{
+		const auto ItemDescriptionText = FText::FromString(Item->GetItemDescription()); 
+		InventoryToolTipWidget->ItemDescription->SetText(ItemDescriptionText);
+	}
+	ItemButton->SetToolTip(InventoryToolTipWidget);
+}
+
 void UInventorySlotWidget::DoSlotItemAction()
 {
 	if(const auto ItemToInventoryAction = Cast<IInventoryUsable>(SlotItem))
@@ -54,15 +66,4 @@ void UInventorySlotWidget::DropItemAction()
 	{
 		ItemToInventoryAction->RemoveFromInventoryAction_Implementation();
 	}	
-}
-
-UUserWidget* UInventorySlotWidget::GetToolTipWidget()
-{
-	if(InventoryToolTipWidget == nullptr)	return nullptr;
-	if(const auto Item = SlotItem.Get())
-	{
-		const auto ItemDescriptionText = FText::FromString(Item->GetItemDescription()); 
-		InventoryToolTipWidget->ItemDescription->SetText(ItemDescriptionText);
-	}
-	return InventoryToolTipWidget;
 }
