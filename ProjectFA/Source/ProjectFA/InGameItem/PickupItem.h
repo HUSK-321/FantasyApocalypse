@@ -20,7 +20,7 @@ enum class EItemState : uint8
 class USkeletalMeshComponent;
 class USphereComponent;
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FItemRemovedEvent, APickupItem*, Item);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FItemDroppedEvent, APickupItem*, Item);
 
 UCLASS()
 class PROJECTFA_API APickupItem : public AActor
@@ -28,11 +28,9 @@ class PROJECTFA_API APickupItem : public AActor
 	GENERATED_BODY()
 
 public:
-
-	FItemRemovedEvent ItemRemovedFromInventoryEvent;
+	FItemDroppedEvent ItemDroppedEvent;
 
 protected:
-
 	UPROPERTY(EditAnywhere)
 	TObjectPtr<USkeletalMeshComponent> PickupItemMesh;
 	UPROPERTY(EditAnywhere)
@@ -50,10 +48,13 @@ protected:
 	float ItemWeight;
 	UPROPERTY()
 	EItemState ItemState;
+
+	FTimerHandle DropTimer;
 	
 public:
-	
 	APickupItem();
+	
+	void DropItem();
 	void SetItemState(const EItemState State);
 	
 	virtual void SetOwner(AActor* NewOwner) override;
@@ -64,16 +65,15 @@ public:
 	FORCEINLINE UTexture2D* GetItemIcon() const { return ItemIcon; }
 
 protected:
-	
 	virtual void BeginPlay() override;
 	virtual void Destroyed() override;
 
 private:
-
 	UFUNCTION()
 	void PickupAreaBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp,
 							int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 	UFUNCTION()
 	void PickupAreaEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 							UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
+	void DropEnd();
 };

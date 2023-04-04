@@ -5,6 +5,8 @@
 #include "CoreMinimal.h"
 #include "ProjectFA/FACharacter/FACharacter.h"
 #include "InputActionValue.h"
+#include "ProjectFA/FACharacter/CombatableCharacter.h"
+#include "ProjectFA/FACharacter/PickupableCharacter.h"
 #include "PlayableCharacter.generated.h"
 
 class UInputComponent;
@@ -12,14 +14,13 @@ class USpringArmComponent;
 class UCameraComponent;
 class UPlayableCharacterCombatComponent;
 class UInventoryComponent;
-class APickupItem;
 class UInputMappingContext;
 class UInputAction;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FPlayerCurrentMaxDelegate, const float&, CurrentValue, const float&, MaxValue);
 
 UCLASS()
-class PROJECTFA_API APlayableCharacter : public AFACharacter
+class PROJECTFA_API APlayableCharacter : public AFACharacter, public IPickupableCharacter, public ICombatableCharacter
 {
 	GENERATED_BODY()
 
@@ -60,6 +61,8 @@ private:
 	float MaxWalkSpeed;
 	UPROPERTY(EditAnywhere, Category = "Player Property")
 	float MaxSprintSpeed;
+	UPROPERTY(EditAnywhere, Category = "Player Property")
+	float MaxCrouchSpeed;
 	bool bNowSprinting;
 	
 	UPROPERTY(EditAnywhere, Category = "Player Property")
@@ -72,6 +75,8 @@ private:
 	float StaminaDecreaseFactor;
 	UPROPERTY(EditAnywhere, Category = "Player Property")
 	float JumpStaminaConsume;
+	
+	float InventoryWeightFactor;
 
 public:
 	
@@ -79,10 +84,10 @@ public:
 	virtual void Tick(float DeltaTime) override;
 	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
 
-	void SetNearbyItem(APickupItem* PickupItem);
-	void UnsetNearbyItem(APickupItem* PickupItem);
+	virtual void SetNearbyItem(AActor* PickupItem) override;
+	virtual void UnsetNearbyItem(AActor* PickupItem) override;
 
-	FORCEINLINE UPlayableCharacterCombatComponent* GetPlayerCombatComponent() const { return CombatComponent; }
+	virtual UActorComponent* GetCombatComponent() const override;
 
 protected:
 	
@@ -106,4 +111,8 @@ private:
 	virtual void ReceiveDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType, AController* InstigatorController, AActor* DamageCauser) override;
 	void SetSprinting(bool bSprinting);
 	void ManageStaminaAmount(float DeltaTime);
+
+	void SetCharacterMoveSpeed();
+	UFUNCTION()
+	void SetInventoryWeightSpeedFactor(const float& InventoryTotalWeight);
 };

@@ -28,14 +28,13 @@ void UPlayableCharacterCombatComponent::BeginPlay()
 void UPlayableCharacterCombatComponent::EquipItemToCharacter(APickupItem* ItemToEquip)
 {
 	if(Character == nullptr)	return;
-	
-	if(EquippedItem)
+	if(const auto Equipable = Cast<IEquipable>(EquippedItem))
 	{
-		// TODO : change weapon, not destroy
-		EquippedItem->SetItemState(EItemState::EIS_InInventory);
+		Equipable->UnEquip();
 	}
 	EquippedItem = ItemToEquip;
 	EquippedItem->SetOwner(Character);
+	EquippedItem->SetItemState(EItemState::EIS_Equipped);
 	if(const auto RightHandSocket = Character->GetMesh()->GetSocketByName("hand_r_weapon_socket"))
 	{
 		RightHandSocket->AttachActor(EquippedItem, Character->GetMesh());

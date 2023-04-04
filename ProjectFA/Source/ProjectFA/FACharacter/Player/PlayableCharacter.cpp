@@ -16,9 +16,10 @@ APlayableCharacter::APlayableCharacter()
 	FollowCamera(CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"))),
 	CombatComponent(CreateDefaultSubobject<UPlayableCharacterCombatComponent>(TEXT("CombatComponent"))),
 	InventoryComponent(CreateDefaultSubobject<UInventoryComponent>(TEXT("InventoryComponent"))),
-	MaxWalkSpeed(400.f), MaxSprintSpeed(700.f), bNowSprinting(false),
+	MaxWalkSpeed(400.f), MaxSprintSpeed(700.f), MaxCrouchSpeed(300.f), bNowSprinting(false),
 	MaxStamina(100.f), CurrentStamina(100.f),
-	StaminaIncreaseFactor(10.f), StaminaDecreaseFactor(20.f), JumpStaminaConsume(20.f)
+	StaminaIncreaseFactor(10.f), StaminaDecreaseFactor(20.f), JumpStaminaConsume(20.f),
+	InventoryWeightFactor(0.f)
 {
 	PrimaryActorTick.bCanEverTick = true;
 
@@ -30,6 +31,7 @@ APlayableCharacter::APlayableCharacter()
 	FollowCamera->SetupAttachment(CameraSpringArm, USpringArmComponent::SocketName);
 
 	bUseControllerRotationYaw = false;
+
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 	GetCharacterMovement()->NavAgentProps.bCanCrouch = true;
 }
@@ -38,9 +40,10 @@ void APlayableCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
-	GetCharacterMovement()->MaxWalkSpeed = MaxWalkSpeed;
+	SetCharacterMoveSpeed();
 
 	OnTakeAnyDamage.AddDynamic(this, &APlayableCharacter::ReceiveDamage);
+	InventoryComponent->InventoryWeightChangedEvent.AddDynamic(this, &APlayableCharacter::SetInventoryWeightSpeedFactor);
 
 	if(const auto PlayableController = Cast<APlayableController>(GetController()))
 	{
@@ -138,7 +141,7 @@ void APlayableCharacter::SprintButtonReleased()
 void APlayableCharacter::SetSprinting(bool bSprinting)
 {
 	bNowSprinting = bSprinting;
-	GetCharacterMovement()->MaxWalkSpeed = bNowSprinting ? MaxSprintSpeed : MaxWalkSpeed;
+	SetCharacterMoveSpeed();
 }
 
 void APlayableCharacter::ManageStaminaAmount(float DeltaTime)
@@ -152,6 +155,24 @@ void APlayableCharacter::ManageStaminaAmount(float DeltaTime)
 	PlayerStaminaChangedEvent.Broadcast(CurrentStamina, MaxStamina);
 }
 
+void APlayableCharacter::SetCharacterMoveSpeed()
+{
+	if(GetCharacterMovement() == nullptr)	return;
+	
+	const float DecreaseFactors = InventoryWeightFactor;
+	const float CurrentSpeed = (bNowSprinting) ? MaxSprintSpeed - DecreaseFactors :
+												 MaxWalkSpeed - DecreaseFactors;
+	const float CurrentCrouchSpeed = MaxCrouchSpeed - DecreaseFactors;
+	GetCharacterMovement()->MaxWalkSpeed = CurrentSpeed;
+	GetCharacterMovement()->MaxWalkSpeedCrouched = CurrentCrouchSpeed;
+}
+
+void APlayableCharacter::SetInventoryWeightSpeedFactor(const float& InventoryTotalWeight)
+{
+	InventoryWeightFactor = InventoryTotalWeight;
+	SetSprinting(bNowSprinting);
+}
+
 void APlayableCharacter::ReceiveDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType,
                                        AController* InstigatorController, AActor* DamageCauser)
 {
@@ -159,16 +180,21 @@ void APlayableCharacter::ReceiveDamage(AActor* DamagedActor, float Damage, const
 	PlayerHealthChangedEvent.Broadcast(CurrentHealth, MaxHealth);
 }
 
-void APlayableCharacter::SetNearbyItem(APickupItem* PickupItem)
+void APlayableCharacter::SetNearbyItem(AActor* PickupItem)
 {
 	if(InventoryComponent == nullptr)	return;
 	InventoryComponent->AddNearbyItem(PickupItem);
 }
 
-void APlayableCharacter::UnsetNearbyItem(APickupItem* PickupItem)
+void APlayableCharacter::UnsetNearbyItem(AActor* PickupItem)
 {
 	if(InventoryComponent == nullptr)	return;
 	InventoryComponent->DeleteNearbyItem(PickupItem);
+}
+
+UActorComponent* APlayableCharacter::GetCombatComponent() const
+{
+	return CombatComponent;
 }
 
 void APlayableCharacter::InteractionButtonPressed()

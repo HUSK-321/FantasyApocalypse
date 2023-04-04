@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
-#include "ItemDescription.generated.h"
+#include "ItemTooltipWidget.generated.h"
 
 /**
  * 
@@ -12,13 +12,11 @@
 class UMultiLineEditableText;
 
 UCLASS()
-class PROJECTFA_API UItemDescription : public UUserWidget
+class PROJECTFA_API UItemTooltipWidget : public UUserWidget
 {
 	GENERATED_BODY()
 
 public:
-
 	UPROPERTY(BlueprintReadWrite, meta=(BindWidget))
 	TObjectPtr<UMultiLineEditableText> ItemDescription;
-	
 };

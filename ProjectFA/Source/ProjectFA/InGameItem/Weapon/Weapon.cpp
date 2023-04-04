@@ -45,9 +45,33 @@ FName AWeapon::GetNormalAttackMontageSectionName() const
 	}
 }
 
+void AWeapon::UnEquip()
+{
+	const FDetachmentTransformRules DetachRules{ EDetachmentRule::KeepWorld, true };
+	PickupItemMesh->DetachFromComponent(DetachRules);
+	SetItemState(EItemState::EIS_InInventory);
+}
+
 void AWeapon::SetAttackCollision(bool bEnable)
 {
 	if(AttackCollision == nullptr)	return;
 	const auto CollisionResponseToPawn = (bEnable) ? ECollisionResponse::ECR_Overlap : ECollisionResponse::ECR_Ignore;
 	AttackCollision->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, CollisionResponseToPawn);
+}
+
+void AWeapon::SetEquipItemEvent(const FEquipItemEvent& Event)
+{
+	EquipItemEvent.Clear();
+	EquipItemEvent = Event;
+}
+
+void AWeapon::InventoryAction_Implementation()
+{
+	EquipItemEvent.Broadcast(this);
+}
+
+void AWeapon::RemoveFromInventoryAction_Implementation()
+{
+	UnEquip();
+	DropItem();
 }

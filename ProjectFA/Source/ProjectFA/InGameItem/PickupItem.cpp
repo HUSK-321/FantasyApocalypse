@@ -3,7 +3,7 @@
 
 #include "PickupItem.h"
 #include "Components/SphereComponent.h"
-#include "ProjectFA/FACharacter/Player/PlayableCharacter.h"
+#include "ProjectFA/FACharacter/PickupableCharacter.h"
 
 APickupItem::APickupItem()
 	:
@@ -18,6 +18,7 @@ APickupItem::APickupItem()
 	
 	PickupAreaSphere->SetupAttachment(GetRootComponent());
 	PickupAreaSphere->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECollisionResponse::ECR_Ignore);
+	PickupAreaSphere->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Overlap);
 }
 
 void APickupItem::BeginPlay()
@@ -30,9 +31,8 @@ void APickupItem::BeginPlay()
 
 void APickupItem::Destroyed()
 {
+	ItemDroppedEvent.Broadcast(this);
 	Super::Destroyed();
-
-	ItemRemovedFromInventoryEvent.Broadcast(this);
 }
 
 void APickupItem::SetOwner(AActor* NewOwner)
@@ -40,7 +40,7 @@ void APickupItem::SetOwner(AActor* NewOwner)
 	Super::SetOwner(NewOwner);
 	if(NewOwner == nullptr)
 	{
-		ItemRemovedFromInventoryEvent.Clear();
+		ItemDroppedEvent.Clear();
 	}
 }
 
@@ -49,11 +49,24 @@ void APickupItem::SetItemState(const EItemState State)
 	ItemState = State;
 	switch (ItemState)
 	{
+	case EItemState::EIS_Initial:
+		SetOwner(nullptr);
+		PickupItemMesh->SetSimulatePhysics(false);
+		PickupItemMesh->SetEnableGravity(false);
+		PickupItemMesh->SetVisibility(true);
+		PickupItemMesh->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
+		PickupItemMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
+		PickupAreaSphere->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+		PickupAreaSphere->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Overlap);
+		break;
+		
 	case EItemState::EIS_Equipped:
 		PickupItemMesh->SetVisibility(true);
 		PickupItemMesh->SetSimulatePhysics(false);
 		PickupItemMesh->SetEnableGravity(false);
 		PickupItemMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		
 		PickupAreaSphere->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 		break;
 		
@@ -62,17 +75,18 @@ void APickupItem::SetItemState(const EItemState State)
 		PickupItemMesh->SetSimulatePhysics(false);
 		PickupItemMesh->SetEnableGravity(false);
 		PickupItemMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		
 		PickupAreaSphere->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 		break;
 		
 	case EItemState::EIS_Dropped:
-		SetOwner(nullptr);
 		PickupItemMesh->SetVisibility(true);
 		PickupItemMesh->SetSimulatePhysics(true);
 		PickupItemMesh->SetEnableGravity(true);
 		PickupItemMesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
-		PickupItemMesh->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Block);
-		PickupItemMesh->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Ignore);
+		PickupItemMesh->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
+		PickupItemMesh->SetCollisionResponseToChannel(ECollisionChannel::ECC_WorldStatic, ECollisionResponse::ECR_Block);
+		
 		PickupAreaSphere->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 		break;
 		
@@ -81,20 +95,43 @@ void APickupItem::SetItemState(const EItemState State)
 	}	
 }
 
+void APickupItem::DropItem()
+{
+	if(GetOwner() == nullptr)	return;
+	
+	SetActorLocation(GetOwner()->GetActorLocation());
+	const FRotator MeshRotation{ 0.f, GetOwner()->GetActorRotation().Yaw, 0.f };
+	SetActorRotation(MeshRotation, ETeleportType::TeleportPhysics);
+	SetItemState(EItemState::EIS_Dropped);
+	
+	FVector ImpulseDirection = GetActorForwardVector();
+	const float RandomRotation = FMath::FRandRange(-40.f, 40.f);
+	ImpulseDirection = ImpulseDirection.RotateAngleAxis(RandomRotation, FVector::UpVector);
+	PickupItemMesh->AddImpulse(ImpulseDirection * 1000.f);
+	
+	GetWorldTimerManager().SetTimer(DropTimer, this, &APickupItem::DropEnd, 2.0f);
+	ItemDroppedEvent.Broadcast(this);
+}
+
 void APickupItem::PickupAreaBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	if(APlayableCharacter* PlayableCharacter = Cast<APlayableCharacter>(OtherActor))
+	if(IPickupableCharacter* PickupableCharacter = Cast<IPickupableCharacter>(OtherActor))
 	{
-		PlayableCharacter->SetNearbyItem(this);
+		PickupableCharacter->SetNearbyItem(this);
 	}
 }
 
 void APickupItem::PickupAreaEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
-	if(APlayableCharacter* PlayableCharacter = Cast<APlayableCharacter>(OtherActor))
+	if(IPickupableCharacter* PickupableCharacter = Cast<IPickupableCharacter>(OtherActor))
 	{
-		PlayableCharacter->UnsetNearbyItem(this);
+		PickupableCharacter->UnsetNearbyItem(this);
 	}
+}
+
+void APickupItem::DropEnd()
+{
+	SetItemState(EItemState::EIS_Initial);
 }
