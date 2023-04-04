@@ -39,6 +39,12 @@ void UPlayableCharacterCombatComponent::EquipItemToCharacter(APickupItem* ItemTo
 	{
 		RightHandSocket->AttachActor(EquippedItem, Character->GetMesh());
 	}
+	if(const auto Equipable = Cast<IEquipable>(ItemToEquip))
+	{
+		FEquipItemEvent Event;
+		Event.AddDynamic(this, &UPlayableCharacterCombatComponent::ItemDrop);
+		Equipable->SetUnEquipEvent(Event);
+	}
 }
 
 void UPlayableCharacterCombatComponent::Attack()
@@ -71,5 +77,13 @@ void UPlayableCharacterCombatComponent::SetWeaponAttackCollision(bool bEnabled)
 	if(auto const WeaponInterface = Cast<IEquipable>(EquippedItem))
 	{
 		WeaponInterface->SetAttackCollision(bEnabled);
+	}
+}
+
+void UPlayableCharacterCombatComponent::ItemDrop(APickupItem* UnEquipItem)
+{
+	if(UnEquipItem == EquippedItem)
+	{
+		EquippedItem = nullptr;
 	}
 }

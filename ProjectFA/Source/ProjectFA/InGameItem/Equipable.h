@@ -30,4 +30,5 @@ public:
 	virtual void UnEquip() = 0;
 	virtual void SetAttackCollision(bool bEnable) = 0;
 	virtual void SetEquipItemEvent(const FEquipItemEvent& Event) = 0;
+	virtual void SetUnEquipEvent(const FEquipItemEvent& Event) = 0;
 };

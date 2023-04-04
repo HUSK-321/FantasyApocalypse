@@ -32,6 +32,7 @@ class PROJECTFA_API AWeapon : public APickupItem, public IEquipable, public IInv
 public:
 
 	FEquipItemEvent EquipItemEvent;
+	FEquipItemEvent UnEquipEvent;
 
 private:
 	
@@ -50,6 +51,7 @@ public:
 	virtual void UnEquip() override;
 	virtual void SetAttackCollision(bool bEnable) override;
 	virtual void SetEquipItemEvent(const FEquipItemEvent& Event) override;
+	virtual void SetUnEquipEvent(const FEquipItemEvent& Event) override;
 
 	virtual void InventoryAction_Implementation() override;
 	virtual void RemoveFromInventoryAction_Implementation() override;
