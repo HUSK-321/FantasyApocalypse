@@ -49,7 +49,7 @@ void UPlayableCharacterCombatComponent::EquipItemToCharacter(APickupItem* ItemTo
 
 void UPlayableCharacterCombatComponent::Attack()
 {
-	if(EquippedItem == nullptr)	return;
+	if(EquippedItem == nullptr || bNowAttacking)	return;
 	if(auto const WeaponInterface = Cast<IEquipable>(EquippedItem))
 	{
 		bNowAttacking = true;
