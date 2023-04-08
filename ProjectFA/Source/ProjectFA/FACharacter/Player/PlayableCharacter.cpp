@@ -51,7 +51,8 @@ void APlayableCharacter::BeginPlay()
 		PlayableController->SetInventoryEvent(InventoryComponent);
 		if(const auto Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayableController->GetLocalPlayer()))
 		{
-			Subsystem->AddMappingContext(PlayableCharacterMappingContext, 0);
+			Subsystem->AddMappingContext(PlayerBasicMappingContext, 0);
+			Subsystem->AddMappingContext(InteractMappingContext, 1);
 		}
 	}
 	PlayerHealthChangedEvent.Broadcast(CurrentHealth, MaxHealth);
@@ -67,12 +68,14 @@ void APlayableCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &APlayableCharacter::CharacterMove);
 		EnhancedInputComponent->BindAction(CameraAction, ETriggerEvent::Triggered, this, &APlayableCharacter::CameraMove);
 		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Started, this, &APlayableCharacter::Jump);
-		EnhancedInputComponent->BindAction(InteractAction, ETriggerEvent::Started, this, &APlayableCharacter::InteractionButtonPressed);
+		EnhancedInputComponent->BindAction(InteractNearbyItem, ETriggerEvent::Started, this, &APlayableCharacter::InteractWithNearbyItem);
 		EnhancedInputComponent->BindAction(AttackAction, ETriggerEvent::Started, this, &APlayableCharacter::AttackButtonPressed);
 		EnhancedInputComponent->BindAction(AttackAction, ETriggerEvent::Completed, this, &APlayableCharacter::AttackButtonReleased);
 		EnhancedInputComponent->BindAction(CrouchAction, ETriggerEvent::Started, this, &APlayableCharacter::CrouchButtonPressed);
 		EnhancedInputComponent->BindAction(SprintAction, ETriggerEvent::Started, this, &APlayableCharacter::SprintButtonPressed);
 		EnhancedInputComponent->BindAction(SprintAction, ETriggerEvent::Completed, this, &APlayableCharacter::SprintButtonReleased);
+
+		EnhancedInputComponent->BindAction(InteractWithObject, ETriggerEvent::Started, this, &APlayableCharacter::InteractWithActors);
 	}
 	PlayerInputComponent->BindAction("Inventory", IE_Pressed, this, &ThisClass::InventoryButtonPressed);
 }
@@ -197,10 +200,25 @@ UActorComponent* APlayableCharacter::GetCombatComponent() const
 	return CombatComponent;
 }
 
-void APlayableCharacter::InteractionButtonPressed()
+void APlayableCharacter::SetInteractingActor(AActor* Actor)
+{
+	if(Actor == nullptr)
+	{
+		SetInteractMappingContext(false);
+		return;
+	}
+	SetInteractMappingContext(true);
+}
+
+void APlayableCharacter::InteractWithNearbyItem()
 {
 	if(InventoryComponent == nullptr)	return;
 	InventoryComponent->SetNearbyItemToInventory();
+}
+
+void APlayableCharacter::InteractWithActors()
+{
+	UE_LOG(LogTemp ,Warning, TEXT("박스 있음"));
 }
 
 void APlayableCharacter::AttackButtonPressed()
@@ -220,6 +238,20 @@ void APlayableCharacter::InventoryButtonPressed()
 	if(const auto PlayableController = Cast<APlayableController>(Controller))
 	{
 		PlayableController->ToggleInventoryWidget();
+	}
+}
+
+void APlayableCharacter::SetInteractMappingContext(bool bIsActive)
+{
+	FModifyContextOptions ModifyContextOptions;
+	ModifyContextOptions.bIgnoreAllPressedKeysUntilRelease = false;
+	if(const auto PlayableController = Cast<APlayableController>(GetController()))
+	{
+		if(const auto Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayableController->GetLocalPlayer()))
+		{
+			bIsActive ? Subsystem->AddMappingContext(InteractMappingContext, 1, ModifyContextOptions) :
+						Subsystem->RemoveMappingContext(InteractMappingContext, ModifyContextOptions);
+		}
 	}
 }
 

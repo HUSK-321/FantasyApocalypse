@@ -4,6 +4,7 @@
 #include "LootingBox.h"
 #include "LootingItemComponent.h"
 #include "Components/SphereComponent.h"
+#include "ProjectFA/FACharacter/InteractableCharacter.h"
 #include "ProjectFA/InGameItem/PickupItem.h"
 
 ALootingBox::ALootingBox()
@@ -18,12 +19,18 @@ ALootingBox::ALootingBox()
 	SetRootComponent(ItemGeneratePosition);
 
 	BoxMesh->SetupAttachment(GetRootComponent());
+	
 	BoxArea->SetupAttachment(GetRootComponent());
+	BoxArea->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECollisionResponse::ECR_Ignore);
+	BoxArea->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Overlap);
 }
 
 void ALootingBox::BeginPlay()
 {
 	Super::BeginPlay();
+
+	BoxArea->OnComponentBeginOverlap.AddDynamic(this, &ALootingBox::LootAreaBeginOverlap);
+	BoxArea->OnComponentEndOverlap.AddDynamic(this, &ALootingBox::LootAreaEndOverlap);
 
 	if(ItemToTestClass == nullptr)	return;
 	TArray<APickupItem*> TestItem;
@@ -39,6 +46,23 @@ void ALootingBox::BeginPlay()
 
 void ALootingBox::CallLooting()
 {
-	UE_LOG(LogTemp, Warning, TEXT("Generate looting items"));
 	LootingItemComponent->GenerateItemsToWorld();
+}
+
+void ALootingBox::LootAreaBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	if(const auto InteractableCharacter = Cast<IInteractableCharacter>(OtherActor))
+	{
+		InteractableCharacter->SetInteractingActor(this);
+	}
+}
+
+void ALootingBox::LootAreaEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
+{
+	if(const auto InteractableCharacter = Cast<IInteractableCharacter>(OtherActor))
+	{
+		InteractableCharacter->SetInteractingActor(nullptr);
+	}
 }
