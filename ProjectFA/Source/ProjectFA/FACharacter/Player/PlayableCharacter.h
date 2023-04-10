@@ -6,6 +6,7 @@
 #include "ProjectFA/FACharacter/FACharacter.h"
 #include "InputActionValue.h"
 #include "ProjectFA/FACharacter/CombatableCharacter.h"
+#include "ProjectFA/FACharacter/InteractableCharacter.h"
 #include "ProjectFA/FACharacter/PickupableCharacter.h"
 #include "PlayableCharacter.generated.h"
 
@@ -20,7 +21,7 @@ class UInputAction;
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FPlayerCurrentMaxDelegate, const float&, CurrentValue, const float&, MaxValue);
 
 UCLASS()
-class PROJECTFA_API APlayableCharacter : public AFACharacter, public IPickupableCharacter, public ICombatableCharacter
+class PROJECTFA_API APlayableCharacter : public AFACharacter, public IPickupableCharacter, public ICombatableCharacter, public IInteractableCharacter
 {
 	GENERATED_BODY()
 
@@ -40,21 +41,25 @@ private:
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UInventoryComponent> InventoryComponent;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
-	TObjectPtr<UInputMappingContext> PlayableCharacterMappingContext;
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Player Input", meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UInputMappingContext> PlayerBasicMappingContext;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Player Input", meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UInputMappingContext> InteractMappingContext;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Player Input", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UInputAction> MoveAction;
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Player Input", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UInputAction> CameraAction;
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Player Input", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UInputAction> JumpAction;
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
-	TObjectPtr<UInputAction> InteractAction;
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Player Input", meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UInputAction> InteractNearbyItem;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Player Input", meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UInputAction> InteractWithObject;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Player Input", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UInputAction> AttackAction;
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Player Input", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UInputAction> CrouchAction;
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Player Input", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UInputAction> SprintAction;
 
 	UPROPERTY(EditAnywhere, Category = "Player Property")
@@ -78,6 +83,9 @@ private:
 	
 	float InventoryWeightFactor;
 
+	UPROPERTY()
+	TObjectPtr<AActor> InteractingActor;
+
 public:
 	
 	APlayableCharacter();
@@ -88,6 +96,8 @@ public:
 	virtual void UnsetNearbyItem(AActor* PickupItem) override;
 
 	virtual UActorComponent* GetCombatComponent() const override;
+
+	virtual void SetInteractingActor(AActor* Actor) override;
 
 protected:
 	
@@ -104,13 +114,16 @@ private:
 	void CrouchButtonPressed();
 	void SprintButtonPressed();
 	void SprintButtonReleased();
-	void InteractionButtonPressed();
+	void InteractWithNearbyItem();
+	void InteractWithActors(const FInputActionValue& Value);
 	void AttackButtonPressed();
 	void AttackButtonReleased();
 	void InventoryButtonPressed();
 	virtual void ReceiveDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType, AController* InstigatorController, AActor* DamageCauser) override;
 	void SetSprinting(bool bSprinting);
 	void ManageStaminaAmount(float DeltaTime);
+
+	void SetInteractMappingContext(bool bIsActive);
 
 	void SetCharacterMoveSpeed();
 	UFUNCTION()
