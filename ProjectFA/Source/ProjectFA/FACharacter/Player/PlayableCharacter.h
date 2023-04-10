@@ -83,6 +83,9 @@ private:
 	
 	float InventoryWeightFactor;
 
+	UPROPERTY()
+	TObjectPtr<AActor> InteractingActor;
+
 public:
 	
 	APlayableCharacter();
@@ -112,7 +115,7 @@ private:
 	void SprintButtonPressed();
 	void SprintButtonReleased();
 	void InteractWithNearbyItem();
-	void InteractWithActors();
+	void InteractWithActors(const FInputActionValue& Value);
 	void AttackButtonPressed();
 	void AttackButtonReleased();
 	void InventoryButtonPressed();

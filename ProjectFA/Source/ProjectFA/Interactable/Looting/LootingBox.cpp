@@ -12,7 +12,8 @@ ALootingBox::ALootingBox()
 	BoxMesh(CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Box Mesh"))),
 	BoxArea(CreateDefaultSubobject<USphereComponent>(TEXT("Box Area"))),
 	ItemGeneratePosition(CreateDefaultSubobject<USceneComponent>(TEXT("Item GeneratePosition"))),
-	LootingItemComponent(CreateDefaultSubobject<ULootingItemComponent>(TEXT("Looting Component")))
+	LootingItemComponent(CreateDefaultSubobject<ULootingItemComponent>(TEXT("Looting Component"))),
+	TimeToSearch(2.f)
 {
 	PrimaryActorTick.bCanEverTick = false;
 
@@ -23,6 +24,26 @@ ALootingBox::ALootingBox()
 	BoxArea->SetupAttachment(GetRootComponent());
 	BoxArea->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECollisionResponse::ECR_Ignore);
 	BoxArea->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Overlap);
+}
+
+void ALootingBox::SearchActor(const float SearchTime)
+{
+	TimeToSearch -= SearchTime;
+	if(TimeToSearch <= 0)
+	{
+		LootingItemComponent->GenerateItemsToWorld();
+		Destroy();
+	}
+}
+
+void ALootingBox::FindItem_Implementation(const float SearchTime)
+{
+	TimeToSearch -= SearchTime;
+	if(TimeToSearch <= 0)
+	{
+		LootingItemComponent->GenerateItemsToWorld();
+		Destroy();
+	}
 }
 
 void ALootingBox::BeginPlay()
@@ -40,13 +61,6 @@ void ALootingBox::BeginPlay()
 		TestItem.Add(Item);
 	}
 	LootingItemComponent->InitializeItemList(TestItem);
-
-	GetWorldTimerManager().SetTimer(TestItemTimerHandle, this, &ALootingBox::CallLooting, 2.f, true);
-}
-
-void ALootingBox::CallLooting()
-{
-	LootingItemComponent->GenerateItemsToWorld();
 }
 
 void ALootingBox::LootAreaBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,

@@ -8,7 +8,9 @@
 #include "EnhancedInputComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
+#include "Kismet/KismetSystemLibrary.h"
 #include "ProjectFA/HUD/InventoryWidget/InventorySlotWidget.h"
+#include "ProjectFA/Interactable/Looting/LootableActor.h"
 
 APlayableCharacter::APlayableCharacter()
 	:
@@ -74,7 +76,7 @@ void APlayableCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 		EnhancedInputComponent->BindAction(SprintAction, ETriggerEvent::Started, this, &APlayableCharacter::SprintButtonPressed);
 		EnhancedInputComponent->BindAction(SprintAction, ETriggerEvent::Completed, this, &APlayableCharacter::SprintButtonReleased);
 
-		EnhancedInputComponent->BindAction(InteractWithObject, ETriggerEvent::Started, this, &APlayableCharacter::InteractWithActors);
+		EnhancedInputComponent->BindAction(InteractWithObject, ETriggerEvent::Triggered, this, &APlayableCharacter::InteractWithActors);
 	}
 	PlayerInputComponent->BindAction("Inventory", IE_Pressed, this, &ThisClass::InventoryButtonPressed);
 }
@@ -201,7 +203,8 @@ UActorComponent* APlayableCharacter::GetCombatComponent() const
 
 void APlayableCharacter::SetInteractingActor(AActor* Actor)
 {
-	if(Actor == nullptr)
+	InteractingActor = Actor;
+	if(InteractingActor == nullptr)
 	{
 		SetInteractMappingContext(false);
 		return;
@@ -215,9 +218,14 @@ void APlayableCharacter::InteractWithNearbyItem()
 	InventoryComponent->SetNearbyItemToInventory();
 }
 
-void APlayableCharacter::InteractWithActors()
+void APlayableCharacter::InteractWithActors(const FInputActionValue& Value)
 {
-	UE_LOG(LogTemp ,Warning, TEXT("박스 있음"));
+	if(InteractingActor == nullptr)	return;
+
+	if(UKismetSystemLibrary::DoesImplementInterface(InteractingActor, ULootableActor::StaticClass()))
+	{
+		ILootableActor::Execute_FindItem(InteractingActor, GetWorld()->GetDeltaSeconds());
+	}
 }
 
 void APlayableCharacter::AttackButtonPressed()

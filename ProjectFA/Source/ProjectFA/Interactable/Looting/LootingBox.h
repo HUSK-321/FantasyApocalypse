@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "LootableActor.h"
 #include "GameFramework/Actor.h"
 #include "LootingBox.generated.h"
 
@@ -11,12 +12,15 @@ class USphereComponent;
 class ULootingItemComponent;
 
 UCLASS()
-class PROJECTFA_API ALootingBox : public AActor
+class PROJECTFA_API ALootingBox : public AActor, public ILootableActor
 {
 	GENERATED_BODY()
 	
 public:	
 	ALootingBox();
+
+	virtual void SearchActor(float SearchTime) override;
+	virtual void FindItem_Implementation(const float SearchTime) override;
 
 protected:
 	virtual void BeginPlay() override;
@@ -33,10 +37,9 @@ private:
 
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<class APickupItem> ItemToTestClass;
-	FTimerHandle TestItemTimerHandle;
 
-	UFUNCTION()
-	void CallLooting();
+	UPROPERTY(EditAnywhere, Category = "Looting Property")
+	float TimeToSearch;
 
 private:
 	UFUNCTION()
