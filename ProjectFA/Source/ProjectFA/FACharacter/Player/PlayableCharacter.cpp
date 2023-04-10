@@ -52,7 +52,6 @@ void APlayableCharacter::BeginPlay()
 		if(const auto Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayableController->GetLocalPlayer()))
 		{
 			Subsystem->AddMappingContext(PlayerBasicMappingContext, 0);
-			Subsystem->AddMappingContext(InteractMappingContext, 1);
 		}
 	}
 	PlayerHealthChangedEvent.Broadcast(CurrentHealth, MaxHealth);
