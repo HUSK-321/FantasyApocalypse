@@ -118,7 +118,7 @@ void ALootingBox::StartDissolve()
 
 	FOnTimelineEvent TimelineEndEvent;
 	TimelineEndEvent.BindDynamic(this, &ALootingBox::AfterDissolve);
-	DissolveTimeline->AddEvent(DissolveTimeline->GetTimelineLength() + 0.1f, TimelineEndEvent);
+	DissolveTimeline->SetTimelineFinishedFunc(TimelineEndEvent);
 	DissolveTimeline->Play();
 }
 
