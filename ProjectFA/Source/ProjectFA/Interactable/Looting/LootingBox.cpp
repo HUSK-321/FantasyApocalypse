@@ -90,7 +90,9 @@ void ALootingBox::UpdateMaterialDissolve(float DissolveTime)
 
 void ALootingBox::StartDissolve()
 {
-	if(DissolveCurve == nullptr || DissolveTimeline == nullptr)	return;
+	if(BoxMesh == nullptr || DissolveCurve == nullptr || DissolveTimeline == nullptr)	return;
+
+	BoxMesh->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
 	
 	FOnTimelineFloat DissolveTrack;
 	DissolveTrack.BindDynamic(this, &ALootingBox::UpdateMaterialDissolve);
