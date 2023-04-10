@@ -11,6 +11,8 @@
 class UStaticMeshComponent;
 class USphereComponent;
 class ULootingItemComponent;
+class UWidgetComponent;
+class UItemLootingProgressWidget;
 
 UCLASS()
 class PROJECTFA_API ALootingBox : public AActor, public ILootableActor
@@ -36,6 +38,11 @@ private:
 	TObjectPtr<ULootingItemComponent> LootingItemComponent;
 
 	UPROPERTY(EditAnywhere)
+	TObjectPtr<UWidgetComponent> ProgressWidgetComponent;
+	UPROPERTY()
+	TObjectPtr<UItemLootingProgressWidget> ProgressWidget;
+
+	UPROPERTY(EditAnywhere)
 	TSubclassOf<class APickupItem> ItemToTestClass;
 
 	/** Runtime changeable dynamic instance */
@@ -50,6 +57,8 @@ private:
 	TObjectPtr<UCurveFloat> DissolveCurve;
 
 	UPROPERTY(EditAnywhere, Category = "Looting Property")
+	float MaxTimeToSearch;
+	UPROPERTY(VisibleAnywhere, Category = "Looting Property")
 	float TimeToSearch;
 
 private:

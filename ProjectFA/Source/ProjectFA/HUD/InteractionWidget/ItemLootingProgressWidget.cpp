@@ -2,12 +2,11 @@
 
 
 #include "ItemLootingProgressWidget.h"
+#include "Components/Image.h"
 
 void UItemLootingProgressWidget::SetProgressPercent(const float& Percent)
 {
-	ImageMaterialInstanceDynamic == nullptr ? ImageMaterialInstanceDynamic = UMaterialInstanceDynamic::Create(ImageMaterialInstance, this) :
-											  ImageMaterialInstanceDynamic;
-	if(ImageMaterialInstanceDynamic == nullptr)	return;
+	if(ProgressImage->GetDynamicMaterial() == nullptr)	return;
 	
-	ImageMaterialInstanceDynamic->SetScalarParameterValue(FName("Percent"), Percent);
+	ProgressImage->GetDynamicMaterial()->SetScalarParameterValue(FName("Percent"), Percent);
 }

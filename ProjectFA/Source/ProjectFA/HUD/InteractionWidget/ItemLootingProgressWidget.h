@@ -23,8 +23,4 @@ public:
 private:
 	UPROPERTY(meta=(BindWidget))
 	TObjectPtr<UImage> ProgressImage;
-	UPROPERTY()
-	TObjectPtr<UMaterialInstanceDynamic> ImageMaterialInstanceDynamic;
-	UPROPERTY(EditAnywhere, Category = "Progress", meta = (AllowPrivateAccess = "true"))
-	TObjectPtr<UMaterialInstance> ImageMaterialInstance;
 };

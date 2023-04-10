@@ -4,7 +4,9 @@
 #include "LootingBox.h"
 #include "LootingItemComponent.h"
 #include "Components/SphereComponent.h"
+#include "Components/WidgetComponent.h"
 #include "ProjectFA/FACharacter/InteractableCharacter.h"
+#include "ProjectFA/HUD/InteractionWidget/ItemLootingProgressWidget.h"
 #include "ProjectFA/InGameItem/PickupItem.h"
 
 ALootingBox::ALootingBox()
@@ -13,8 +15,9 @@ ALootingBox::ALootingBox()
 	BoxArea(CreateDefaultSubobject<USphereComponent>(TEXT("Box Area"))),
 	ItemGeneratePosition(CreateDefaultSubobject<USceneComponent>(TEXT("Item GeneratePosition"))),
 	LootingItemComponent(CreateDefaultSubobject<ULootingItemComponent>(TEXT("Looting Component"))),
+	ProgressWidgetComponent(CreateDefaultSubobject<UWidgetComponent>(TEXT("Progress Widget"))),
 	DissolveTimeline(CreateDefaultSubobject<UTimelineComponent>(TEXT("Dissolve Timeline Component"))),
-	TimeToSearch(2.f)
+	MaxTimeToSearch(2.f), TimeToSearch(0.f)
 {
 	PrimaryActorTick.bCanEverTick = false;
 
@@ -25,11 +28,16 @@ ALootingBox::ALootingBox()
 	BoxArea->SetupAttachment(GetRootComponent());
 	BoxArea->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECollisionResponse::ECR_Ignore);
 	BoxArea->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Overlap);
+
+	ProgressWidgetComponent->SetupAttachment(GetRootComponent());
 }
 
 void ALootingBox::BeginPlay()
 {
 	Super::BeginPlay();
+
+	ProgressWidgetComponent->SetVisibility(false);
+	ProgressWidget = Cast<UItemLootingProgressWidget>(ProgressWidgetComponent->GetUserWidgetObject());
 
 	BoxArea->OnComponentBeginOverlap.AddDynamic(this, &ALootingBox::LootAreaBeginOverlap);
 	BoxArea->OnComponentEndOverlap.AddDynamic(this, &ALootingBox::LootAreaEndOverlap);
@@ -46,8 +54,15 @@ void ALootingBox::BeginPlay()
 
 void ALootingBox::FindItem_Implementation(const float SearchTime)
 {
-	TimeToSearch -= SearchTime;
-	if(TimeToSearch <= 0)
+	TimeToSearch += SearchTime;
+	ProgressWidget = ProgressWidget == nullptr ?
+					 Cast<UItemLootingProgressWidget>(ProgressWidgetComponent->GetUserWidgetObject()) :
+					 ProgressWidget;
+	if(ProgressWidget)
+	{
+		ProgressWidget->SetProgressPercent(TimeToSearch / MaxTimeToSearch);
+	}
+	if(TimeToSearch >= MaxTimeToSearch)
 	{
 		LootingItemComponent->GenerateItemsToWorld();
 		OpenLooting();
@@ -56,6 +71,7 @@ void ALootingBox::FindItem_Implementation(const float SearchTime)
 
 void ALootingBox::OpenLooting()
 {
+	ProgressWidgetComponent->SetVisibility(false);
 	if(DissolveMaterialInstance == nullptr)	return;
 
 	DynamicDissolveMaterialInstance = UMaterialInstanceDynamic::Create(DissolveMaterialInstance, this);
@@ -69,6 +85,7 @@ void ALootingBox::LootAreaBeginOverlap(UPrimitiveComponent* OverlappedComponent,
 {
 	if(const auto InteractableCharacter = Cast<IInteractableCharacter>(OtherActor))
 	{
+		ProgressWidgetComponent->SetVisibility(true);
 		InteractableCharacter->SetInteractingActor(this);
 	}
 }
@@ -78,6 +95,7 @@ void ALootingBox::LootAreaEndOverlap(UPrimitiveComponent* OverlappedComponent, A
 {
 	if(const auto InteractableCharacter = Cast<IInteractableCharacter>(OtherActor))
 	{
+		ProgressWidgetComponent->SetVisibility(false);
 		InteractableCharacter->SetInteractingActor(nullptr);
 	}
 }
