@@ -20,8 +20,6 @@ class PROJECTFA_API ILootableActor
 	GENERATED_BODY()
 
 public:
-	virtual void SearchActor(const float SearchTime) = 0;
-
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Looting Action")
 	void FindItem(const float SearchTime);
 };

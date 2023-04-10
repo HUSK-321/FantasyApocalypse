@@ -13,6 +13,7 @@ ALootingBox::ALootingBox()
 	BoxArea(CreateDefaultSubobject<USphereComponent>(TEXT("Box Area"))),
 	ItemGeneratePosition(CreateDefaultSubobject<USceneComponent>(TEXT("Item GeneratePosition"))),
 	LootingItemComponent(CreateDefaultSubobject<ULootingItemComponent>(TEXT("Looting Component"))),
+	DissolveTimeline(CreateDefaultSubobject<UTimelineComponent>(TEXT("Dissolve Timeline Component"))),
 	TimeToSearch(2.f)
 {
 	PrimaryActorTick.bCanEverTick = false;
@@ -24,26 +25,6 @@ ALootingBox::ALootingBox()
 	BoxArea->SetupAttachment(GetRootComponent());
 	BoxArea->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECollisionResponse::ECR_Ignore);
 	BoxArea->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Overlap);
-}
-
-void ALootingBox::SearchActor(const float SearchTime)
-{
-	TimeToSearch -= SearchTime;
-	if(TimeToSearch <= 0)
-	{
-		LootingItemComponent->GenerateItemsToWorld();
-		Destroy();
-	}
-}
-
-void ALootingBox::FindItem_Implementation(const float SearchTime)
-{
-	TimeToSearch -= SearchTime;
-	if(TimeToSearch <= 0)
-	{
-		LootingItemComponent->GenerateItemsToWorld();
-		Destroy();
-	}
 }
 
 void ALootingBox::BeginPlay()
@@ -63,8 +44,28 @@ void ALootingBox::BeginPlay()
 	LootingItemComponent->InitializeItemList(TestItem);
 }
 
+void ALootingBox::FindItem_Implementation(const float SearchTime)
+{
+	TimeToSearch -= SearchTime;
+	if(TimeToSearch <= 0)
+	{
+		LootingItemComponent->GenerateItemsToWorld();
+		OpenLooting();
+	}
+}
+
+void ALootingBox::OpenLooting()
+{
+	if(DissolveMaterialInstance == nullptr)	return;
+
+	DynamicDissolveMaterialInstance = UMaterialInstanceDynamic::Create(DissolveMaterialInstance, this);
+	BoxMesh->SetMaterial(0, DynamicDissolveMaterialInstance);
+	DynamicDissolveMaterialInstance->SetScalarParameterValue(TEXT("Disslove"), -0.55f);
+	StartDissolve();
+}
+
 void ALootingBox::LootAreaBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
-	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+                                       UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	if(const auto InteractableCharacter = Cast<IInteractableCharacter>(OtherActor))
 	{
@@ -79,4 +80,29 @@ void ALootingBox::LootAreaEndOverlap(UPrimitiveComponent* OverlappedComponent, A
 	{
 		InteractableCharacter->SetInteractingActor(nullptr);
 	}
+}
+
+void ALootingBox::UpdateMaterialDissolve(float DissolveTime)
+{
+	if(DynamicDissolveMaterialInstance == nullptr)	return;
+	DynamicDissolveMaterialInstance->SetScalarParameterValue(TEXT("Dissolve"), DissolveTime);
+}
+
+void ALootingBox::StartDissolve()
+{
+	if(DissolveCurve == nullptr || DissolveTimeline == nullptr)	return;
+	
+	FOnTimelineFloat DissolveTrack;
+	DissolveTrack.BindDynamic(this, &ALootingBox::UpdateMaterialDissolve);
+	DissolveTimeline->AddInterpFloat(DissolveCurve, DissolveTrack);
+
+	FOnTimelineEvent TimelineEndEvent;
+	TimelineEndEvent.BindDynamic(this, &ALootingBox::AfterDissolve);
+	DissolveTimeline->AddEvent(DissolveTimeline->GetTimelineLength() + 0.1f, TimelineEndEvent);
+	DissolveTimeline->Play();
+}
+
+void ALootingBox::AfterDissolve()
+{
+	Destroy();
 }
