@@ -11,7 +11,6 @@
  */
 
 class UButton;
-class UTextBlock;
 class UImage;
 class APickupItem;
 class UItemTooltipWidget;
