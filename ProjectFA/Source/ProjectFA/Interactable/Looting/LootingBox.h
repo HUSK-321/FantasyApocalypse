@@ -6,6 +6,7 @@
 #include "LootInteractable.h"
 #include "Components/TimelineComponent.h"
 #include "GameFramework/Actor.h"
+#include "ProjectFA/PlayGamePretreatment/ItemSpawnable.h"
 #include "LootingBox.generated.h"
 
 class UStaticMeshComponent;
@@ -15,7 +16,7 @@ class UWidgetComponent;
 class UItemLootingProgressWidget;
 
 UCLASS()
-class PROJECTFA_API ALootingBox : public AActor, public ILootInteractable
+class PROJECTFA_API ALootingBox : public AActor, public ILootInteractable, public IItemSpawnable
 {
 	GENERATED_BODY()
 	
@@ -23,6 +24,9 @@ public:
 	ALootingBox();
 
 	virtual void FindItem_Implementation(const float SearchTime) override;
+
+	virtual const int32 GetSpawnIndex() override;
+	virtual void SetSpawnItemList(const TArray<APickupItem*>& ItemList) override;
 
 protected:
 	virtual void BeginPlay() override;
@@ -43,7 +47,7 @@ private:
 	TObjectPtr<UItemLootingProgressWidget> ProgressWidget;
 
 	UPROPERTY(EditAnywhere)
-	TSubclassOf<class APickupItem> ItemToTestClass;
+	int32 SpawnIndex;
 
 	/** Runtime changeable dynamic instance */
 	UPROPERTY(VisibleAnywhere, Category = "Dissolve", meta = (AllowPrivateAccess = "true"))

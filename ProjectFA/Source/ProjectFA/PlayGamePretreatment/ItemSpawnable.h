@@ -22,5 +22,6 @@ class PROJECTFA_API IItemSpawnable
 	GENERATED_BODY()
 
 public:
-	virtual const TArray<APickupItem*> GetItemListBySpawnIndex(int32 SpawnIndex) = 0;
+	virtual const int32 GetSpawnIndex() = 0;
+	virtual void SetSpawnItemList(const TArray<APickupItem*>& ItemList) = 0;
 };
