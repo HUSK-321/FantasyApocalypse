@@ -7,6 +7,7 @@
 #include "FACharacter.generated.h"
 
 class UInputComponent;
+class UTimelineComponent;
 
 UCLASS()
 class PROJECTFA_API AFACharacter : public ACharacter
@@ -42,6 +43,14 @@ protected:
 	UFUNCTION(BlueprintCallable)
 	virtual bool CharacterCannotAttack();
 
+	void StartDeadDissolve();
+
+private:
+	UFUNCTION()
+	void UpdateMaterialDissolve(float DissolveTime);
+	UFUNCTION()
+	void AfterDeadDissolve();
+
 protected:
 
 	UPROPERTY(EditAnywhere, Category = "Character Property")
@@ -53,5 +62,15 @@ protected:
 	TObjectPtr<UAnimMontage> NormalAttackMontage;
 	UPROPERTY(EditAnywhere, Category = "Character Combat")
 	TObjectPtr<UAnimMontage> DieMontage;
+
+private:
+	UPROPERTY(VisibleAnywhere, Category = "Dead", meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UMaterialInstanceDynamic> DynamicDissolveMaterialInstance;
+	UPROPERTY(EditAnywhere, Category = "Dead", meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UMaterialInstance> DissolveMaterialInstance;
+	UPROPERTY(VisibleAnywhere, Category = "Dead", meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UTimelineComponent> DissolveTimeline;
+	UPROPERTY(EditAnywhere, Category = "Dead")
+	TObjectPtr<UCurveFloat> DissolveCurve;
 
 };

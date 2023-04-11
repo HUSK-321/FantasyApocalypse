@@ -2,12 +2,13 @@
 
 
 #include "FACharacter.h"
-
 #include "Components/CapsuleComponent.h"
+#include "Components/TimelineComponent.h"
 
 AFACharacter::AFACharacter()
 	:
-	MaxHealth(100.f), CurrentHealth(100.f)
+	MaxHealth(100.f), CurrentHealth(100.f),
+	DissolveTimeline(CreateDefaultSubobject<UTimelineComponent>(TEXT("Dissolve Timeline")))
 {
 	PrimaryActorTick.bCanEverTick = true;
 }
@@ -71,4 +72,48 @@ bool AFACharacter::CharacterCannotMove()
 bool AFACharacter::CharacterCannotAttack()
 {
 	return false;
+}
+
+void AFACharacter::StartDeadDissolve()
+{
+	if(GetMesh() == nullptr)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("mesh"));
+	}
+	if(DissolveCurve == nullptr)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("DissolveCurve"));
+	}
+	if(DissolveTimeline == nullptr)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("DissolveTimeline"));
+	}
+	if(GetMesh() == nullptr || DissolveCurve == nullptr || DissolveTimeline == nullptr)	return;
+	
+	GetMesh()->bPauseAnims = true;
+	GetMesh()->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
+
+	DynamicDissolveMaterialInstance = UMaterialInstanceDynamic::Create(DissolveMaterialInstance, this);
+	GetMesh()->SetMaterial(0, DynamicDissolveMaterialInstance);
+	DynamicDissolveMaterialInstance->SetScalarParameterValue(TEXT("Disslove"), -0.55f);
+	
+	FOnTimelineFloat DissolveTrack;
+	DissolveTrack.BindDynamic(this, &AFACharacter::UpdateMaterialDissolve);
+	DissolveTimeline->AddInterpFloat(DissolveCurve, DissolveTrack);
+
+	FOnTimelineEvent TimelineEndEvent;
+	TimelineEndEvent.BindDynamic(this, &AFACharacter::AfterDeadDissolve);
+	DissolveTimeline->SetTimelineFinishedFunc(TimelineEndEvent);
+	DissolveTimeline->Play();
+}
+
+void AFACharacter::UpdateMaterialDissolve(float DissolveTime)
+{
+	if(DynamicDissolveMaterialInstance == nullptr)	return;
+	DynamicDissolveMaterialInstance->SetScalarParameterValue(TEXT("Dissolve"), DissolveTime);
+}
+
+void AFACharacter::AfterDeadDissolve()
+{
+	Destroy();
 }

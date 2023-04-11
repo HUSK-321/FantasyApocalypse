@@ -6,7 +6,6 @@
 #include "Components/BoxComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/SphereComponent.h"
-#include "Components/TimelineComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Perception/PawnSensingComponent.h"
@@ -18,8 +17,7 @@ AEnemy::AEnemy()
 	PawnSensingComponent(CreateDefaultSubobject<UPawnSensingComponent>(TEXT("PawnSensingComponent"))),
 	AttackSphere(CreateDefaultSubobject<USphereComponent>(TEXT("AttackSphere"))),
 	AttackCollision(CreateDefaultSubobject<UBoxComponent>(TEXT("AttackCollision"))),
-	LootingItemComponent(CreateDefaultSubobject<ULootingItemComponent>(TEXT("Looting Item Component"))),
-	DissolveTimeline(CreateDefaultSubobject<UTimelineComponent>(TEXT("Dissolve Timeline Component")))
+	LootingItemComponent(CreateDefaultSubobject<ULootingItemComponent>(TEXT("Looting Item Component")))
 {
 	PrimaryActorTick.bCanEverTick = false;
 
@@ -115,42 +113,7 @@ void AEnemy::AttackCollisionOnOverlapBegin(UPrimitiveComponent* OverlappedCompon
 void AEnemy::AfterDeath()
 {
 	LootingItemComponent->GenerateItemsToWorld();
-	
 	StartDeadDissolve();
-}
-
-void AEnemy::StartDeadDissolve()
-{
-	GetMesh()->bPauseAnims = true;
-	GetMesh()->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
-
-	DynamicDissolveMaterialInstance = UMaterialInstanceDynamic::Create(DissolveMaterialInstance, this);
-	GetMesh()->SetMaterial(0, DynamicDissolveMaterialInstance);
-	DynamicDissolveMaterialInstance->SetScalarParameterValue(TEXT("Disslove"), -0.55f);
-
-	if(GetMesh() == nullptr || DissolveCurve == nullptr || DissolveTimeline == nullptr)	return;
-
-	GetMesh()->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
-	
-	FOnTimelineFloat DissolveTrack;
-	DissolveTrack.BindDynamic(this, &AEnemy::UpdateMaterialDissolve);
-	DissolveTimeline->AddInterpFloat(DissolveCurve, DissolveTrack);
-
-	FOnTimelineEvent TimelineEndEvent;
-	TimelineEndEvent.BindDynamic(this, &AEnemy::AfterDeadDissolve);
-	DissolveTimeline->SetTimelineFinishedFunc(TimelineEndEvent);
-	DissolveTimeline->Play();
-}
-
-void AEnemy::UpdateMaterialDissolve(float DissolveTime)
-{
-	if(DynamicDissolveMaterialInstance == nullptr)	return;
-	DynamicDissolveMaterialInstance->SetScalarParameterValue(TEXT("Dissolve"), DissolveTime);
-}
-
-void AEnemy::AfterDeadDissolve()
-{
-	Destroy();
 }
 
 void AEnemy::SetSpawnItemList(const TArray<APickupItem*>& ItemList)
