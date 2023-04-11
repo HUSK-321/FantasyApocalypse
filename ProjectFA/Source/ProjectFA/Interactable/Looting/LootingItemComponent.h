@@ -4,13 +4,13 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
-#include "ProjectFA/FAInterfaces/Lootable.h"
+#include "ProjectFA/FAInterfaces/LootableComponent.h"
 #include "LootingItemComponent.generated.h"
 
 class APickupItem;
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
-class PROJECTFA_API ULootingItemComponent : public UActorComponent, public ILootable
+class PROJECTFA_API ULootingItemComponent : public UActorComponent, public ILootableComponent
 {
 	GENERATED_BODY()
 

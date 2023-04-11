@@ -4,11 +4,11 @@
 
 #include "CoreMinimal.h"
 #include "UObject/Interface.h"
-#include "Lootable.generated.h"
+#include "LootableComponent.generated.h"
 
 // This class does not need to be modified.
 UINTERFACE(MinimalAPI)
-class ULootable : public UInterface
+class ULootableComponent : public UInterface
 {
 	GENERATED_BODY()
 };
@@ -16,7 +16,7 @@ class ULootable : public UInterface
 /**
  * 
  */
-class PROJECTFA_API ILootable
+class PROJECTFA_API ILootableComponent
 {
 	GENERATED_BODY()
 

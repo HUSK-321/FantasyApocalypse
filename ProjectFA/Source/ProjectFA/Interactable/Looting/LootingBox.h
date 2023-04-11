@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "LootableActor.h"
+#include "LootInteractable.h"
 #include "Components/TimelineComponent.h"
 #include "GameFramework/Actor.h"
 #include "LootingBox.generated.h"
@@ -15,7 +15,7 @@ class UWidgetComponent;
 class UItemLootingProgressWidget;
 
 UCLASS()
-class PROJECTFA_API ALootingBox : public AActor, public ILootableActor
+class PROJECTFA_API ALootingBox : public AActor, public ILootInteractable
 {
 	GENERATED_BODY()
 	

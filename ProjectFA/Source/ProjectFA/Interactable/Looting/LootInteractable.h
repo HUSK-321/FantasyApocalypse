@@ -4,10 +4,10 @@
 
 #include "CoreMinimal.h"
 #include "UObject/Interface.h"
-#include "LootableActor.generated.h"
+#include "LootInteractable.generated.h"
 
 UINTERFACE(MinimalAPI)
-class ULootableActor : public UInterface
+class ULootInteractable : public UInterface
 {
 	GENERATED_BODY()
 };
@@ -15,7 +15,7 @@ class ULootableActor : public UInterface
 /**
  * 
  */
-class PROJECTFA_API ILootableActor
+class PROJECTFA_API ILootInteractable
 {
 	GENERATED_BODY()
 
