@@ -10,7 +10,7 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "ProjectFA/HUD/InventoryWidget/InventorySlotWidget.h"
-#include "ProjectFA/Interactable/Looting/LootableActor.h"
+#include "ProjectFA/Interactable/Looting/LootInteractable.h"
 
 APlayableCharacter::APlayableCharacter()
 	:
@@ -222,9 +222,9 @@ void APlayableCharacter::InteractWithActors(const FInputActionValue& Value)
 {
 	if(InteractingActor == nullptr)	return;
 
-	if(UKismetSystemLibrary::DoesImplementInterface(InteractingActor, ULootableActor::StaticClass()))
+	if(UKismetSystemLibrary::DoesImplementInterface(InteractingActor, ULootInteractable::StaticClass()))
 	{
-		ILootableActor::Execute_FindItem(InteractingActor, GetWorld()->GetDeltaSeconds());
+		ILootInteractable::Execute_FindItem(InteractingActor, GetWorld()->GetDeltaSeconds());
 	}
 }
 

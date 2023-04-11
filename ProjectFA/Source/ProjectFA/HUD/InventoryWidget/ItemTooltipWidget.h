@@ -9,6 +9,8 @@
 /**
  * 
  */
+
+class UTextBlock;
 class UMultiLineEditableText;
 
 UCLASS()
@@ -17,6 +19,8 @@ class PROJECTFA_API UItemTooltipWidget : public UUserWidget
 	GENERATED_BODY()
 
 public:
+	UPROPERTY(BlueprintReadWrite, meta=(BindWidget))
+	TObjectPtr<UTextBlock> ItemName;
 	UPROPERTY(BlueprintReadWrite, meta=(BindWidget))
 	TObjectPtr<UMultiLineEditableText> ItemDescription;
 };

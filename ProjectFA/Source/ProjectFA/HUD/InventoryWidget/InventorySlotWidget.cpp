@@ -7,6 +7,7 @@
 #include "ItemTooltipWidget.h"
 #include "InventorySlotActionWidget.h"
 #include "Components/MultiLineEditableText.h"
+#include "Components/TextBlock.h"
 
 void UInventorySlotWidget::InitializeInventorySlot(APickupItem* Item)
 {
@@ -46,7 +47,9 @@ void UInventorySlotWidget::SetToolTipWidget()
 	if(InventoryToolTipWidget == nullptr)	return;
 	if(const auto Item = SlotItem.Get())
 	{
-		const auto ItemDescriptionText = FText::FromString(Item->GetItemDescription()); 
+		const auto ItemName = FText::FromString(Item->GetItemName());
+		const auto ItemDescriptionText = FText::FromString(Item->GetItemDescription());
+		InventoryToolTipWidget->ItemName->SetText(ItemName);
 		InventoryToolTipWidget->ItemDescription->SetText(ItemDescriptionText);
 	}
 	ItemButton->SetToolTip(InventoryToolTipWidget);
