@@ -13,6 +13,7 @@ class AEnemyController;
 class USphereComponent;
 class UBoxComponent;
 class ULootingItemComponent;
+class UTimelineComponent;
 
 UCLASS()
 class PROJECTFA_API AEnemy : public AFACharacter, public IItemSpawnable
@@ -31,6 +32,15 @@ private:
 	TObjectPtr<ULootingItemComponent> LootingItemComponent;
 	UPROPERTY(VisibleAnywhere, Category = "Spawn Item", meta = (AllowPrivateAccess = "true"))
 	int32 SpawnIndex;
+
+	UPROPERTY(VisibleAnywhere, Category = "Dead", meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UMaterialInstanceDynamic> DynamicDissolveMaterialInstance;
+	UPROPERTY(EditAnywhere, Category = "Dead", meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UMaterialInstance> DissolveMaterialInstance;
+	UPROPERTY(VisibleAnywhere, Category = "Dead", meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UTimelineComponent> DissolveTimeline;
+	UPROPERTY(EditAnywhere, Category = "Dead")
+	TObjectPtr<UCurveFloat> DissolveCurve;
 	
 	TObjectPtr<AEnemyController> EnemyController;
 	UPROPERTY(EditAnywhere, Category = "Behaviour Tree", meta = (AllowPrivateAccess = "true"))
@@ -71,4 +81,11 @@ protected:
 	UFUNCTION()
 	void AttackCollisionOnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp,
 											int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+
+private:
+	void StartDeadDissolve();
+	UFUNCTION()
+	void UpdateMaterialDissolve(float DissolveTime);
+	UFUNCTION()
+	void AfterDeadDissolve();
 };

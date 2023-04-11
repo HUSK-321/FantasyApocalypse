@@ -69,10 +69,7 @@ void ALootingBox::OpenLooting()
 {
 	ProgressWidgetComponent->SetVisibility(false);
 	if(DissolveMaterialInstance == nullptr)	return;
-
-	DynamicDissolveMaterialInstance = UMaterialInstanceDynamic::Create(DissolveMaterialInstance, this);
-	BoxMesh->SetMaterial(0, DynamicDissolveMaterialInstance);
-	DynamicDissolveMaterialInstance->SetScalarParameterValue(TEXT("Disslove"), -0.55f);
+	
 	StartDissolve();
 }
 
@@ -104,6 +101,11 @@ void ALootingBox::UpdateMaterialDissolve(float DissolveTime)
 
 void ALootingBox::StartDissolve()
 {
+	if(DissolveMaterialInstance == nullptr)	return;
+	DynamicDissolveMaterialInstance = UMaterialInstanceDynamic::Create(DissolveMaterialInstance, this);
+	BoxMesh->SetMaterial(0, DynamicDissolveMaterialInstance);
+	DynamicDissolveMaterialInstance->SetScalarParameterValue(TEXT("Disslove"), -0.55f);
+	
 	if(BoxMesh == nullptr || DissolveCurve == nullptr || DissolveTimeline == nullptr)	return;
 
 	BoxMesh->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
