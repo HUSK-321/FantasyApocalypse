@@ -76,18 +76,6 @@ bool AFACharacter::CharacterCannotAttack()
 
 void AFACharacter::StartDeadDissolve()
 {
-	if(GetMesh() == nullptr)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("mesh"));
-	}
-	if(DissolveCurve == nullptr)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("DissolveCurve"));
-	}
-	if(DissolveTimeline == nullptr)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("DissolveTimeline"));
-	}
 	if(GetMesh() == nullptr || DissolveCurve == nullptr || DissolveTimeline == nullptr)	return;
 	
 	GetMesh()->bPauseAnims = true;
