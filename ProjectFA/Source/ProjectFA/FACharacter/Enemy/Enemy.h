@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "ProjectFA/FACharacter/FACharacter.h"
+#include "ProjectFA/PlayGamePretreatment/ItemSpawnable.h"
 #include "Enemy.generated.h"
 
 class UPawnSensingComponent;
@@ -11,9 +12,10 @@ class UBehaviorTree;
 class AEnemyController;
 class USphereComponent;
 class UBoxComponent;
+class ULootingItemComponent;
 
 UCLASS()
-class PROJECTFA_API AEnemy : public AFACharacter
+class PROJECTFA_API AEnemy : public AFACharacter, public IItemSpawnable
 {
 	GENERATED_BODY()
 
@@ -25,6 +27,10 @@ private:
 	TObjectPtr<USphereComponent> AttackSphere;
 	UPROPERTY(EditAnywhere)
 	TObjectPtr<UBoxComponent> AttackCollision;
+	UPROPERTY(VisibleAnywhere, Category = "Spawn Item", meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<ULootingItemComponent> LootingItemComponent;
+	UPROPERTY(VisibleAnywhere, Category = "Spawn Item", meta = (AllowPrivateAccess = "true"))
+	int32 SpawnIndex;
 	
 	TObjectPtr<AEnemyController> EnemyController;
 	UPROPERTY(EditAnywhere, Category = "Behaviour Tree", meta = (AllowPrivateAccess = "true"))
@@ -44,6 +50,9 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Enemy Attack")
 	void SetAttackCollision(bool bEnabled);
+
+	virtual void SetSpawnItemList(const TArray<APickupItem*>& ItemList) override;
+	virtual const int32 GetSpawnIndex() override;
 
 	FORCEINLINE UBehaviorTree* GetEnemyBehaviorTree() const { return EnemyBehaviorTree; }
 
