@@ -54,7 +54,7 @@ protected:
 public:
 	APickupItem();
 	
-	void DropItem();
+	void DropItem(bool bFromPlayerInventory = false);
 	void SetItemState(const EItemState State);
 	
 	virtual void SetOwner(AActor* NewOwner) override;

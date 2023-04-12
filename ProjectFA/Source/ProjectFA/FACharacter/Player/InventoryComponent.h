@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include "ProjectFA/FAInterfaces/LootableComponent.h"
 #include "ProjectFA/InGameItem/PickupItem.h"
 #include "InventoryComponent.generated.h"
 
@@ -15,7 +16,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FInventoryChangedEvent, const TArray
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FInventoryWeightChangedEvent, const float&, InventoryWeight);
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
-class PROJECTFA_API UInventoryComponent : public UActorComponent
+class PROJECTFA_API UInventoryComponent : public UActorComponent, public ILootableComponent
 {
 	GENERATED_BODY()
 
@@ -44,6 +45,8 @@ public:
 	UFUNCTION()
 	void DeleteNearbyItem(AActor* Item);
 	void SetNearbyItemToInventory();
+
+	virtual void GenerateItemsToWorld() override;
 
 	FORCEINLINE float GetInventoryTotalWeight() const { return InventoryItemTotalWeight; }
 

@@ -81,9 +81,14 @@ void AFACharacter::StartDeadDissolve()
 	GetMesh()->bPauseAnims = true;
 	GetMesh()->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
 
+	
 	DynamicDissolveMaterialInstance = UMaterialInstanceDynamic::Create(DissolveMaterialInstance, this);
-	GetMesh()->SetMaterial(0, DynamicDissolveMaterialInstance);
-	DynamicDissolveMaterialInstance->SetScalarParameterValue(TEXT("Disslove"), -0.55f);
+	const int32 MaterialCount = GetMesh()->GetNumOverrideMaterials();
+	for(int i = 0; i < MaterialCount; i++)
+	{
+		GetMesh()->SetMaterial(i, DynamicDissolveMaterialInstance);
+		DynamicDissolveMaterialInstance->SetScalarParameterValue(TEXT("Disslove"), -0.55f);
+	}
 	
 	FOnTimelineFloat DissolveTrack;
 	DissolveTrack.BindDynamic(this, &AFACharacter::UpdateMaterialDissolve);

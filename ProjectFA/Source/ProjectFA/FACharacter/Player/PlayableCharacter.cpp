@@ -60,6 +60,14 @@ void APlayableCharacter::BeginPlay()
 	PlayerStaminaChangedEvent.Broadcast(CurrentStamina, MaxStamina);
 }
 
+void APlayableCharacter::CharacterDead()
+{
+	// TODO : call AfterDeath in anim montage, not here
+	Super::CharacterDead();
+
+	AfterDeath();
+}
+
 void APlayableCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
@@ -182,6 +190,10 @@ void APlayableCharacter::ReceiveDamage(AActor* DamagedActor, float Damage, const
 {
 	CurrentHealth = FMath::Clamp(CurrentHealth - Damage, 0.f, MaxHealth);
 	PlayerHealthChangedEvent.Broadcast(CurrentHealth, MaxHealth);
+	if(CurrentHealth <= 0.f)
+	{
+		CharacterDead();
+	}
 }
 
 void APlayableCharacter::SetNearbyItem(AActor* PickupItem)
@@ -260,6 +272,12 @@ void APlayableCharacter::SetInteractMappingContext(bool bIsActive)
 						Subsystem->RemoveMappingContext(InteractMappingContext, ModifyContextOptions);
 		}
 	}
+}
+
+void APlayableCharacter::AfterDeath()
+{
+	InventoryComponent->GenerateItemsToWorld();
+	StartDeadDissolve();
 }
 
 bool APlayableCharacter::CharacterCannotMove()
