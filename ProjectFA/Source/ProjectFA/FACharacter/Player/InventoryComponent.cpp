@@ -35,7 +35,7 @@ void UInventoryComponent::SetNearbyItemToInventory()
 }
 
 void UInventoryComponent::AddItemToInventory(APickupItem* ItemToIn)
-{	
+{
 	ItemToIn->SetOwner(GetOwner());
 	ItemToIn->SetItemState(EItemState::EIS_InInventory);
 	ItemToIn->ItemDroppedEvent.AddDynamic(this, &UInventoryComponent::DropItemFromInventory);
@@ -91,4 +91,14 @@ void UInventoryComponent::DeleteNearbyItem(AActor* Item)
 void UInventoryComponent::EquipItem(APickupItem* Item)
 {
 	PlayerCombatComponent->EquipItemToCharacter(Item);
+}
+
+void UInventoryComponent::GenerateItemsToWorld()
+{
+	if(InventoryItemList.IsEmpty())	return;
+	for(const auto Item : InventoryItemList)
+	{
+		Item->DropItem();
+	}
+	InventoryItemList.Empty();
 }

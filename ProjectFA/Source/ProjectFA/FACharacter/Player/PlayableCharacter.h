@@ -103,6 +103,8 @@ protected:
 	
 	virtual void BeginPlay() override;
 
+	virtual void CharacterDead() override;
+	virtual void AfterDeath() override;
 	virtual bool CharacterCannotMove() override;
 	virtual bool CharacterCannotAttack() override;
 

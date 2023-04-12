@@ -41,15 +41,11 @@ void ALootingBox::BeginPlay()
 
 	BoxArea->OnComponentBeginOverlap.AddDynamic(this, &ALootingBox::LootAreaBeginOverlap);
 	BoxArea->OnComponentEndOverlap.AddDynamic(this, &ALootingBox::LootAreaEndOverlap);
+}
 
-	if(ItemToTestClass == nullptr)	return;
-	TArray<APickupItem*> TestItem;
-	for(int i = 0; i < 3; i++)
-	{
-		auto Item = GetWorld()->SpawnActor<APickupItem>(ItemToTestClass);
-		TestItem.Add(Item);
-	}
-	LootingItemComponent->InitializeItemList(TestItem);
+void ALootingBox::SetSpawnItemList(const TArray<APickupItem*>& ItemList)
+{
+	LootingItemComponent->InitializeItemList(ItemList);
 }
 
 void ALootingBox::FindItem_Implementation(const float SearchTime)
@@ -73,10 +69,7 @@ void ALootingBox::OpenLooting()
 {
 	ProgressWidgetComponent->SetVisibility(false);
 	if(DissolveMaterialInstance == nullptr)	return;
-
-	DynamicDissolveMaterialInstance = UMaterialInstanceDynamic::Create(DissolveMaterialInstance, this);
-	BoxMesh->SetMaterial(0, DynamicDissolveMaterialInstance);
-	DynamicDissolveMaterialInstance->SetScalarParameterValue(TEXT("Disslove"), -0.55f);
+	
 	StartDissolve();
 }
 
@@ -108,6 +101,11 @@ void ALootingBox::UpdateMaterialDissolve(float DissolveTime)
 
 void ALootingBox::StartDissolve()
 {
+	if(DissolveMaterialInstance == nullptr)	return;
+	DynamicDissolveMaterialInstance = UMaterialInstanceDynamic::Create(DissolveMaterialInstance, this);
+	BoxMesh->SetMaterial(0, DynamicDissolveMaterialInstance);
+	DynamicDissolveMaterialInstance->SetScalarParameterValue(TEXT("Disslove"), -0.55f);
+	
 	if(BoxMesh == nullptr || DissolveCurve == nullptr || DissolveTimeline == nullptr)	return;
 
 	BoxMesh->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
@@ -125,4 +123,9 @@ void ALootingBox::StartDissolve()
 void ALootingBox::AfterDissolve()
 {
 	Destroy();
+}
+
+const int32 ALootingBox::GetSpawnIndex()
+{
+	return SpawnIndex;
 }

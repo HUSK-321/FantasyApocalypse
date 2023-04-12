@@ -10,12 +10,14 @@
 #include "Kismet/KismetMathLibrary.h"
 #include "Perception/PawnSensingComponent.h"
 #include "ProjectFA/FACharacter/Player/PlayableCharacter.h"
+#include "ProjectFA/Interactable/Looting/LootingItemComponent.h"
 
 AEnemy::AEnemy()
 	:
 	PawnSensingComponent(CreateDefaultSubobject<UPawnSensingComponent>(TEXT("PawnSensingComponent"))),
 	AttackSphere(CreateDefaultSubobject<USphereComponent>(TEXT("AttackSphere"))),
-	AttackCollision(CreateDefaultSubobject<UBoxComponent>(TEXT("AttackCollision")))
+	AttackCollision(CreateDefaultSubobject<UBoxComponent>(TEXT("AttackCollision"))),
+	LootingItemComponent(CreateDefaultSubobject<ULootingItemComponent>(TEXT("Looting Item Component")))
 {
 	PrimaryActorTick.bCanEverTick = false;
 
@@ -99,7 +101,7 @@ void AEnemy::SetAttackCollision(bool bEnabled)
 }
 
 void AEnemy::AttackCollisionOnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
-	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+                                           UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	if(OtherActor == this || DamageTypeClass == nullptr)	return;
 	const auto AttackingInstigator = GetController();
@@ -110,6 +112,16 @@ void AEnemy::AttackCollisionOnOverlapBegin(UPrimitiveComponent* OverlappedCompon
 
 void AEnemy::AfterDeath()
 {
-	// TODO : change to mesh or rooting inventory
-	GetMesh()->bPauseAnims = true;
+	LootingItemComponent->GenerateItemsToWorld();
+	StartDeadDissolve();
+}
+
+void AEnemy::SetSpawnItemList(const TArray<APickupItem*>& ItemList)
+{
+	LootingItemComponent->InitializeItemList(ItemList);
+}
+
+const int32 AEnemy::GetSpawnIndex()
+{
+	return SpawnIndex;
 }

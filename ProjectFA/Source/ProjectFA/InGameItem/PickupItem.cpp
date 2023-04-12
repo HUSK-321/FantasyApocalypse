@@ -95,7 +95,7 @@ void APickupItem::SetItemState(const EItemState State)
 	}	
 }
 
-void APickupItem::DropItem()
+void APickupItem::DropItem(bool bFromPlayerInventory)
 {
 	if(GetOwner() == nullptr)	return;
 	
@@ -110,7 +110,8 @@ void APickupItem::DropItem()
 	PickupItemMesh->AddImpulse(ImpulseDirection * 1000.f);
 	
 	GetWorldTimerManager().SetTimer(DropTimer, this, &APickupItem::DropEnd, 2.0f);
-	ItemDroppedEvent.Broadcast(this);
+
+	(bFromPlayerInventory) ? ItemDroppedEvent.Broadcast(this) : ItemDroppedEvent.Clear();
 }
 
 void APickupItem::PickupAreaBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,

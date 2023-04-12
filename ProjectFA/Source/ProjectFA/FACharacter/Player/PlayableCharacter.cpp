@@ -60,6 +60,14 @@ void APlayableCharacter::BeginPlay()
 	PlayerStaminaChangedEvent.Broadcast(CurrentStamina, MaxStamina);
 }
 
+void APlayableCharacter::CharacterDead()
+{
+	// TODO : call AfterDeath in anim montage, not here
+	Super::CharacterDead();
+
+	AfterDeath();
+}
+
 void APlayableCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
@@ -111,13 +119,12 @@ void APlayableCharacter::CameraMove(const FInputActionValue& Value)
 
 void APlayableCharacter::Jump()
 {
-	if(CurrentStamina < JumpStaminaConsume || CharacterCannotMove())	return;
+	if(CharacterCannotMove())	return;
 	if(bIsCrouched)
 	{
 		UnCrouch();
 		return;
 	}
-	CurrentStamina = FMath::Clamp(CurrentStamina - JumpStaminaConsume, 0.f, MaxStamina);
 	Super::Jump();
 }
 
@@ -182,6 +189,10 @@ void APlayableCharacter::ReceiveDamage(AActor* DamagedActor, float Damage, const
 {
 	CurrentHealth = FMath::Clamp(CurrentHealth - Damage, 0.f, MaxHealth);
 	PlayerHealthChangedEvent.Broadcast(CurrentHealth, MaxHealth);
+	if(CurrentHealth <= 0.f)
+	{
+		CharacterDead();
+	}
 }
 
 void APlayableCharacter::SetNearbyItem(AActor* PickupItem)
@@ -262,6 +273,12 @@ void APlayableCharacter::SetInteractMappingContext(bool bIsActive)
 	}
 }
 
+void APlayableCharacter::AfterDeath()
+{
+	InventoryComponent->GenerateItemsToWorld();
+	StartDeadDissolve();
+}
+
 bool APlayableCharacter::CharacterCannotMove()
 {
 	if(CombatComponent == nullptr)	return  false;
@@ -270,5 +287,5 @@ bool APlayableCharacter::CharacterCannotMove()
 
 bool APlayableCharacter::CharacterCannotAttack()
 {
-	return bIsCrouched || bPressedJump; // TODO : resolve Jump
+	return bIsCrouched || GetCharacterMovement()->IsFalling();
 }
