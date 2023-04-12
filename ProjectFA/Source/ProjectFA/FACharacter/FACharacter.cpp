@@ -76,11 +76,10 @@ bool AFACharacter::CharacterCannotAttack()
 
 void AFACharacter::StartDeadDissolve()
 {
-	if(GetMesh() == nullptr || DissolveCurve == nullptr || DissolveTimeline == nullptr)	return;
+	if(GetMesh() == nullptr || DissolveCurve == nullptr || DissolveTimeline == nullptr || DissolveMaterialInstance == nullptr)	return;
 	
 	GetMesh()->bPauseAnims = true;
 	GetMesh()->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
-
 	
 	DynamicDissolveMaterialInstance = UMaterialInstanceDynamic::Create(DissolveMaterialInstance, this);
 	const int32 MaterialCount = GetMesh()->GetNumOverrideMaterials();
