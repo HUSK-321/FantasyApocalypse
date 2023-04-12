@@ -119,13 +119,12 @@ void APlayableCharacter::CameraMove(const FInputActionValue& Value)
 
 void APlayableCharacter::Jump()
 {
-	if(CurrentStamina < JumpStaminaConsume || CharacterCannotMove())	return;
+	if(CharacterCannotMove())	return;
 	if(bIsCrouched)
 	{
 		UnCrouch();
 		return;
 	}
-	CurrentStamina = FMath::Clamp(CurrentStamina - JumpStaminaConsume, 0.f, MaxStamina);
 	Super::Jump();
 }
 
@@ -288,5 +287,5 @@ bool APlayableCharacter::CharacterCannotMove()
 
 bool APlayableCharacter::CharacterCannotAttack()
 {
-	return bIsCrouched || bPressedJump; // TODO : resolve Jump
+	return bIsCrouched || GetCharacterMovement()->IsFalling();
 }
