@@ -8,7 +8,7 @@
 
 UPlayableCharacterCombatComponent::UPlayableCharacterCombatComponent()
 	:
-	bNowAttacking(false), bShouldStopAttack(false)
+	bNowAttacking(false), bDoNextAttack(false)
 {
 	PrimaryComponentTick.bCanEverTick = false;
 }
@@ -49,7 +49,12 @@ void UPlayableCharacterCombatComponent::EquipItemToCharacter(APickupItem* ItemTo
 
 void UPlayableCharacterCombatComponent::Attack()
 {
-	if(EquippedItem == nullptr || bNowAttacking)	return;
+	if(EquippedItem == nullptr || Character == nullptr)	return;
+	if(bNowAttacking)
+	{
+		bDoNextAttack = true;
+		return;
+	}
 	if(auto const WeaponInterface = Cast<IEquipable>(EquippedItem))
 	{
 		bNowAttacking = true;
@@ -57,22 +62,20 @@ void UPlayableCharacterCombatComponent::Attack()
 	}
 }
 
-void UPlayableCharacterCombatComponent::ShouldStopAttack()
-{
-	bShouldStopAttack = true;
-}
-
 void UPlayableCharacterCombatComponent::CheckShouldStopAttack()
 {
-	if(bShouldStopAttack == false) return;
-
+	if(bDoNextAttack || Character == nullptr)
+	{
+		bDoNextAttack = false;
+		return;
+	}
 	bNowAttacking = false;
-	bShouldStopAttack = false;
 	Character->StopNormalAttackMontage();
 }
 
 void UPlayableCharacterCombatComponent::SetWeaponAttackCollision(bool bEnabled)
 {
+	bDoNextAttack = false;
 	if(EquippedItem == nullptr)	return;
 	if(auto const WeaponInterface = Cast<IEquipable>(EquippedItem))
 	{
