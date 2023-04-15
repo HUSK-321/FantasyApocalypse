@@ -114,5 +114,5 @@ void UInventoryComponent::ScrollNearbyItemList(int32 AddAmount)
 	NearbyItemIndex = (NearbyItemList.Num() <= 1) ?
 						0 :
 						FMath::Clamp(NearbyItemIndex, 0, NearbyItemList.Num() - 1);
-	NearbyListScrollChangedEvent.Broadcast(AddAmount);
+	NearbyListScrollChangedEvent.Broadcast(NearbyItemIndex);
 }
