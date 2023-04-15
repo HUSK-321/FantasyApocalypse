@@ -10,7 +10,8 @@
 
 UInventoryComponent::UInventoryComponent()
 	:
-	InventoryCapacity(15), InventoryItemTotalWeight(0.f)
+	InventoryCapacity(15), InventoryItemTotalWeight(0.f),
+	NearbyItemIndex(0)
 {
 	PrimaryComponentTick.bCanEverTick = false;
 
@@ -30,7 +31,8 @@ void UInventoryComponent::BeginPlay()
 void UInventoryComponent::SetNearbyItemToInventory()
 {
 	if(NearbyItemList.IsEmpty() || InventoryItemList.Num() >= InventoryCapacity)	return;
-	APickupItem* ItemToGetIn = NearbyItemList[0];
+	ScrollNearbyItemList(0);
+	APickupItem* ItemToGetIn = NearbyItemList[NearbyItemIndex];
 	AddItemToInventory(ItemToGetIn);
 }
 
@@ -78,6 +80,7 @@ void UInventoryComponent::AddNearbyItem(AActor* Item)
 	if(PickupItemActor == nullptr)	return;
 	NearbyItemList.Add(PickupItemActor);
 	NearbyItemAddEvent.Broadcast(PickupItemActor);
+	ScrollNearbyItemList(0);
 }
 
 void UInventoryComponent::DeleteNearbyItem(AActor* Item)
@@ -86,6 +89,7 @@ void UInventoryComponent::DeleteNearbyItem(AActor* Item)
 	if(PickupItemActor == nullptr)	return;
 	NearbyItemList.Remove(PickupItemActor);
 	NearbyItemDeleteEvent.Broadcast(PickupItemActor);
+	ScrollNearbyItemList(0);
 }
 
 void UInventoryComponent::EquipItem(APickupItem* Item)
@@ -101,4 +105,14 @@ void UInventoryComponent::GenerateItemsToWorld()
 		Item->DropItem();
 	}
 	InventoryItemList.Empty();
+}
+
+void UInventoryComponent::ScrollNearbyItemList(int32 AddAmount)
+{
+	if(NearbyItemList.IsEmpty())	return;
+	NearbyItemIndex += AddAmount;
+	NearbyItemIndex = (NearbyItemList.Num() <= 1) ?
+						0 :
+						FMath::Clamp(NearbyItemIndex, 0, NearbyItemList.Num() - 1);
+	NearbyListScrollChangedEvent.Broadcast(AddAmount);
 }

@@ -12,6 +12,7 @@ class UPlayableCharacterCombatComponent;
 class APickupItem;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOneItemChangedEvent, UObject*, Item);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FNearbyListScrollChangedEvent, int32, Index);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FInventoryChangedEvent, const TArray<APickupItem*>, ItemList);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FInventoryWeightChangedEvent, const float&, InventoryWeight);
 
@@ -23,6 +24,7 @@ class PROJECTFA_API UInventoryComponent : public UActorComponent, public ILootab
 public:
 	FOneItemChangedEvent NearbyItemAddEvent;
 	FOneItemChangedEvent NearbyItemDeleteEvent;
+	FNearbyListScrollChangedEvent NearbyListScrollChangedEvent;
 	FInventoryChangedEvent InventoryChangedEvent;
 	FInventoryWeightChangedEvent InventoryWeightChangedEvent;
 
@@ -38,8 +40,12 @@ private:
 	UPROPERTY(VisibleAnywhere)
 	TArray<APickupItem*> InventoryItemList;
 
+	int32 NearbyItemIndex;
+
 public:
 	UInventoryComponent();
+	
+	void ScrollNearbyItemList(int32 AddAmount);
 	UFUNCTION()
 	void AddNearbyItem(AActor* Item);
 	UFUNCTION()

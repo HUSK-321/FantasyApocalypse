@@ -82,6 +82,7 @@ void APlayableCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 		EnhancedInputComponent->BindAction(CrouchAction, ETriggerEvent::Started, this, &APlayableCharacter::CrouchButtonPressed);
 		EnhancedInputComponent->BindAction(SprintAction, ETriggerEvent::Started, this, &APlayableCharacter::SprintButtonPressed);
 		EnhancedInputComponent->BindAction(SprintAction, ETriggerEvent::Completed, this, &APlayableCharacter::SprintButtonReleased);
+		EnhancedInputComponent->BindAction(ScrollAction, ETriggerEvent::Triggered, this, &APlayableCharacter::SetNearbyItemByScroll);
 
 		EnhancedInputComponent->BindAction(InteractWithObject, ETriggerEvent::Triggered, this, &APlayableCharacter::InteractWithActors);
 	}
@@ -242,6 +243,15 @@ void APlayableCharacter::AttackButtonPressed()
 {
 	if(CombatComponent == nullptr || CharacterCannotAttack())	return;
 	CombatComponent->Attack();
+}
+
+void APlayableCharacter::SetNearbyItemByScroll(const FInputActionValue& Value)
+{
+	if(GetController() == nullptr || InventoryComponent == nullptr)	return;
+	
+	auto ScrollAmount = Value.Get<float>();
+	ScrollAmount = FMath::Clamp(ScrollAmount, -1.0f, 1.0f);
+	InventoryComponent->ScrollNearbyItemList(ScrollAmount);
 }
 
 void APlayableCharacter::InventoryButtonPressed()
