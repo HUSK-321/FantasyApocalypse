@@ -19,13 +19,8 @@ void UPickupItemList::SetScrollIndex(int32 ScrollIndex)
 		}
 	}
 	const auto IndexItem = NearbyItemList->GetItemAt(ScrollIndex);
-	if(IndexItem)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("count"));
-	}
 	if(const auto ActiveSlot = Cast<UPickupItemListElement>(NearbyItemList->GetEntryWidgetFromItem(IndexItem)))
 	{
-		UE_LOG(LogTemp, Warning, TEXT("active"));
 		ActiveSlot->SetCursorActive();
 	}
 }
