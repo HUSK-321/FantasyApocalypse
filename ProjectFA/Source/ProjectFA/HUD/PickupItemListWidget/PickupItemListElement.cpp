@@ -2,6 +2,7 @@
 
 
 #include "PickupItemListElement.h"
+#include "Components/Image.h"
 #include "Components/TextBlock.h"
 #include "ProjectFA/InGameItem/PickupItem.h"
 
@@ -12,4 +13,15 @@ void UPickupItemListElement::NativeOnListItemObjectSet(UObject* ListItemObject)
 	if(Item == nullptr)	return;
 
 	ItemName->SetText(FText::FromString(Item->GetItemName()));
+	SetCursorDeactive();
+}
+
+void UPickupItemListElement::SetCursorActive()
+{
+	CursorImage->SetVisibility(ESlateVisibility::Visible);
+}
+
+void UPickupItemListElement::SetCursorDeactive()
+{
+	CursorImage->SetVisibility(ESlateVisibility::Hidden);
 }

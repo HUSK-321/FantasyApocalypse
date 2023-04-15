@@ -71,7 +71,7 @@ void APlayableController::DeleteNearbyItem(UObject* Item)
 void APlayableController::ScrollNearbyItemList(int32 ScrollIndex)
 {
 	if(NearbyItemListNotValid())	return;
-	ProjectFAHUD->PickupItemList->NearbyItemList->ScrollIndexIntoView(ScrollIndex);
+	ProjectFAHUD->PickupItemList->SetScrollIndex(ScrollIndex);
 }
 
 void APlayableController::AddInventoryItem(const TArray<APickupItem*> ItemList)

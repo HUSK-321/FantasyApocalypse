@@ -46,7 +46,7 @@ void UInventoryComponent::AddItemToInventory(APickupItem* ItemToIn)
 	InventoryChangedEvent.Broadcast(InventoryItemList);
 	AddInventoryWeight(ItemToIn->GetItemWeight());
 		
-	if(auto EquipableItem = Cast<IEquipable>(ItemToIn))
+	if(const auto EquipableItem = Cast<IEquipable>(ItemToIn))
 	{
 		FEquipItemEvent EquipItemEvent;
 		EquipItemEvent.AddDynamic(this, &UInventoryComponent::EquipItem);
