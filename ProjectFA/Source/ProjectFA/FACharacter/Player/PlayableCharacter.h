@@ -61,6 +61,8 @@ private:
 	TObjectPtr<UInputAction> CrouchAction;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Player Input", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UInputAction> SprintAction;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Player Input", meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UInputAction> ScrollAction;
 
 	UPROPERTY(EditAnywhere, Category = "Player Property")
 	float MaxWalkSpeed;
@@ -119,7 +121,7 @@ private:
 	void InteractWithNearbyItem();
 	void InteractWithActors(const FInputActionValue& Value);
 	void AttackButtonPressed();
-	void AttackButtonReleased();
+	void SetNearbyItemByScroll(const FInputActionValue& Value);
 	void InventoryButtonPressed();
 	virtual void ReceiveDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType, AController* InstigatorController, AActor* DamageCauser) override;
 	void SetSprinting(bool bSprinting);

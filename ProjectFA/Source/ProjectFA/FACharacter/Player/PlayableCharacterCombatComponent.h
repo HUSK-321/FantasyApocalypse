@@ -30,7 +30,7 @@ private:
 	TObjectPtr<APickupItem> DefaultPunchWeapon;
 	
 	bool bNowAttacking;
-	bool bShouldStopAttack;
+	bool bDoNextAttack;
 
 public:
 
@@ -38,7 +38,6 @@ public:
 
 	void EquipItemToCharacter(APickupItem* ItemToEquip);
 	void Attack();
-	void ShouldStopAttack();
 	UFUNCTION(BlueprintCallable)
 	void SetWeaponAttackCollision(bool bEnabled);
 	UFUNCTION(BlueprintCallable)

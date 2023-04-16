@@ -20,14 +20,15 @@ class PROJECTFA_API UPickupItemListElement : public UUserWidget, public IUserObj
 	GENERATED_BODY()
 
 public:
-
-	virtual void NativeOnListItemObjectSet(UObject* ListItemObject) override;
-
-public:
-
 	UPROPERTY(meta=(BindWidget))
 	TObjectPtr<UImage> ItemImage;
 	UPROPERTY(meta=(BindWidget))
 	TObjectPtr<UTextBlock> ItemName;
-	
+	UPROPERTY(meta=(BindWidget))
+	TObjectPtr<UImage> CursorImage;
+
+public:
+	virtual void NativeOnListItemObjectSet(UObject* ListItemObject) override;
+	void SetCursorActive();
+	void SetCursorDeactive();
 };

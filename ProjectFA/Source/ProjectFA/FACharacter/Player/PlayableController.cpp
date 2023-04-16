@@ -31,6 +31,7 @@ void APlayableController::SetInventoryEvent(UInventoryComponent* InventoryCompon
 	InventoryComponent->NearbyItemDeleteEvent.AddDynamic(this, &APlayableController::DeleteNearbyItem);
 	InventoryComponent->InventoryChangedEvent.AddDynamic(this, &APlayableController::AddInventoryItem);
 	InventoryComponent->InventoryWeightChangedEvent.AddDynamic(this, &APlayableController::SetInventoryWeight);
+	InventoryComponent->NearbyListScrollChangedEvent.AddDynamic(this, &APlayableController::ScrollNearbyItemList);
 }
 
 void APlayableController::SetHealthHUD(const float& CurrentHealth, const float& MaxHealth)
@@ -65,6 +66,12 @@ void APlayableController::DeleteNearbyItem(UObject* Item)
 	{
 		ProjectFAHUD->PickupItemList->SetVisibility(ESlateVisibility::Hidden);
 	}
+}
+
+void APlayableController::ScrollNearbyItemList(int32 ScrollIndex)
+{
+	if(NearbyItemListNotValid())	return;
+	ProjectFAHUD->PickupItemList->SetScrollIndex(ScrollIndex);
 }
 
 void APlayableController::AddInventoryItem(const TArray<APickupItem*> ItemList)

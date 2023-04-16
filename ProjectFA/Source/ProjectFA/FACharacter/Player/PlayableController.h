@@ -31,6 +31,8 @@ public:
 	void AddNearbyItem(UObject* Item);
 	UFUNCTION()
 	void DeleteNearbyItem(UObject* Item);
+	UFUNCTION()
+	void ScrollNearbyItemList(int32 ScrollIndex);
 
 	UFUNCTION()
 	void SetHealthHUD(const float& CurrentHealth, const float& MaxHealth);

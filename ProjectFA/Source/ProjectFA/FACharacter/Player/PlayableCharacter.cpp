@@ -79,10 +79,10 @@ void APlayableCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Started, this, &APlayableCharacter::Jump);
 		EnhancedInputComponent->BindAction(InteractNearbyItem, ETriggerEvent::Started, this, &APlayableCharacter::InteractWithNearbyItem);
 		EnhancedInputComponent->BindAction(AttackAction, ETriggerEvent::Started, this, &APlayableCharacter::AttackButtonPressed);
-		EnhancedInputComponent->BindAction(AttackAction, ETriggerEvent::Completed, this, &APlayableCharacter::AttackButtonReleased);
 		EnhancedInputComponent->BindAction(CrouchAction, ETriggerEvent::Started, this, &APlayableCharacter::CrouchButtonPressed);
 		EnhancedInputComponent->BindAction(SprintAction, ETriggerEvent::Started, this, &APlayableCharacter::SprintButtonPressed);
 		EnhancedInputComponent->BindAction(SprintAction, ETriggerEvent::Completed, this, &APlayableCharacter::SprintButtonReleased);
+		EnhancedInputComponent->BindAction(ScrollAction, ETriggerEvent::Triggered, this, &APlayableCharacter::SetNearbyItemByScroll);
 
 		EnhancedInputComponent->BindAction(InteractWithObject, ETriggerEvent::Triggered, this, &APlayableCharacter::InteractWithActors);
 	}
@@ -245,10 +245,13 @@ void APlayableCharacter::AttackButtonPressed()
 	CombatComponent->Attack();
 }
 
-void APlayableCharacter::AttackButtonReleased()
+void APlayableCharacter::SetNearbyItemByScroll(const FInputActionValue& Value)
 {
-	if(CombatComponent == nullptr)	return;
-	CombatComponent->ShouldStopAttack();
+	if(GetController() == nullptr || InventoryComponent == nullptr)	return;
+	
+	auto ScrollAmount = Value.Get<float>();
+	ScrollAmount = FMath::Clamp(ScrollAmount, -1.0f, 1.0f);
+	InventoryComponent->ScrollNearbyItemList(ScrollAmount);
 }
 
 void APlayableCharacter::InventoryButtonPressed()

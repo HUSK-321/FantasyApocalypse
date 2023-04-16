@@ -11,6 +11,7 @@
  */
 
 class UListView;
+class UTextBlock;
 
 UCLASS()
 class PROJECTFA_API UPickupItemList : public UUserWidget
@@ -18,8 +19,9 @@ class PROJECTFA_API UPickupItemList : public UUserWidget
 	GENERATED_BODY()
 
 public:
-	
 	UPROPERTY(meta=(BindWidget))
 	TObjectPtr<UListView> NearbyItemList;
-	
+
+public:
+	void SetScrollIndex(int32 ScrollIndex);
 };
