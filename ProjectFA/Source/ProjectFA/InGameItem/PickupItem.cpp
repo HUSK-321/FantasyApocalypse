@@ -10,6 +10,8 @@ APickupItem::APickupItem()
 	PickupItemMesh(CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("PickupItemMeah"))),
 	PickupAreaSphere(CreateDefaultSubobject<USphereComponent>(TEXT("PickupAreaSphere")))
 {
+	ItemDataTablePath = TEXT("DataTable'/Game/DataTable/NormalItemDataTable.NormalItemDataTable'");
+	
 	PrimaryActorTick.bCanEverTick = false;
 
 	SetRootComponent(PickupItemMesh);
@@ -30,7 +32,8 @@ void APickupItem::OnConstruction(const FTransform& Transform)
 
 void APickupItem::SetItemPropertyFromDataTable()
 {
-	const FString ItemDataTablePath(TEXT("DataTable'/Game/DataTable/ItemDataTable.ItemDataTable'"));
+	if(ItemDataTablePath.IsEmpty())	return;
+	
 	const UDataTable* ItemDataTableObject = Cast<UDataTable>(StaticLoadObject(UDataTable::StaticClass(), nullptr, *ItemDataTablePath));
 	if(ItemDataTableObject == nullptr)	return;
 

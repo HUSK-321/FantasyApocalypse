@@ -73,6 +73,9 @@ protected:
 	EItemState ItemState;
 
 	FTimerHandle DropTimer;
+	
+	UPROPERTY(EditAnywhere)
+	FString ItemDataTablePath;
 
 private:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "DataTable", meta = (AllowPrivateAccess = "true"))

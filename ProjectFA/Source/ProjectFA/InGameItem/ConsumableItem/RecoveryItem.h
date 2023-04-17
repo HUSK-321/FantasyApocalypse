@@ -16,6 +16,7 @@ class PROJECTFA_API ARecoveryItem : public APickupItem, public IInventoryUsable
 	GENERATED_BODY()
 
 public:
+	ARecoveryItem();
 	virtual void InventoryAction_Implementation() override;
 	virtual void RemoveFromInventoryAction_Implementation() override;
 };

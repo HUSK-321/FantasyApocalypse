@@ -4,6 +4,11 @@
 #include "RecoveryItem.h"
 #include "Kismet/GameplayStatics.h"
 
+ARecoveryItem::ARecoveryItem()
+{
+	ItemDataTablePath = TEXT("DataTable'/Game/DataTable/RecoveryDataTable.RecoveryDataTable'");
+}
+
 void ARecoveryItem::InventoryAction_Implementation()
 {
 	if(GetOwner()->GetInstigatorController() == nullptr)	return;
