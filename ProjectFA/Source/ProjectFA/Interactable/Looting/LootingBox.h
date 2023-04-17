@@ -62,8 +62,6 @@ private:
 
 	UPROPERTY(EditAnywhere, Category = "Looting Property")
 	float MaxTimeToSearch;
-	UPROPERTY(VisibleAnywhere, Category = "Looting Property")
-	float TimeToSearch;
 
 private:
 	void OpenLooting();	

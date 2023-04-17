@@ -21,7 +21,8 @@ APlayableCharacter::APlayableCharacter()
 	MaxWalkSpeed(400.f), MaxSprintSpeed(700.f), MaxCrouchSpeed(300.f), bNowSprinting(false),
 	MaxStamina(100.f), CurrentStamina(100.f),
 	StaminaIncreaseFactor(10.f), StaminaDecreaseFactor(20.f), JumpStaminaConsume(20.f),
-	InventoryWeightFactor(0.f)
+	InventoryWeightFactor(0.f),
+	InteractingTime(0.f)
 {
 	PrimaryActorTick.bCanEverTick = true;
 
@@ -85,6 +86,7 @@ void APlayableCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 		EnhancedInputComponent->BindAction(ScrollAction, ETriggerEvent::Triggered, this, &APlayableCharacter::SetNearbyItemByScroll);
 
 		EnhancedInputComponent->BindAction(InteractWithObject, ETriggerEvent::Triggered, this, &APlayableCharacter::InteractWithActors);
+		EnhancedInputComponent->BindAction(InteractWithObject, ETriggerEvent::Completed, this, &APlayableCharacter::InteractWithActorsEnd);
 	}
 	PlayerInputComponent->BindAction("Inventory", IE_Pressed, this, &ThisClass::InventoryButtonPressed);
 }
@@ -214,6 +216,7 @@ UActorComponent* APlayableCharacter::GetCombatComponent() const
 
 void APlayableCharacter::SetInteractingActor(AActor* Actor)
 {
+	InteractingTime = 0.f;
 	InteractingActor = Actor;
 	if(InteractingActor == nullptr)
 	{
@@ -232,11 +235,16 @@ void APlayableCharacter::InteractWithNearbyItem()
 void APlayableCharacter::InteractWithActors(const FInputActionValue& Value)
 {
 	if(InteractingActor == nullptr)	return;
-
 	if(UKismetSystemLibrary::DoesImplementInterface(InteractingActor, ULootInteractable::StaticClass()))
 	{
-		ILootInteractable::Execute_FindItem(InteractingActor, GetWorld()->GetDeltaSeconds());
+		InteractingTime += GetWorld()->GetDeltaSeconds();
+		ILootInteractable::Execute_FindItem(InteractingActor, InteractingTime);
 	}
+}
+
+void APlayableCharacter::InteractWithActorsEnd()
+{
+	InteractingTime = 0.f;
 }
 
 void APlayableCharacter::AttackButtonPressed()

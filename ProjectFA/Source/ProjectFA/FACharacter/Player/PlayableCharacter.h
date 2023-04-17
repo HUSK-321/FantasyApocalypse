@@ -85,6 +85,7 @@ private:
 	
 	float InventoryWeightFactor;
 
+	float InteractingTime;
 	UPROPERTY()
 	TObjectPtr<AActor> InteractingActor;
 
@@ -120,6 +121,7 @@ private:
 	void SprintButtonReleased();
 	void InteractWithNearbyItem();
 	void InteractWithActors(const FInputActionValue& Value);
+	void InteractWithActorsEnd();
 	void AttackButtonPressed();
 	void SetNearbyItemByScroll(const FInputActionValue& Value);
 	void InventoryButtonPressed();
