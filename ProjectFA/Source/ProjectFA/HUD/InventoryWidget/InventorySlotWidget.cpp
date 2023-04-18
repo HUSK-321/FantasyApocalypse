@@ -6,14 +6,17 @@
 #include "ProjectFA/InGameItem/PickupItem.h"
 #include "ItemTooltipWidget.h"
 #include "InventorySlotActionWidget.h"
+#include "Components/Image.h"
 #include "Components/MultiLineEditableText.h"
 #include "Components/TextBlock.h"
 
 void UInventorySlotWidget::InitializeInventorySlot(APickupItem* Item)
 {
 	if(Item == nullptr)	return;
+	
 	SlotItem = Item;
 	ItemButton->OnClicked.Clear();
+	ItemImage->SetBrushFromTexture(Item->GetItemIcon());
 }
 
 void UInventorySlotWidget::NativeConstruct()
@@ -49,6 +52,7 @@ void UInventorySlotWidget::SetToolTipWidget()
 	{
 		const auto ItemName = FText::FromString(Item->GetItemName());
 		const auto ItemDescriptionText = FText::FromString(Item->GetItemDescription());
+		InventoryToolTipWidget->ItemImage->SetBrushFromTexture(Item->GetItemIcon());
 		InventoryToolTipWidget->ItemName->SetText(ItemName);
 		InventoryToolTipWidget->ItemDescription->SetText(ItemDescriptionText);
 	}

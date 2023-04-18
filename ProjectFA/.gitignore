@@ -80,3 +80,5 @@ Content/Assets/InfinityBladeWeapons/*
 !Content/Assets/InfinityBladeWeapons/.gitkeep
 Content/Assets/StylizedVillage/*
 !Content/Assets/StylizedVillage/.gitkeep
+Content/Assets/Animation/Sword_Animations/*
+!Content/Assets/Animation/Sword_Animations/.gitkeep

@@ -9,6 +9,8 @@ AWeapon::AWeapon()
 	:
 	AttackCollision(CreateDefaultSubobject<UBoxComponent>(TEXT("AttackCollision")))
 {
+	ItemDataTablePath = TEXT("DataTable'/Game/DataTable/WeaponDataTable.WeaponDataTable'");
+	
 	AttackCollision->SetupAttachment(GetRootComponent());
 	AttackCollision->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
 }

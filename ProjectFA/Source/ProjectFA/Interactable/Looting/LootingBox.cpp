@@ -17,7 +17,7 @@ ALootingBox::ALootingBox()
 	LootingItemComponent(CreateDefaultSubobject<ULootingItemComponent>(TEXT("Looting Component"))),
 	ProgressWidgetComponent(CreateDefaultSubobject<UWidgetComponent>(TEXT("Progress Widget"))),
 	DissolveTimeline(CreateDefaultSubobject<UTimelineComponent>(TEXT("Dissolve Timeline Component"))),
-	MaxTimeToSearch(2.f), TimeToSearch(0.f)
+	MaxTimeToSearch(2.f)
 {
 	PrimaryActorTick.bCanEverTick = false;
 
@@ -50,15 +50,14 @@ void ALootingBox::SetSpawnItemList(const TArray<APickupItem*>& ItemList)
 
 void ALootingBox::FindItem_Implementation(const float SearchTime)
 {
-	TimeToSearch += SearchTime;
 	ProgressWidget = ProgressWidget == nullptr ?
 					 Cast<UItemLootingProgressWidget>(ProgressWidgetComponent->GetUserWidgetObject()) :
 					 ProgressWidget;
 	if(ProgressWidget)
 	{
-		ProgressWidget->SetProgressPercent(TimeToSearch / MaxTimeToSearch);
+		ProgressWidget->SetProgressPercent(SearchTime / MaxTimeToSearch);
 	}
-	if(TimeToSearch >= MaxTimeToSearch)
+	if(SearchTime >= MaxTimeToSearch)
 	{
 		LootingItemComponent->GenerateItemsToWorld();
 		OpenLooting();

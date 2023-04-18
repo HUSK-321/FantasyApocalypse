@@ -10,6 +10,8 @@ APickupItem::APickupItem()
 	PickupItemMesh(CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("PickupItemMeah"))),
 	PickupAreaSphere(CreateDefaultSubobject<USphereComponent>(TEXT("PickupAreaSphere")))
 {
+	ItemDataTablePath = TEXT("DataTable'/Game/DataTable/NormalItemDataTable.NormalItemDataTable'");
+	
 	PrimaryActorTick.bCanEverTick = false;
 
 	SetRootComponent(PickupItemMesh);
@@ -19,6 +21,36 @@ APickupItem::APickupItem()
 	PickupAreaSphere->SetupAttachment(GetRootComponent());
 	PickupAreaSphere->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECollisionResponse::ECR_Ignore);
 	PickupAreaSphere->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Overlap);
+}
+
+void APickupItem::OnConstruction(const FTransform& Transform)
+{
+	Super::OnConstruction(Transform);
+
+	SetItemPropertyFromDataTable();
+}
+
+void APickupItem::SetItemPropertyFromDataTable()
+{
+	if(ItemDataTablePath.IsEmpty())	return;
+	
+	const UDataTable* ItemDataTableObject = Cast<UDataTable>(StaticLoadObject(UDataTable::StaticClass(), nullptr, *ItemDataTablePath));
+	if(ItemDataTableObject == nullptr)	return;
+
+	const auto ItemDataTableRowNames = ItemDataTableObject->GetRowNames();
+	const int32 DataCount = ItemDataTableRowNames.Num();
+	if(DataCount == 0 || DataCount <= ItemDataIndex || ItemDataIndex < 0)	return;
+	
+	const FName ItemNameInRow = ItemDataTableObject->GetRowNames()[ItemDataIndex];
+	FItemDataTable* ItemRow = ItemDataTableObject->FindRow<FItemDataTable>(ItemNameInRow, TEXT(""));
+	if(ItemRow == nullptr)	return;
+
+	ItemName = ItemRow->Name;
+	ItemDescription = ItemRow->Description;
+	ItemIcon = ItemRow->Icon;
+	PickupItemMesh->SetSkeletalMesh(ItemRow->Mesh);
+	ItemPowerAmount = ItemRow->PowerAmount;
+	ItemWeight = ItemRow->Weight;
 }
 
 void APickupItem::BeginPlay()
