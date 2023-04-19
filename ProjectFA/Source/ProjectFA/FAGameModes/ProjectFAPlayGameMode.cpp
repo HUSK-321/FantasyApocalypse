@@ -55,7 +55,7 @@ TArray<APickupItem*> AProjectFAPlayGameMode::GetRandomItemList(IItemSpawnable* S
 	for(const auto SpawnInfo : SpawnInfoList)
 	{
 		const auto AmountToSpawn = FMath::RandRange(SpawnInfo.SpawnAmountMin, SpawnInfo.SpawnAmountMax);
-		for(int SpawnCount = 0; SpawnCount < AmountToSpawn; SpawnCount++)
+		for(int32 SpawnCount = 0; SpawnCount < AmountToSpawn; SpawnCount++)
 		{
 			const auto Item = ItemSpawnPools[SpawnInfo.CategoryIndex]->GetItemFromPool();
 			Item->SetItemPropertyFromDataAsset(GetRandomItemData(SpawnInfo.CategoryIndex));
