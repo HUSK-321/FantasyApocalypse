@@ -15,6 +15,8 @@ class APlayableCharacter;
 class APlayableController;
 class APickupItem;
 class UItemSpawnPool;
+class UDataTable;
+class UItemDataAsset;
 
 UCLASS()
 class PROJECTFA_API AProjectFAPlayGameMode : public AGameMode
@@ -26,6 +28,8 @@ private:
 	TArray<TSubclassOf<APickupItem>> ItemTable;
 	UPROPERTY(EditAnywhere)
 	TArray<UItemSpawnPool*> ItemSpawnPools;
+	UPROPERTY(EditAnywhere)
+	TArray<TObjectPtr<UDataTable>> ItemDataTables;
 	
 public:
 	void PlayerDead(APlayableCharacter* VictimCharacter, APlayableController* VictimController, APlayableController* InstigatorController);
@@ -36,4 +40,5 @@ protected:
 
 private:
 	TArray<APickupItem*> GetRandomItemList(IItemSpawnable* Spawner);
+	UItemDataAsset* GetRandomItemData(int32 CategoryIndex);
 };

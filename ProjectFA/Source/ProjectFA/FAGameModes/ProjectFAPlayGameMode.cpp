@@ -56,8 +56,20 @@ TArray<APickupItem*> AProjectFAPlayGameMode::GetRandomItemList(IItemSpawnable* S
 		for(int SpawnCount = 0; SpawnCount < AmountToSpawn; SpawnCount++)
 		{
 			const auto Item = ItemSpawnPools[SpawnInfo.CategoryIndex]->GetItemFromPool();
+			Item->SetItemPropertyFromDataAsset(GetRandomItemData(SpawnInfo.CategoryIndex));
 			ItemList.Emplace(Item);
 		}
 	}
 	return ItemList;
+}
+
+UItemDataAsset* AProjectFAPlayGameMode::GetRandomItemData(int32 CategoryIndex)
+{
+	const int32 DataCount = ItemDataTables[CategoryIndex]->GetRowNames().Num();
+	const int32 ItemIndex = FMath::RandRange(0, DataCount - 1);
+	const FName ItemNameInRow = ItemDataTables[CategoryIndex]->GetRowNames()[ItemIndex];
+	const FItemDataTable* ItemRow = ItemDataTables[CategoryIndex]->FindRow<FItemDataTable>(ItemNameInRow, TEXT(""));
+	if(ItemRow == nullptr)	return nullptr;
+
+	return ItemRow->ItemDataAsset;	
 }

@@ -27,9 +27,9 @@ struct FSpawnerInitializeInfo
 	int32 CategoryIndex;
 	// TODO : 이후 함수처럼 만드는 방법 생각해보기
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	int32 SpawnAmountMax;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	int32 SpawnAmountMin;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int32 SpawnAmountMax;
 };
 
 class PROJECTFA_API IItemSpawnable

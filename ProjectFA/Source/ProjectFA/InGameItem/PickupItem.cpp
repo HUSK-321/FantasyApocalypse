@@ -2,6 +2,7 @@
 
 
 #include "PickupItem.h"
+#include "ItemDataAsset.h"
 #include "Components/SphereComponent.h"
 #include "ProjectFA/FACharacter/PickupableCharacter.h"
 
@@ -10,8 +11,6 @@ APickupItem::APickupItem()
 	PickupItemMesh(CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("PickupItemMeah"))),
 	PickupAreaSphere(CreateDefaultSubobject<USphereComponent>(TEXT("PickupAreaSphere")))
 {
-	ItemDataTablePath = TEXT("DataTable'/Game/DataTable/NormalItemDataTable.NormalItemDataTable'");
-	
 	PrimaryActorTick.bCanEverTick = false;
 
 	SetRootComponent(PickupItemMesh);
@@ -23,34 +22,16 @@ APickupItem::APickupItem()
 	PickupAreaSphere->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Overlap);
 }
 
-void APickupItem::OnConstruction(const FTransform& Transform)
+void APickupItem::SetItemPropertyFromDataAsset(const UItemDataAsset* DataAsset)
 {
-	Super::OnConstruction(Transform);
+	if(DataAsset == nullptr)	return;
 
-	SetItemPropertyFromDataTable();
-}
-
-void APickupItem::SetItemPropertyFromDataTable()
-{
-	if(ItemDataTablePath.IsEmpty())	return;
-	
-	const UDataTable* ItemDataTableObject = Cast<UDataTable>(StaticLoadObject(UDataTable::StaticClass(), nullptr, *ItemDataTablePath));
-	if(ItemDataTableObject == nullptr)	return;
-
-	const auto ItemDataTableRowNames = ItemDataTableObject->GetRowNames();
-	const int32 DataCount = ItemDataTableRowNames.Num();
-	if(DataCount == 0 || DataCount <= ItemDataIndex || ItemDataIndex < 0)	return;
-	
-	const FName ItemNameInRow = ItemDataTableObject->GetRowNames()[ItemDataIndex];
-	FItemDataTable* ItemRow = ItemDataTableObject->FindRow<FItemDataTable>(ItemNameInRow, TEXT(""));
-	if(ItemRow == nullptr)	return;
-
-	ItemName = ItemRow->Name;
-	ItemDescription = ItemRow->Description;
-	ItemIcon = ItemRow->Icon;
-	PickupItemMesh->SetSkeletalMesh(ItemRow->Mesh);
-	ItemPowerAmount = ItemRow->PowerAmount;
-	ItemWeight = ItemRow->Weight;
+	ItemName = DataAsset->Name;
+	ItemDescription = DataAsset->Description;
+	ItemIcon = DataAsset->Icon;
+	PickupItemMesh->SetSkeletalMesh(DataAsset->Mesh);
+	ItemPowerAmount = DataAsset->PowerAmount;
+	ItemWeight = DataAsset->Weight;
 }
 
 void APickupItem::BeginPlay()
