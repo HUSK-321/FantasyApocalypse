@@ -22,10 +22,9 @@ void AProjectFAPlayGameMode::HandleMatchIsWaitingToStart()
 
 void AProjectFAPlayGameMode::InitializeSpawnPoolList()
 {
-	for(const auto ItemClass : ItemTable)
+	for(const auto PoolClass : ItemSpawnPoolClasses)
 	{
-		auto ItemPool = NewObject<UItemSpawnPool>(this);
-		ItemPool->SetPoolItemClass(ItemClass, GetWorld());
+		auto ItemPool = NewObject<UItemSpawnPool>(this, PoolClass);
 		ItemSpawnPools.Emplace(ItemPool);
 	}
 }
@@ -58,7 +57,7 @@ TArray<APickupItem*> AProjectFAPlayGameMode::GetRandomItemList(IItemSpawnable* S
 		const auto AmountToSpawn = FMath::RandRange(SpawnInfo.SpawnAmountMin, SpawnInfo.SpawnAmountMax);
 		for(int SpawnCount = 0; SpawnCount < AmountToSpawn; SpawnCount++)
 		{
-			const auto Item = ItemSpawnPools[SpawnInfo.CategoryIndex]->GetItemFromPool(GetWorld());
+			const auto Item = ItemSpawnPools[SpawnInfo.CategoryIndex]->GetItemFromPool();
 			Item->SetItemPropertyFromDataAsset(GetRandomItemData(SpawnInfo.CategoryIndex));
 			ItemList.Emplace(Item);
 		}

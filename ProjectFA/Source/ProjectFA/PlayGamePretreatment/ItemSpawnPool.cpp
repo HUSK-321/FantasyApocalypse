@@ -8,22 +8,22 @@ UItemSpawnPool::UItemSpawnPool()
 {
 }
 
-void UItemSpawnPool::SetPoolItemClass(const TSubclassOf<APickupItem> ItemClass, UWorld* World)
+void UItemSpawnPool::SetPoolItemClass(const TSubclassOf<APickupItem> ItemClass)
 {
 	if(ItemClass == nullptr)	return;
 	SpawnPoolItemClass = ItemClass;
 	int32 SpawnCount = 5;
 	while(SpawnCount--)
 	{
-		SupplyItemToPool(World);
+		SupplyItemToPool();
 	}
 }
 
-APickupItem* UItemSpawnPool::GetItemFromPool(UWorld* World)
+APickupItem* UItemSpawnPool::GetItemFromPool()
 {
 	if(ItemPool.IsEmpty())
 	{
-		SupplyItemToPool(World);
+		SupplyItemToPool();
 	}
 
 	APickupItem* ItemToReturn;
@@ -40,10 +40,10 @@ void UItemSpawnPool::ReturnItemToPool(APickupItem* Item)
 	ItemPool.Enqueue(Item);
 }
 
-void UItemSpawnPool::SupplyItemToPool(UWorld* World)
+void UItemSpawnPool::SupplyItemToPool()
 {
-	if(SpawnPoolItemClass == nullptr || World == nullptr)	return;
+	if(SpawnPoolItemClass == nullptr || GetWorld() == nullptr)	return;
 	
-	const auto CreatedItem = World->SpawnActor<APickupItem>(SpawnPoolItemClass);
+	const auto CreatedItem = GetWorld()->SpawnActor<APickupItem>(SpawnPoolItemClass);
 	ItemPool.Enqueue(CreatedItem);
 }

@@ -27,11 +27,11 @@ private:
 public:
 	UItemSpawnPool();
 
-	void SetPoolItemClass(const TSubclassOf<APickupItem> ItemClass, UWorld* World);
+	void SetPoolItemClass(const TSubclassOf<APickupItem> ItemClass);
 	
-	APickupItem* GetItemFromPool(UWorld* World);
+	APickupItem* GetItemFromPool();
 	void ReturnItemToPool(APickupItem* Item);
 
 private:
-	void SupplyItemToPool(UWorld* World);
+	void SupplyItemToPool();
 };

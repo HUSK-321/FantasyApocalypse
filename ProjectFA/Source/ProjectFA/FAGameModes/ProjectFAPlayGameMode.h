@@ -25,7 +25,7 @@ class PROJECTFA_API AProjectFAPlayGameMode : public AGameMode
 
 private:
 	UPROPERTY(EditAnywhere)
-	TArray<TSubclassOf<APickupItem>> ItemTable;
+	TArray<TSubclassOf<UItemSpawnPool>> ItemSpawnPoolClasses;
 	UPROPERTY(EditAnywhere)
 	TArray<UItemSpawnPool*> ItemSpawnPools;
 	UPROPERTY(EditAnywhere)
