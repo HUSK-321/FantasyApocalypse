@@ -6,7 +6,6 @@
 
 UItemSpawnPool::UItemSpawnPool()
 {
-	
 }
 
 void UItemSpawnPool::SetPoolItemClass(const TSubclassOf<APickupItem> ItemClass, UWorld* World)
@@ -20,11 +19,11 @@ void UItemSpawnPool::SetPoolItemClass(const TSubclassOf<APickupItem> ItemClass, 
 	}
 }
 
-APickupItem* UItemSpawnPool::GetItemFromPool()
+APickupItem* UItemSpawnPool::GetItemFromPool(UWorld* World)
 {
 	if(ItemPool.IsEmpty())
 	{
-		SupplyItemToPool(GetWorld());
+		SupplyItemToPool(World);
 	}
 
 	APickupItem* ItemToReturn;
@@ -43,13 +42,8 @@ void UItemSpawnPool::ReturnItemToPool(APickupItem* Item)
 
 void UItemSpawnPool::SupplyItemToPool(UWorld* World)
 {
-	if(SpawnPoolItemClass == nullptr)	return;
-	if(World == nullptr)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("get world nullptr"));
-		return;
-	}
+	if(SpawnPoolItemClass == nullptr || World == nullptr)	return;
+	
 	const auto CreatedItem = World->SpawnActor<APickupItem>(SpawnPoolItemClass);
-	// TODO : 아이템 초기화 작업 Setitemstate에 추가하자
 	ItemPool.Enqueue(CreatedItem);
 }

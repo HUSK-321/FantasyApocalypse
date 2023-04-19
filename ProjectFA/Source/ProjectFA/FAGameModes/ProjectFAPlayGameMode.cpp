@@ -16,23 +16,26 @@ void AProjectFAPlayGameMode::HandleMatchIsWaitingToStart()
 {
 	Super::HandleMatchIsWaitingToStart();
 	
+	InitializeSpawnPoolList();
+	SpawnItemToAllSpawner();
+}
+
+void AProjectFAPlayGameMode::InitializeSpawnPoolList()
+{
 	for(const auto ItemClass : ItemTable)
 	{
-		auto ItemPool = NewObject<UItemSpawnPool>();
+		auto ItemPool = NewObject<UItemSpawnPool>(this);
 		ItemPool->SetPoolItemClass(ItemClass, GetWorld());
 		ItemSpawnPools.Emplace(ItemPool);
 	}
-	UE_LOG(LogTemp, Warning, TEXT("item spawn pool count : %d"), ItemSpawnPools.Num());
-	
-	SpawnItemToAllSpawner();
 }
 
 void AProjectFAPlayGameMode::SpawnItemToAllSpawner()
 {
 	if(GetWorld() == nullptr)	return;
-	TArray<AActor*> OutActors;
-	UGameplayStatics::GetAllActorsWithInterface(GetWorld(), UItemSpawnable::StaticClass(), OutActors);
-	for(const auto Spawner : OutActors)
+	TArray<AActor*> OutSpawnerList;
+	UGameplayStatics::GetAllActorsWithInterface(GetWorld(), UItemSpawnable::StaticClass(), OutSpawnerList);
+	for(const auto Spawner : OutSpawnerList)
 	{
 		const auto Spawnable = Cast<IItemSpawnable>(Spawner);
 		if(Spawnable == nullptr)	return;
@@ -44,7 +47,7 @@ void AProjectFAPlayGameMode::SpawnItemToAllSpawner()
 TArray<APickupItem*> AProjectFAPlayGameMode::GetRandomItemList(IItemSpawnable* Spawner)
 {
 	TArray<APickupItem*> ItemList;
-	if(Spawner == nullptr)
+	if(Spawner == nullptr || GetWorld() == nullptr)
 	{
 		return ItemList;
 	}
@@ -55,7 +58,7 @@ TArray<APickupItem*> AProjectFAPlayGameMode::GetRandomItemList(IItemSpawnable* S
 		const auto AmountToSpawn = FMath::RandRange(SpawnInfo.SpawnAmountMin, SpawnInfo.SpawnAmountMax);
 		for(int SpawnCount = 0; SpawnCount < AmountToSpawn; SpawnCount++)
 		{
-			const auto Item = ItemSpawnPools[SpawnInfo.CategoryIndex]->GetItemFromPool();
+			const auto Item = ItemSpawnPools[SpawnInfo.CategoryIndex]->GetItemFromPool(GetWorld());
 			Item->SetItemPropertyFromDataAsset(GetRandomItemData(SpawnInfo.CategoryIndex));
 			ItemList.Emplace(Item);
 		}

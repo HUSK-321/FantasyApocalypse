@@ -33,12 +33,14 @@ private:
 	
 public:
 	void PlayerDead(APlayableCharacter* VictimCharacter, APlayableController* VictimController, APlayableController* InstigatorController);
-	void SpawnItemToAllSpawner();
 
 protected:
 	virtual void HandleMatchIsWaitingToStart() override;
 
 private:
+	void InitializeSpawnPoolList();
+	void SpawnItemToAllSpawner();
+	
 	TArray<APickupItem*> GetRandomItemList(IItemSpawnable* Spawner);
 	UItemDataAsset* GetRandomItemData(int32 CategoryIndex);
 };

@@ -29,7 +29,7 @@ public:
 
 	void SetPoolItemClass(const TSubclassOf<APickupItem> ItemClass, UWorld* World);
 	
-	APickupItem* GetItemFromPool();
+	APickupItem* GetItemFromPool(UWorld* World);
 	void ReturnItemToPool(APickupItem* Item);
 
 private:
