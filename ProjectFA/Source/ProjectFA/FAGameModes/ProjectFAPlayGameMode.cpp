@@ -5,16 +5,30 @@
 #include "Kismet/GameplayStatics.h"
 #include "ProjectFA/InGameItem/PickupItem.h"
 #include "ProjectFA/PlayGamePretreatment/ItemSpawnable.h"
+#include "ProjectFA/PlayGamePretreatment/ItemSpawnPool.h"
 
 void AProjectFAPlayGameMode::PlayerDead(APlayableCharacter* VictimCharacter, APlayableController* VictimController,
                                         APlayableController* InstigatorController)
 {
 }
 
-void AProjectFAPlayGameMode::BeginPlay()
+void AProjectFAPlayGameMode::HandleMatchIsWaitingToStart()
 {
-	Super::BeginPlay();
+	Super::HandleMatchIsWaitingToStart();
 	
+	for(const auto ItemClass : ItemTable)
+	{
+		auto ItemPool = NewObject<UItemSpawnPool>();
+		ItemPool->SetPoolItemClass(ItemClass, GetWorld());
+		ItemSpawnPools.Emplace(ItemPool);
+	}
+	UE_LOG(LogTemp, Warning, TEXT("item spawn pool count : %d"), ItemSpawnPools.Num());
+	
+	SpawnItemToAllSpawner();
+}
+
+void AProjectFAPlayGameMode::SpawnItemToAllSpawner()
+{
 	if(GetWorld() == nullptr)	return;
 	TArray<AActor*> OutActors;
 	UGameplayStatics::GetAllActorsWithInterface(GetWorld(), UItemSpawnable::StaticClass(), OutActors);
@@ -22,19 +36,28 @@ void AProjectFAPlayGameMode::BeginPlay()
 	{
 		const auto Spawnable = Cast<IItemSpawnable>(Spawner);
 		if(Spawnable == nullptr)	return;
-		Spawnable->SetSpawnItemList(GetRandomItemList());
+		
+		Spawnable->SetSpawnItemList(GetRandomItemList(Spawnable));
 	}
 }
 
-TArray<APickupItem*> AProjectFAPlayGameMode::GetRandomItemList()
+TArray<APickupItem*> AProjectFAPlayGameMode::GetRandomItemList(IItemSpawnable* Spawner)
 {
-	TArray<APickupItem*> SpawnItemList;
-	int8 RandomItemCount = FMath::RandRange(1, 4);
-	while(RandomItemCount--)
+	TArray<APickupItem*> ItemList;
+	if(Spawner == nullptr)
 	{
-		const int8 RandomItemIndex = FMath::RandRange(0, ItemTable.Num() - 1);
-		auto Item = GetWorld()->SpawnActor<APickupItem>(ItemTable[RandomItemIndex]);
-		SpawnItemList.Emplace(Item);
+		return ItemList;
 	}
-	return SpawnItemList;
+	
+	auto SpawnInfoList = Spawner->GetSpawnCategoryPercent();
+	for(const auto SpawnInfo : SpawnInfoList)
+	{
+		const auto AmountToSpawn = FMath::RandRange(SpawnInfo.SpawnAmountMin, SpawnInfo.SpawnAmountMax);
+		for(int SpawnCount = 0; SpawnCount < AmountToSpawn; SpawnCount++)
+		{
+			const auto Item = ItemSpawnPools[SpawnInfo.CategoryIndex]->GetItemFromPool();
+			ItemList.Emplace(Item);
+		}
+	}
+	return ItemList;
 }

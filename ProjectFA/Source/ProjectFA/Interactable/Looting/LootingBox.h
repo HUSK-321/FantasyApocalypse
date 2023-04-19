@@ -19,17 +19,6 @@ UCLASS()
 class PROJECTFA_API ALootingBox : public AActor, public ILootInteractable, public IItemSpawnable
 {
 	GENERATED_BODY()
-	
-public:	
-	ALootingBox();
-
-	virtual void FindItem_Implementation(const float SearchTime) override;
-
-	virtual const int32 GetSpawnIndex() override;
-	virtual void SetSpawnItemList(const TArray<APickupItem*>& ItemList) override;
-
-protected:
-	virtual void BeginPlay() override;
 
 private:
 	UPROPERTY(EditAnywhere)
@@ -46,9 +35,6 @@ private:
 	UPROPERTY()
 	TObjectPtr<UItemLootingProgressWidget> ProgressWidget;
 
-	UPROPERTY(EditAnywhere)
-	int32 SpawnIndex;
-
 	/** Runtime changeable dynamic instance */
 	UPROPERTY(VisibleAnywhere, Category = "Dissolve", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UMaterialInstanceDynamic> DynamicDissolveMaterialInstance;
@@ -62,7 +48,20 @@ private:
 
 	UPROPERTY(EditAnywhere, Category = "Looting Property")
 	float MaxTimeToSearch;
+	UPROPERTY(EditAnywhere, Category = "Spawner Property")
+	TArray<FSpawnerInitializeInfo> SpawnCategoryInfo;
 
+public:	
+	ALootingBox();
+
+	virtual void FindItem_Implementation(const float SearchTime) override;
+
+	virtual TArray<FSpawnerInitializeInfo> GetSpawnCategoryPercent() override;
+	virtual void SetSpawnItemList(const TArray<APickupItem*>& ItemList) override;
+
+protected:
+	virtual void BeginPlay() override;
+	
 private:
 	void OpenLooting();	
 	UFUNCTION()

@@ -10,25 +10,30 @@
  * 
  */
 
+class IItemSpawnable;
 class APlayableCharacter;
 class APlayableController;
 class APickupItem;
+class UItemSpawnPool;
 
 UCLASS()
 class PROJECTFA_API AProjectFAPlayGameMode : public AGameMode
 {
 	GENERATED_BODY()
-	
-public:
-	void PlayerDead(APlayableCharacter* VictimCharacter, APlayableController* VictimController, APlayableController* InstigatorController);
-
-protected:
-	virtual void BeginPlay() override;
-
-private:
-	TArray<APickupItem*> GetRandomItemList();
 
 private:
 	UPROPERTY(EditAnywhere)
 	TArray<TSubclassOf<APickupItem>> ItemTable;
+	UPROPERTY(EditAnywhere)
+	TArray<UItemSpawnPool*> ItemSpawnPools;
+	
+public:
+	void PlayerDead(APlayableCharacter* VictimCharacter, APlayableController* VictimController, APlayableController* InstigatorController);
+	void SpawnItemToAllSpawner();
+
+protected:
+	virtual void HandleMatchIsWaitingToStart() override;
+
+private:
+	TArray<APickupItem*> GetRandomItemList(IItemSpawnable* Spawner);
 };

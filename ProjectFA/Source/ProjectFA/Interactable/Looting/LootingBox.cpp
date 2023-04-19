@@ -124,7 +124,7 @@ void ALootingBox::AfterDissolve()
 	Destroy();
 }
 
-const int32 ALootingBox::GetSpawnIndex()
+TArray<FSpawnerInitializeInfo> ALootingBox::GetSpawnCategoryPercent()
 {
-	return SpawnIndex;
+	return SpawnCategoryInfo;
 }

@@ -29,8 +29,6 @@ private:
 	TObjectPtr<UBoxComponent> AttackCollision;
 	UPROPERTY(VisibleAnywhere, Category = "Spawn Item", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<ULootingItemComponent> LootingItemComponent;
-	UPROPERTY(VisibleAnywhere, Category = "Spawn Item", meta = (AllowPrivateAccess = "true"))
-	int32 SpawnIndex;
 	
 	TObjectPtr<AEnemyController> EnemyController;
 	UPROPERTY(EditAnywhere, Category = "Behaviour Tree", meta = (AllowPrivateAccess = "true"))
@@ -42,6 +40,9 @@ private:
 	UPROPERTY(EditAnywhere, Category = "Enemy Properties")
 	TSubclassOf<UDamageType> DamageTypeClass;
 
+	UPROPERTY(EditAnywhere, Category = "Spawner Property")
+	TArray<FSpawnerInitializeInfo> SpawnCategoryInfo;
+
 public:
 	
 	AEnemy();
@@ -51,8 +52,8 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Enemy Attack")
 	void SetAttackCollision(bool bEnabled);
 
+	virtual TArray<FSpawnerInitializeInfo> GetSpawnCategoryPercent() override;
 	virtual void SetSpawnItemList(const TArray<APickupItem*>& ItemList) override;
-	virtual const int32 GetSpawnIndex() override;
 
 	FORCEINLINE UBehaviorTree* GetEnemyBehaviorTree() const { return EnemyBehaviorTree; }
 
