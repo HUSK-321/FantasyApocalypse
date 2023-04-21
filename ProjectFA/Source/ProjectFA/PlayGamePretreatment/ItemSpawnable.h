@@ -17,11 +17,26 @@ class UItemSpawnable : public UInterface
 /**
  * 
  */
+
+USTRUCT(Atomic, BlueprintType)
+struct FSpawnerInitializeInfo
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int32 CategoryIndex;
+	// TODO : 이후 함수처럼 만드는 방법 생각해보기
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int32 SpawnAmountMin;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int32 SpawnAmountMax;
+};
+
 class PROJECTFA_API IItemSpawnable
 {
 	GENERATED_BODY()
 
 public:
-	virtual const int32 GetSpawnIndex() = 0;
+	virtual TArray<FSpawnerInitializeInfo> GetSpawnCategoryPercent() = 0;
 	virtual void SetSpawnItemList(const TArray<APickupItem*>& ItemList) = 0;
 };

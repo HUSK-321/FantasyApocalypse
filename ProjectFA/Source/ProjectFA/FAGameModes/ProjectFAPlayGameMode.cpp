@@ -5,36 +5,73 @@
 #include "Kismet/GameplayStatics.h"
 #include "ProjectFA/InGameItem/PickupItem.h"
 #include "ProjectFA/PlayGamePretreatment/ItemSpawnable.h"
+#include "ProjectFA/PlayGamePretreatment/ItemSpawnPool.h"
 
 void AProjectFAPlayGameMode::PlayerDead(APlayableCharacter* VictimCharacter, APlayableController* VictimController,
                                         APlayableController* InstigatorController)
 {
 }
 
-void AProjectFAPlayGameMode::BeginPlay()
+void AProjectFAPlayGameMode::HandleMatchIsWaitingToStart()
 {
-	Super::BeginPlay();
+	Super::HandleMatchIsWaitingToStart();
 	
-	if(GetWorld() == nullptr)	return;
-	TArray<AActor*> OutActors;
-	UGameplayStatics::GetAllActorsWithInterface(GetWorld(), UItemSpawnable::StaticClass(), OutActors);
-	for(const auto Spawner : OutActors)
+	InitializeSpawnPoolList();
+	SpawnItemToAllSpawner();
+}
+
+void AProjectFAPlayGameMode::InitializeSpawnPoolList()
+{
+	for(const auto PoolClass : ItemSpawnPoolClasses)
 	{
-		const auto Spawnable = Cast<IItemSpawnable>(Spawner);
-		if(Spawnable == nullptr)	return;
-		Spawnable->SetSpawnItemList(GetRandomItemList());
+		auto ItemPool = NewObject<UItemSpawnPool>(this, PoolClass);
+		ItemSpawnPools.Emplace(ItemPool);
 	}
 }
 
-TArray<APickupItem*> AProjectFAPlayGameMode::GetRandomItemList()
+void AProjectFAPlayGameMode::SpawnItemToAllSpawner()
 {
-	TArray<APickupItem*> SpawnItemList;
-	int8 RandomItemCount = FMath::RandRange(1, 4);
-	while(RandomItemCount--)
+	if(GetWorld() == nullptr)	return;
+	TArray<AActor*> OutSpawnerList;
+	UGameplayStatics::GetAllActorsWithInterface(GetWorld(), UItemSpawnable::StaticClass(), OutSpawnerList);
+	for(const auto Spawner : OutSpawnerList)
 	{
-		const int8 RandomItemIndex = FMath::RandRange(0, ItemTable.Num() - 1);
-		auto Item = GetWorld()->SpawnActor<APickupItem>(ItemTable[RandomItemIndex]);
-		SpawnItemList.Emplace(Item);
+		const auto Spawnable = Cast<IItemSpawnable>(Spawner);
+		if(Spawnable == nullptr)	return;
+		
+		Spawnable->SetSpawnItemList(GetRandomItemList(Spawnable));
 	}
-	return SpawnItemList;
+}
+
+TArray<APickupItem*> AProjectFAPlayGameMode::GetRandomItemList(IItemSpawnable* Spawner)
+{
+	TArray<APickupItem*> ItemList;
+	if(Spawner == nullptr || GetWorld() == nullptr)
+	{
+		return ItemList;
+	}
+	
+	auto SpawnInfoList = Spawner->GetSpawnCategoryPercent();
+	for(const auto SpawnInfo : SpawnInfoList)
+	{
+		const auto AmountToSpawn = FMath::RandRange(SpawnInfo.SpawnAmountMin, SpawnInfo.SpawnAmountMax);
+		for(int32 SpawnCount = 0; SpawnCount < AmountToSpawn; SpawnCount++)
+		{
+			const auto Item = ItemSpawnPools[SpawnInfo.CategoryIndex]->GetItemFromPool();
+			Item->SetItemPropertyFromDataAsset(GetRandomItemData(SpawnInfo.CategoryIndex));
+			ItemList.Emplace(Item);
+		}
+	}
+	return ItemList;
+}
+
+UItemDataAsset* AProjectFAPlayGameMode::GetRandomItemData(int32 CategoryIndex)
+{
+	const int32 DataCount = ItemDataTables[CategoryIndex]->GetRowNames().Num();
+	const int32 ItemIndex = FMath::RandRange(0, DataCount - 1);
+	const FName ItemNameInRow = ItemDataTables[CategoryIndex]->GetRowNames()[ItemIndex];
+	const FItemDataTable* ItemRow = ItemDataTables[CategoryIndex]->FindRow<FItemDataTable>(ItemNameInRow, TEXT(""));
+	if(ItemRow == nullptr)	return nullptr;
+
+	return ItemRow->ItemDataAsset;	
 }

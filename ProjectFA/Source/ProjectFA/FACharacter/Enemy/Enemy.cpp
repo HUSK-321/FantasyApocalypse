@@ -121,7 +121,7 @@ void AEnemy::SetSpawnItemList(const TArray<APickupItem*>& ItemList)
 	LootingItemComponent->InitializeItemList(ItemList);
 }
 
-const int32 AEnemy::GetSpawnIndex()
+TArray<FSpawnerInitializeInfo> AEnemy::GetSpawnCategoryPercent()
 {
-	return SpawnIndex;
+	return SpawnCategoryInfo;
 }
