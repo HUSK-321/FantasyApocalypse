@@ -74,6 +74,11 @@ bool AFACharacter::CharacterCannotAttack()
 	return false;
 }
 
+bool AFACharacter::CharacterCannotJump()
+{
+	return false;
+}
+
 void AFACharacter::StartDeadDissolve()
 {
 	if(GetMesh() == nullptr || DissolveCurve == nullptr || DissolveTimeline == nullptr || DissolveMaterialInstance == nullptr)	return;

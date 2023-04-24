@@ -44,6 +44,8 @@ public:
 	void WeaponAttackEnd();
 	UFUNCTION(BlueprintCallable)
 	void CheckShouldStopAttack();
+	UFUNCTION(BlueprintCallable)
+	void EndAttack();
 
 	FORCEINLINE bool GetNowAttacking() const { return bNowAttacking; }
 	

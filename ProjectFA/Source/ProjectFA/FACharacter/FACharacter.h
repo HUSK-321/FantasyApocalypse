@@ -42,6 +42,8 @@ protected:
 	virtual bool CharacterCannotMove();
 	UFUNCTION(BlueprintCallable)
 	virtual bool CharacterCannotAttack();
+	UFUNCTION(BlueprintCallable)
+	virtual bool CharacterCannotJump();
 
 	void StartDeadDissolve();
 

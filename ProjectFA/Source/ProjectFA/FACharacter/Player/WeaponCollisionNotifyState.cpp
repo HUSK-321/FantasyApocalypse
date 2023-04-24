@@ -2,7 +2,6 @@
 
 
 #include "WeaponCollisionNotifyState.h"
-
 #include "PlayableCharacterCombatComponent.h"
 
 void UWeaponCollisionNotifyState::NotifyTick(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation,

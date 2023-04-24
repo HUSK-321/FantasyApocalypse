@@ -110,6 +110,7 @@ protected:
 	virtual void AfterDeath() override;
 	virtual bool CharacterCannotMove() override;
 	virtual bool CharacterCannotAttack() override;
+	virtual bool CharacterCannotJump() override;
 
 private:
 

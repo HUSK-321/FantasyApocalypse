@@ -88,6 +88,11 @@ void UPlayableCharacterCombatComponent::CheckShouldStopAttack()
 		bDoNextAttack = false;
 		return;
 	}
+	EndAttack();
+}
+
+void UPlayableCharacterCombatComponent::EndAttack()
+{
 	bNowAttacking = false;
 	Character->StopNormalAttackMontage();
 }

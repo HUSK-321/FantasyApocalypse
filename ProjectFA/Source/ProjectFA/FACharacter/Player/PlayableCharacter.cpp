@@ -121,7 +121,7 @@ void APlayableCharacter::CameraMove(const FInputActionValue& Value)
 
 void APlayableCharacter::Jump()
 {
-	if(CharacterCannotMove())	return;
+	if(CharacterCannotJump())	return;
 	if(bIsCrouched)
 	{
 		UnCrouch();
@@ -292,11 +292,16 @@ void APlayableCharacter::AfterDeath()
 
 bool APlayableCharacter::CharacterCannotMove()
 {
-	if(CombatComponent == nullptr)	return  false;
-	return CombatComponent->GetNowAttacking();
+	return false;
 }
 
 bool APlayableCharacter::CharacterCannotAttack()
 {
 	return bIsCrouched || GetCharacterMovement()->IsFalling();
+}
+
+bool APlayableCharacter::CharacterCannotJump()
+{
+	if(CombatComponent == nullptr)	return CharacterCannotMove();
+	return CharacterCannotMove() || CombatComponent->GetNowAttacking();
 }
