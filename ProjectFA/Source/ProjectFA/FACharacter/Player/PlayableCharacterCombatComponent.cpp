@@ -62,6 +62,25 @@ void UPlayableCharacterCombatComponent::Attack()
 	}
 }
 
+void UPlayableCharacterCombatComponent::WeaponAttacking()
+{
+	if(EquippedItem == nullptr)	return;
+	if(auto const WeaponInterface = Cast<IEquipable>(EquippedItem))
+	{
+		WeaponInterface->WeaponAttacking_Implementation();
+	}
+}
+
+void UPlayableCharacterCombatComponent::WeaponAttackEnd()
+{
+	if(EquippedItem == nullptr)	return;
+	if(auto const WeaponInterface = Cast<IEquipable>(EquippedItem))
+	{
+		WeaponInterface->AttackEnd_Implementation();
+		bDoNextAttack = false;
+	}
+}
+
 void UPlayableCharacterCombatComponent::CheckShouldStopAttack()
 {
 	if(bDoNextAttack || Character == nullptr)
@@ -71,16 +90,6 @@ void UPlayableCharacterCombatComponent::CheckShouldStopAttack()
 	}
 	bNowAttacking = false;
 	Character->StopNormalAttackMontage();
-}
-
-void UPlayableCharacterCombatComponent::SetWeaponAttackCollision(bool bEnabled)
-{
-	bDoNextAttack = false;
-	if(EquippedItem == nullptr)	return;
-	if(auto const WeaponInterface = Cast<IEquipable>(EquippedItem))
-	{
-		WeaponInterface->SetAttackCollision(bEnabled);
-	}
 }
 
 void UPlayableCharacterCombatComponent::ItemDrop(APickupItem* UnEquipItem)

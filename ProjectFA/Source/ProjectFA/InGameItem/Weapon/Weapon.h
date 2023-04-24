@@ -22,8 +22,6 @@ enum class EWeaponType : uint8
 	EWT_MAX				UMETA(DisplayName = "DefaultMAX")
 };
 
-class UBoxComponent;
-
 UCLASS()
 class PROJECTFA_API AWeapon : public APickupItem, public IEquipable, public IInventoryUsable
 {
@@ -36,12 +34,13 @@ public:
 
 private:
 	
-	UPROPERTY(EditAnywhere)
-	TObjectPtr<UBoxComponent> AttackCollision;
 	UPROPERTY(EditAnywhere, Category = "Weapon Properties")
 	TSubclassOf<UDamageType> DamageTypeClass;
 	UPROPERTY(EditDefaultsOnly, Category = "Weapon Properties")
 	EWeaponType WeaponType;
+	
+	UPROPERTY()
+	TArray<AActor*> HittedActors;
 
 public:
 
@@ -49,7 +48,8 @@ public:
 	
 	virtual FName GetNormalAttackMontageSectionName() const override;
 	virtual void UnEquip() override;
-	virtual void SetAttackCollision(bool bEnable) override;
+	virtual void WeaponAttacking_Implementation() override;
+	virtual void AttackEnd_Implementation() override;
 	virtual void SetEquipItemEvent(const FEquipItemEvent& Event) override;
 	virtual void SetUnEquipEvent(const FEquipItemEvent& Event) override;
 
@@ -59,7 +59,4 @@ public:
 protected:
 	
 	virtual void BeginPlay() override;
-	UFUNCTION()
-	void AttackCollisionOnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp,
-												int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 };

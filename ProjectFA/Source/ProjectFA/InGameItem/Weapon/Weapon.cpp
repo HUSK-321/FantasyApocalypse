@@ -2,34 +2,16 @@
 
 
 #include "Weapon.h"
-#include "Components/BoxComponent.h"
+#include "Engine/SkeletalMeshSocket.h"
 #include "Kismet/GameplayStatics.h"
 
 AWeapon::AWeapon()
-	:
-	AttackCollision(CreateDefaultSubobject<UBoxComponent>(TEXT("AttackCollision")))
 {
-	AttackCollision->SetupAttachment(GetRootComponent());
-	AttackCollision->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
 }
 
 void AWeapon::BeginPlay()
 {
 	Super::BeginPlay();
-
-	AttackCollision->OnComponentBeginOverlap.AddDynamic(this, &AWeapon::AttackCollisionOnOverlapBegin);
-}
-
-void AWeapon::AttackCollisionOnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
-	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
-{
-	const APawn* AttackingPawn = Cast<APawn>(GetOwner());
-	if(OtherActor == GetOwner() || AttackingPawn == nullptr || DamageTypeClass == nullptr)	return;
-	const auto AttackingInstigator = AttackingPawn->GetController();
-	if(AttackingInstigator == nullptr)	return;
-	
-	UGameplayStatics::ApplyDamage(OtherActor, ItemPowerAmount, AttackingInstigator, this, DamageTypeClass);
-	SetAttackCollision(false);
 }
 
 FName AWeapon::GetNormalAttackMontageSectionName() const
@@ -53,11 +35,33 @@ void AWeapon::UnEquip()
 	UnEquipEvent.Broadcast(this);
 }
 
-void AWeapon::SetAttackCollision(bool bEnable)
+void AWeapon::WeaponAttacking_Implementation()
 {
-	if(AttackCollision == nullptr)	return;
-	const auto CollisionResponseToPawn = (bEnable) ? ECollisionResponse::ECR_Overlap : ECollisionResponse::ECR_Ignore;
-	AttackCollision->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, CollisionResponseToPawn);
+	HittedActors.AddUnique(GetOwner());
+	HittedActors.AddUnique(this);
+	const FVector TraceStart{ PickupItemMesh->GetSocketLocation(TEXT("AttackCapsuleStart")) };
+	const FVector TraceEnd{ PickupItemMesh->GetSocketLocation(TEXT("AttackCapsuleEnd")) };
+	const float CapsuleRadius = 20.f;
+	const float CapsuleHeight = 10.f;
+	FHitResult HitResult;
+	
+	UKismetSystemLibrary::CapsuleTraceSingle(this, TraceStart, TraceEnd, CapsuleRadius, CapsuleHeight, UEngineTypes::ConvertToTraceType(ECC_Pawn),
+									false, HittedActors, EDrawDebugTrace::ForDuration, HitResult, true);
+	if(HitResult.bBlockingHit)
+	{
+		const APawn* AttackingPawn = Cast<APawn>(GetOwner());
+		if(AttackingPawn == nullptr || DamageTypeClass == nullptr)	return;
+		const auto AttackingInstigator = AttackingPawn->GetController();
+		if(AttackingInstigator == nullptr)	return;
+		
+		UGameplayStatics::ApplyDamage(HitResult.GetActor(), ItemPowerAmount, AttackingInstigator, this, DamageTypeClass);
+		HittedActors.AddUnique(HitResult.GetActor());
+	}
+}
+
+void AWeapon::AttackEnd_Implementation()
+{
+	HittedActors.Empty();
 }
 
 void AWeapon::SetEquipItemEvent(const FEquipItemEvent& Event)

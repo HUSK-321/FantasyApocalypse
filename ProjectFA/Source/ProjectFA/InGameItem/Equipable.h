@@ -28,7 +28,10 @@ public:
 
 	virtual FName GetNormalAttackMontageSectionName() const = 0;
 	virtual void UnEquip() = 0;
-	virtual void SetAttackCollision(bool bEnable) = 0;
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Attack Action")
+	void WeaponAttacking();
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Attack Action")
+	void AttackEnd();
 	virtual void SetEquipItemEvent(const FEquipItemEvent& Event) = 0;
 	virtual void SetUnEquipEvent(const FEquipItemEvent& Event) = 0;
 };

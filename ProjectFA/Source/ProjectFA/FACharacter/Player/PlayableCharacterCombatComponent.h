@@ -39,7 +39,9 @@ public:
 	void EquipItemToCharacter(APickupItem* ItemToEquip);
 	void Attack();
 	UFUNCTION(BlueprintCallable)
-	void SetWeaponAttackCollision(bool bEnabled);
+	void WeaponAttacking();
+	UFUNCTION(BlueprintCallable)
+	void WeaponAttackEnd();
 	UFUNCTION(BlueprintCallable)
 	void CheckShouldStopAttack();
 
