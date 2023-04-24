@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include "ProjectFA/FAInterfaces/WeaponAttackableComponent.h"
 #include "PlayableCharacterCombatComponent.generated.h"
 
 
@@ -14,7 +15,7 @@ class UEquipable;
 class APickupItem;
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
-class PROJECTFA_API UPlayableCharacterCombatComponent : public UActorComponent
+class PROJECTFA_API UPlayableCharacterCombatComponent : public UActorComponent, public IWeaponAttackableComponent
 {
 	GENERATED_BODY()
 
@@ -35,13 +36,12 @@ private:
 public:
 
 	UPlayableCharacterCombatComponent();
+	
+	virtual void WeaponAttacking() override;
+	virtual void WeaponAttackEnd() override;
 
 	void EquipItemToCharacter(APickupItem* ItemToEquip);
 	void Attack();
-	UFUNCTION(BlueprintCallable)
-	void WeaponAttacking();
-	UFUNCTION(BlueprintCallable)
-	void WeaponAttackEnd();
 	UFUNCTION(BlueprintCallable)
 	void CheckShouldStopAttack();
 	UFUNCTION(BlueprintCallable)
@@ -54,7 +54,6 @@ protected:
 	virtual void BeginPlay() override;
 
 private:
-	
 	UFUNCTION()
 	void ItemDrop(APickupItem* UnEquipItem);
 };

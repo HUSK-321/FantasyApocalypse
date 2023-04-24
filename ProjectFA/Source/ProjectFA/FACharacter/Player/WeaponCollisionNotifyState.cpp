@@ -9,10 +9,12 @@ void UWeaponCollisionNotifyState::NotifyTick(USkeletalMeshComponent* MeshComp, U
 {
 	Super::NotifyTick(MeshComp, Animation, FrameDeltaTime, EventReference);
 	const auto MeshOwnerActor = MeshComp->GetOwner();
-	const auto ActorComponent = MeshOwnerActor->GetComponentByClass(UPlayableCharacterCombatComponent::StaticClass());
-	if(const auto CombatComponent = Cast<UPlayableCharacterCombatComponent>(ActorComponent))
+	const auto ActorComponents = MeshOwnerActor->GetComponentsByInterface(UWeaponAttackableComponent::StaticClass());
+	for(const auto ActorComponent : ActorComponents)
 	{
-		CombatComponent->WeaponAttacking();
+		const auto WeaponAttackable = Cast<IWeaponAttackableComponent>(ActorComponent);
+		if(WeaponAttackable == nullptr)	continue;
+		WeaponAttackable->WeaponAttacking();
 	}
 }
 
@@ -21,9 +23,11 @@ void UWeaponCollisionNotifyState::NotifyEnd(USkeletalMeshComponent* MeshComp, UA
 {
 	Super::NotifyEnd(MeshComp, Animation, EventReference);
 	const auto MeshOwnerActor = MeshComp->GetOwner();
-	const auto ActorComponent = MeshOwnerActor->GetComponentByClass(UPlayableCharacterCombatComponent::StaticClass());
-	if(const auto CombatComponent = Cast<UPlayableCharacterCombatComponent>(ActorComponent))
+	const auto ActorComponents = MeshOwnerActor->GetComponentsByInterface(UWeaponAttackableComponent::StaticClass());
+	for(const auto ActorComponent : ActorComponents)
 	{
-		CombatComponent->WeaponAttackEnd();
+		const auto WeaponAttackable = Cast<IWeaponAttackableComponent>(ActorComponent);
+		if(WeaponAttackable == nullptr)	continue;
+		WeaponAttackable->WeaponAttackEnd();
 	}
 }
