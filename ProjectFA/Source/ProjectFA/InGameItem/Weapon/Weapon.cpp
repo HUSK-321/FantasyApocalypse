@@ -37,23 +37,30 @@ void AWeapon::UnEquip()
 
 void AWeapon::WeaponAttacking_Implementation()
 {
+	if(DamageTypeClass == nullptr)	return;
+	
 	HittedActors.AddUnique(GetOwner());
 	HittedActors.AddUnique(this);
 	const FVector TraceStart{ PickupItemMesh->GetSocketLocation(TEXT("AttackCapsuleStart")) };
 	const FVector TraceEnd{ PickupItemMesh->GetSocketLocation(TEXT("AttackCapsuleEnd")) };
-	const float CapsuleRadius = 20.f;
-	const float CapsuleHeight = 10.f;
-	FHitResult HitResult;
-	
-	UKismetSystemLibrary::CapsuleTraceSingle(this, TraceStart, TraceEnd, CapsuleRadius, CapsuleHeight, UEngineTypes::ConvertToTraceType(ECC_Pawn),
-									false, HittedActors, EDrawDebugTrace::ForDuration, HitResult, true);
-	if(HitResult.bBlockingHit)
+	const float CapsuleRadius = 10.f;
+
+	TArray<TEnumAsByte<EObjectTypeQuery>> ObjectTypes { UEngineTypes::ConvertToObjectType(ECollisionChannel::ECC_Pawn) };
+	TArray<FHitResult> OutHits;
+
+	// TODO : PickupItemMesh 이후 변경
+	UKismetSystemLibrary::SphereTraceMultiForObjects(PickupItemMesh, TraceStart, TraceEnd, CapsuleRadius, ObjectTypes, false, HittedActors,
+														EDrawDebugTrace::ForDuration, OutHits, true);
+
+	for(const auto HitResult : OutHits)
 	{
+		if(HitResult.bBlockingHit == false)	continue;
 		const APawn* AttackingPawn = Cast<APawn>(GetOwner());
-		if(AttackingPawn == nullptr || DamageTypeClass == nullptr)	return;
+		if(AttackingPawn == nullptr)	continue;
 		const auto AttackingInstigator = AttackingPawn->GetController();
-		if(AttackingInstigator == nullptr)	return;
-		
+		if(AttackingInstigator == nullptr)	continue;
+		if(HittedActors.Contains(HitResult.GetActor()))	continue;
+	
 		UGameplayStatics::ApplyDamage(HitResult.GetActor(), ItemPowerAmount, AttackingInstigator, this, DamageTypeClass);
 		HittedActors.AddUnique(HitResult.GetActor());
 	}

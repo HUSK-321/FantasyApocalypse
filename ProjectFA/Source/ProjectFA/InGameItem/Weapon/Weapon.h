@@ -28,12 +28,10 @@ class PROJECTFA_API AWeapon : public APickupItem, public IEquipable, public IInv
 	GENERATED_BODY()
 
 public:
-
 	FEquipItemEvent EquipItemEvent;
 	FEquipItemEvent UnEquipEvent;
 
 private:
-	
 	UPROPERTY(EditAnywhere, Category = "Weapon Properties")
 	TSubclassOf<UDamageType> DamageTypeClass;
 	UPROPERTY(EditDefaultsOnly, Category = "Weapon Properties")
@@ -43,7 +41,6 @@ private:
 	TArray<AActor*> HittedActors;
 
 public:
-
 	AWeapon();
 	
 	virtual FName GetNormalAttackMontageSectionName() const override;
@@ -57,6 +54,5 @@ public:
 	virtual void RemoveFromInventoryAction_Implementation() override;
 
 protected:
-	
 	virtual void BeginPlay() override;
 };
