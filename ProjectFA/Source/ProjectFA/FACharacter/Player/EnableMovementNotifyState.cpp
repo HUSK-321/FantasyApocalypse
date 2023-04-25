@@ -3,11 +3,12 @@
 
 #include "EnableMovementNotifyState.h"
 
-void UEnableMovementNotifyState::NotifyTick(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation,
-                                            float FrameDeltaTime, const FAnimNotifyEventReference& EventReference)
+void UEnableMovementNotifyState::NotifyBegin(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation,
+	float TotalDuration, const FAnimNotifyEventReference& EventReference)
 {
-	Super::NotifyTick(MeshComp, Animation, FrameDeltaTime, EventReference);
+	Super::NotifyBegin(MeshComp, Animation, TotalDuration, EventReference);
 	MeshComp->GetAnimInstance()->RootMotionMode = ERootMotionMode::IgnoreRootMotion;
+	
 }
 
 void UEnableMovementNotifyState::NotifyEnd(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation,
