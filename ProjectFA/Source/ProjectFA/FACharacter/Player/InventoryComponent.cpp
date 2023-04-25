@@ -56,6 +56,8 @@ void UInventoryComponent::AddItemToInventory(APickupItem* ItemToIn)
 
 void UInventoryComponent::DropItemFromInventory(APickupItem* ItemToOut)
 {
+	if(ItemToOut == nullptr)	return;
+	
 	ItemToOut->SetOwner(nullptr);
 	InventoryItemList.Remove(ItemToOut);
 	InventoryChangedEvent.Broadcast(InventoryItemList);

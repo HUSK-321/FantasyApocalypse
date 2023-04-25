@@ -2,34 +2,16 @@
 
 
 #include "Weapon.h"
-#include "Components/BoxComponent.h"
+#include "Engine/SkeletalMeshSocket.h"
 #include "Kismet/GameplayStatics.h"
 
 AWeapon::AWeapon()
-	:
-	AttackCollision(CreateDefaultSubobject<UBoxComponent>(TEXT("AttackCollision")))
 {
-	AttackCollision->SetupAttachment(GetRootComponent());
-	AttackCollision->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
 }
 
 void AWeapon::BeginPlay()
 {
 	Super::BeginPlay();
-
-	AttackCollision->OnComponentBeginOverlap.AddDynamic(this, &AWeapon::AttackCollisionOnOverlapBegin);
-}
-
-void AWeapon::AttackCollisionOnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
-	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
-{
-	const APawn* AttackingPawn = Cast<APawn>(GetOwner());
-	if(OtherActor == GetOwner() || AttackingPawn == nullptr || DamageTypeClass == nullptr)	return;
-	const auto AttackingInstigator = AttackingPawn->GetController();
-	if(AttackingInstigator == nullptr)	return;
-	
-	UGameplayStatics::ApplyDamage(OtherActor, ItemPowerAmount, AttackingInstigator, this, DamageTypeClass);
-	SetAttackCollision(false);
 }
 
 FName AWeapon::GetNormalAttackMontageSectionName() const
@@ -53,11 +35,40 @@ void AWeapon::UnEquip()
 	UnEquipEvent.Broadcast(this);
 }
 
-void AWeapon::SetAttackCollision(bool bEnable)
+void AWeapon::WeaponAttacking_Implementation()
 {
-	if(AttackCollision == nullptr)	return;
-	const auto CollisionResponseToPawn = (bEnable) ? ECollisionResponse::ECR_Overlap : ECollisionResponse::ECR_Ignore;
-	AttackCollision->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, CollisionResponseToPawn);
+	if(DamageTypeClass == nullptr)	return;
+	
+	HittedActors.AddUnique(GetOwner());
+	HittedActors.AddUnique(this);
+	const FVector TraceStart{ PickupItemMesh->GetSocketLocation(TEXT("AttackCapsuleStart")) };
+	const FVector TraceEnd{ PickupItemMesh->GetSocketLocation(TEXT("AttackCapsuleEnd")) };
+	const float CapsuleRadius = 10.f;
+
+	TArray<TEnumAsByte<EObjectTypeQuery>> ObjectTypes { UEngineTypes::ConvertToObjectType(ECollisionChannel::ECC_Pawn) };
+	TArray<FHitResult> OutHits;
+
+	// TODO : PickupItemMesh 이후 변경
+	UKismetSystemLibrary::SphereTraceMultiForObjects(PickupItemMesh, TraceStart, TraceEnd, CapsuleRadius, ObjectTypes, false, HittedActors,
+														EDrawDebugTrace::ForDuration, OutHits, true);
+
+	for(const auto HitResult : OutHits)
+	{
+		if(HitResult.bBlockingHit == false)	continue;
+		const APawn* AttackingPawn = Cast<APawn>(GetOwner());
+		if(AttackingPawn == nullptr)	continue;
+		const auto AttackingInstigator = AttackingPawn->GetController();
+		if(AttackingInstigator == nullptr)	continue;
+		if(HittedActors.Contains(HitResult.GetActor()))	continue;
+	
+		UGameplayStatics::ApplyDamage(HitResult.GetActor(), ItemPowerAmount, AttackingInstigator, this, DamageTypeClass);
+		HittedActors.AddUnique(HitResult.GetActor());
+	}
+}
+
+void AWeapon::AttackEnd_Implementation()
+{
+	HittedActors.Empty();
 }
 
 void AWeapon::SetEquipItemEvent(const FEquipItemEvent& Event)

@@ -66,7 +66,7 @@ public:
 	APickupItem();
 	void SetItemPropertyFromDataAsset(const UItemDataAsset* DataAsset);
 
-	void DropItem(bool bFromPlayerInventory = false);
+	void DropItem();
 	void SetItemState(const EItemState State);
 	
 	virtual void SetOwner(AActor* NewOwner) override;
