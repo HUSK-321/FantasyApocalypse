@@ -78,6 +78,8 @@ DerivedDataCache/*
 # !Content/Assets/[ASSET NAME]/.gitkeep
 Content/Assets/InfinityBladeWeapons/*
 !Content/Assets/InfinityBladeWeapons/.gitkeep
+Content/Assets/InfinityBladeEffects/*
+!Content/Assets/InfinityBladeEffects/.gitkeep
 Content/Assets/StylizedVillage/*
 !Content/Assets/StylizedVillage/.gitkeep
 Content/Assets/Animation/Sword_Animations/*

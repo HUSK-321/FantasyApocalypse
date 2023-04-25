@@ -14,10 +14,16 @@
 | **프로젝트 기간**   | 2023.03.12 ~             |
 | **기타**        |                          |
 
-# 
+ 
 
 ## 사용 에셋
 
 - [Animation from 'Mixamo'](https://www.mixamo.com/#/)
+
 - [Infinity Blade : Weapons by Epic Games](https://www.unrealengine.com/marketplace/en-US/product/infinity-blade-weapons)
+
+- [# Infinity Blade: Effects by Epic Games](https://www.unrealengine.com/marketplace/en-US/product/infinity-blade-effectshttps://www.unrealengine.com/marketplace/en-US/product/infinity-blade-effects)
+
 - [Modular Stylized Medieval Town by StylArts](https://www.unrealengine.com/marketplace/en-US/product/modular-stylized-medieval-town)
+
+- [Sword Animation Pack by 9CG](https://www.unrealengine.com/marketplace/en-US/product/sword-animation-pack-01)
