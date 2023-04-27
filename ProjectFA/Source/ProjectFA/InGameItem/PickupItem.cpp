@@ -4,19 +4,19 @@
 #include "PickupItem.h"
 #include "ItemDataAsset.h"
 #include "Components/SphereComponent.h"
+#include "Components/StaticMeshComponent.h"
 #include "ProjectFA/FACharacter/PickupableCharacter.h"
 
 APickupItem::APickupItem()
-	:
-	PickupItemMesh(CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("PickupItemMeah"))),
-	PickupAreaSphere(CreateDefaultSubobject<USphereComponent>(TEXT("PickupAreaSphere")))
 {
 	PrimaryActorTick.bCanEverTick = false;
 
+	PickupItemMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("PickupItemMesh"));
 	SetRootComponent(PickupItemMesh);
 	PickupItemMesh->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Block);
 	PickupItemMesh->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECollisionResponse::ECR_Ignore);
-	
+
+	PickupAreaSphere = CreateDefaultSubobject<USphereComponent>(TEXT("PickupAreaSphere"));
 	PickupAreaSphere->SetupAttachment(GetRootComponent());
 	PickupAreaSphere->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECollisionResponse::ECR_Ignore);
 	PickupAreaSphere->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Overlap);
@@ -29,7 +29,7 @@ void APickupItem::SetItemPropertyFromDataAsset(const UItemDataAsset* DataAsset)
 	ItemName = DataAsset->Name;
 	ItemDescription = DataAsset->Description;
 	ItemIcon = DataAsset->Icon;
-	PickupItemMesh->SetSkeletalMesh(DataAsset->Mesh);
+	PickupItemMesh->SetStaticMesh(DataAsset->Mesh);
 	ItemPowerAmount = DataAsset->PowerAmount;
 	ItemWeight = DataAsset->Weight;
 }
@@ -60,13 +60,13 @@ void APickupItem::SetOwner(AActor* NewOwner)
 void APickupItem::SetItemState(const EItemState State)
 {
 	ItemState = State;
-	switch (ItemState)
+	switch (State)
 	{
 	case EItemState::EIS_Initial:
 		SetOwner(nullptr);
+		PickupItemMesh->SetVisibility(true);
 		PickupItemMesh->SetSimulatePhysics(false);
 		PickupItemMesh->SetEnableGravity(false);
-		PickupItemMesh->SetVisibility(true);
 		PickupItemMesh->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
 		PickupItemMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
@@ -75,7 +75,7 @@ void APickupItem::SetItemState(const EItemState State)
 		break;
 		
 	case EItemState::EIS_Equipped:
-		PickupItemMesh->SetVisibility(true);
+		PickupItemMesh->SetVisibility(false);
 		PickupItemMesh->SetSimulatePhysics(false);
 		PickupItemMesh->SetEnableGravity(false);
 		PickupItemMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);

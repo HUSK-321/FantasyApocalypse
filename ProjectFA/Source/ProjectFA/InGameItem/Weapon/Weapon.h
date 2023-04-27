@@ -6,21 +6,12 @@
 #include "ProjectFA/InGameItem/Equipable.h"
 #include "ProjectFA/InGameItem/InventoryUsable.h"
 #include "ProjectFA/InGameItem/PickupItem.h"
+#include "WeaponType.h"
 #include "Weapon.generated.h"
 
 /**
  * 
  */
-
-UENUM(BlueprintType)
-enum class EWeaponType : uint8
-{
-	EWT_Default			UMETA(DisplayName = "Default"),
-	EWT_OneHandSword	UMETA(DisplayName = "One Hand Sword"),
-	EWT_MagicStaff		UMETA(DisplayName = "Magic Staff"),
-
-	EWT_MAX				UMETA(DisplayName = "DefaultMAX")
-};
 
 UCLASS()
 class PROJECTFA_API AWeapon : public APickupItem, public IEquipable, public IInventoryUsable
@@ -33,6 +24,8 @@ public:
 
 private:
 	UPROPERTY(EditAnywhere, Category = "Weapon Properties")
+	TObjectPtr<USkeletalMeshComponent> WeaponMesh;
+	UPROPERTY(EditAnywhere, Category = "Weapon Properties")
 	TSubclassOf<UDamageType> DamageTypeClass;
 	UPROPERTY(EditDefaultsOnly, Category = "Weapon Properties")
 	EWeaponType WeaponType;
@@ -42,6 +35,8 @@ private:
 
 public:
 	AWeapon();
+	virtual void SetItemPropertyFromDataAsset(const UItemDataAsset* DataAsset) override;
+	virtual void SetItemState(const EItemState State) override;
 	
 	virtual FName GetNormalAttackMontageSectionName() const override;
 	virtual void UnEquip() override;

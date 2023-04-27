@@ -11,8 +11,6 @@
  * 
  */
 
-class APickupItem;
-
 UCLASS(Blueprintable, BlueprintType)
 class PROJECTFA_API UItemSpawnPool : public UObject
 {
@@ -20,7 +18,7 @@ class PROJECTFA_API UItemSpawnPool : public UObject
 	
 private:
 	UPROPERTY(EditAnywhere)
-	TSubclassOf<APickupItem> SpawnPoolItemClass;
+	TSubclassOf<class APickupItem> SpawnPoolItemClass;
 
 	TQueue<APickupItem*> ItemPool;
 

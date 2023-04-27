@@ -8,7 +8,6 @@ void UEnableMovementNotifyState::NotifyBegin(USkeletalMeshComponent* MeshComp, U
 {
 	Super::NotifyBegin(MeshComp, Animation, TotalDuration, EventReference);
 	MeshComp->GetAnimInstance()->RootMotionMode = ERootMotionMode::IgnoreRootMotion;
-	
 }
 
 void UEnableMovementNotifyState::NotifyEnd(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation,
