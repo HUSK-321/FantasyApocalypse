@@ -94,7 +94,7 @@ FName AWeapon::GetNormalAttackMontageSectionName() const
 void AWeapon::UnEquip()
 {
 	const FDetachmentTransformRules DetachRules{ EDetachmentRule::KeepWorld, true };
-	WeaponMesh->DetachFromComponent(DetachRules);
+	this->DetachFromActor(DetachRules);
 	SetItemState(EItemState::EIS_InInventory);
 	UnEquipEvent.Broadcast(this);
 }
@@ -137,7 +137,6 @@ void AWeapon::AttackEnd_Implementation()
 
 void AWeapon::SetEquipItemEvent(const FEquipItemEvent& Event)
 {
-	EquipItemEvent.Clear();
 	EquipItemEvent = Event;
 }
 

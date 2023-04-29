@@ -125,7 +125,6 @@ void APickupItem::DropItem()
 	GetWorldTimerManager().SetTimer(DropTimer, this, &APickupItem::DropEnd, 2.0f);
 
 	ItemDroppedEvent.Broadcast(this);
-	ItemDroppedEvent.Clear();
 }
 
 void APickupItem::PickupAreaBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
