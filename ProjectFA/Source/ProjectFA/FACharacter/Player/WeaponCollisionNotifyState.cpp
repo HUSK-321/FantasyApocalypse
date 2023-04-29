@@ -4,17 +4,17 @@
 #include "WeaponCollisionNotifyState.h"
 #include "PlayableCharacterCombatComponent.h"
 
-void UWeaponCollisionNotifyState::NotifyTick(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation,
-                                             float FrameDeltaTime, const FAnimNotifyEventReference& EventReference)
+void UWeaponCollisionNotifyState::NotifyBegin(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation,
+	float TotalDuration, const FAnimNotifyEventReference& EventReference)
 {
-	Super::NotifyTick(MeshComp, Animation, FrameDeltaTime, EventReference);
+	Super::NotifyBegin(MeshComp, Animation, TotalDuration, EventReference);
 	const auto MeshOwnerActor = MeshComp->GetOwner();
 	const auto ActorComponents = MeshOwnerActor->GetComponentsByInterface(UWeaponAttackableComponent::StaticClass());
 	for(const auto ActorComponent : ActorComponents)
 	{
 		const auto WeaponAttackable = Cast<IWeaponAttackableComponent>(ActorComponent);
 		if(WeaponAttackable == nullptr)	continue;
-		WeaponAttackable->WeaponAttacking();
+		WeaponAttackable->WeaponAttackStart();
 	}
 }
 

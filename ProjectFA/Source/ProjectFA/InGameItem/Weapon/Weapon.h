@@ -6,21 +6,14 @@
 #include "ProjectFA/InGameItem/Equipable.h"
 #include "ProjectFA/InGameItem/InventoryUsable.h"
 #include "ProjectFA/InGameItem/PickupItem.h"
+#include "WeaponType.h"
 #include "Weapon.generated.h"
 
 /**
  * 
  */
 
-UENUM(BlueprintType)
-enum class EWeaponType : uint8
-{
-	EWT_Default			UMETA(DisplayName = "Default"),
-	EWT_OneHandSword	UMETA(DisplayName = "One Hand Sword"),
-	EWT_MagicStaff		UMETA(DisplayName = "Magic Staff"),
-
-	EWT_MAX				UMETA(DisplayName = "DefaultMAX")
-};
+class UBoxComponent;
 
 UCLASS()
 class PROJECTFA_API AWeapon : public APickupItem, public IEquipable, public IInventoryUsable
@@ -33,25 +26,34 @@ public:
 
 private:
 	UPROPERTY(EditAnywhere, Category = "Weapon Properties")
+	TObjectPtr<USkeletalMeshComponent> WeaponMesh;
+	UPROPERTY(EditAnywhere, Category = "Weapon Properties")
 	TSubclassOf<UDamageType> DamageTypeClass;
 	UPROPERTY(EditDefaultsOnly, Category = "Weapon Properties")
 	EWeaponType WeaponType;
+	UPROPERTY(EditAnywhere, Category = "Weapon Properties")
+	TObjectPtr<UBoxComponent> AttackCollision;
 	
 	UPROPERTY()
 	TArray<AActor*> HittedActors;
 
 public:
 	AWeapon();
+	virtual void SetItemPropertyFromDataAsset(const UItemDataAsset* DataAsset) override;
+	virtual void SetItemState(const EItemState State) override;
 	
 	virtual FName GetNormalAttackMontageSectionName() const override;
 	virtual void UnEquip() override;
-	virtual void WeaponAttacking_Implementation() override;
+	virtual void AttackStart_Implementation() override;
 	virtual void AttackEnd_Implementation() override;
 	virtual void SetEquipItemEvent(const FEquipItemEvent& Event) override;
 	virtual void SetUnEquipEvent(const FEquipItemEvent& Event) override;
 
 	virtual void InventoryAction_Implementation() override;
 	virtual void RemoveFromInventoryAction_Implementation() override;
+
+	UFUNCTION()
+	void AttackCollisionOnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
 protected:
 	virtual void BeginPlay() override;

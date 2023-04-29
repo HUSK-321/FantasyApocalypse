@@ -7,7 +7,7 @@
 #include "Engine/DataTable.h"
 #include "PickupItem.generated.h"
 
-class USkeletalMeshComponent;
+class UStaticMeshComponent;
 class USphereComponent;
 class UItemDataAsset;
 
@@ -43,7 +43,7 @@ public:
 
 protected:
 	UPROPERTY(EditAnywhere)
-	TObjectPtr<USkeletalMeshComponent> PickupItemMesh;
+	TObjectPtr<UStaticMeshComponent> PickupItemMesh;
 	UPROPERTY(EditAnywhere)
 	TObjectPtr<USphereComponent> PickupAreaSphere;
 
@@ -64,10 +64,10 @@ protected:
 	
 public:
 	APickupItem();
-	void SetItemPropertyFromDataAsset(const UItemDataAsset* DataAsset);
+	virtual void SetItemPropertyFromDataAsset(const UItemDataAsset* DataAsset);
 
-	void DropItem();
-	void SetItemState(const EItemState State);
+	void DropItem(const float DropImpulsePower = 5000.f);
+	virtual void SetItemState(const EItemState State);
 	
 	virtual void SetOwner(AActor* NewOwner) override;
 
