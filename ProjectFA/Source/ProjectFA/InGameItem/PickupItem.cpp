@@ -120,7 +120,7 @@ void APickupItem::DropItem()
 	FVector ImpulseDirection = GetActorForwardVector();
 	const float RandomRotation = FMath::FRandRange(-40.f, 40.f);
 	ImpulseDirection = ImpulseDirection.RotateAngleAxis(RandomRotation, FVector::UpVector);
-	PickupItemMesh->AddImpulse(ImpulseDirection * 1000.f);
+	PickupItemMesh->AddImpulse(ImpulseDirection * 5000.f);
 	
 	GetWorldTimerManager().SetTimer(DropTimer, this, &APickupItem::DropEnd, 2.0f);
 

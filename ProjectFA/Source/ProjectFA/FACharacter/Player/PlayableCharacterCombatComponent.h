@@ -36,8 +36,8 @@ private:
 public:
 
 	UPlayableCharacterCombatComponent();
-	
-	virtual void WeaponAttacking() override;
+
+	virtual void WeaponAttackStart() override;
 	virtual void WeaponAttackEnd() override;
 
 	void EquipItemToCharacter(APickupItem* ItemToEquip);

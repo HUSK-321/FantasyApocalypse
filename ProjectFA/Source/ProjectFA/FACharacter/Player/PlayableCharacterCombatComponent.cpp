@@ -62,12 +62,12 @@ void UPlayableCharacterCombatComponent::Attack()
 	}
 }
 
-void UPlayableCharacterCombatComponent::WeaponAttacking()
+void UPlayableCharacterCombatComponent::WeaponAttackStart()
 {
 	if(EquippedItem == nullptr)	return;
 	if(auto const WeaponInterface = Cast<IEquipable>(EquippedItem))
 	{
-		WeaponInterface->WeaponAttacking_Implementation();
+		WeaponInterface->AttackStart_Implementation();
 	}
 }
 

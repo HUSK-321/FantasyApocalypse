@@ -21,6 +21,6 @@ class PROJECTFA_API IWeaponAttackableComponent
 	GENERATED_BODY()
 
 public:
-	virtual void WeaponAttacking() = 0;
+	virtual void WeaponAttackStart() = 0;
 	virtual void WeaponAttackEnd() = 0;
 };
