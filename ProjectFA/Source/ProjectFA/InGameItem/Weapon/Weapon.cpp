@@ -118,7 +118,7 @@ void AWeapon::AttackCollisionOnOverlapBegin(UPrimitiveComponent* OverlappedCompo
 	
 	UGameplayStatics::ApplyDamage(OtherActor, ItemPowerAmount, AttackingInstigator, this, DamageTypeClass);
 	HittedActors.AddUnique(OtherActor);
-	
+
 	if(GetWorld())
 	{
 		const FVector DebugLineStart = SweepResult.ImpactPoint;

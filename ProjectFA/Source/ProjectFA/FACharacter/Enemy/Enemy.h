@@ -43,6 +43,9 @@ private:
 	UPROPERTY(EditAnywhere, Category = "Spawner Property")
 	TArray<FSpawnerInitializeInfo> SpawnCategoryInfo;
 
+	UPROPERTY()
+	TSet<AActor*> HittedActors;
+
 public:
 	
 	AEnemy();
