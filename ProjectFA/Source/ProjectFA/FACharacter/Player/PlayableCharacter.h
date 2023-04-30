@@ -70,6 +70,7 @@ private:
 	float MaxSprintSpeed;
 	UPROPERTY(EditAnywhere, Category = "Player Property")
 	float MaxCrouchSpeed;
+	UPROPERTY(VisibleAnywhere)
 	bool bNowSprinting;
 	
 	UPROPERTY(EditAnywhere, Category = "Player Property")
@@ -105,12 +106,17 @@ public:
 protected:
 	
 	virtual void BeginPlay() override;
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
 	virtual void CharacterDead() override;
 	virtual void AfterDeath() override;
 	virtual bool CharacterCannotMove() override;
 	virtual bool CharacterCannotAttack() override;
 	virtual bool CharacterCannotJump() override;
+	
+private:
+	UFUNCTION(Server, Reliable)
+	void ServerSetCharacterMovement(bool bSprinting);
 
 private:
 

@@ -9,6 +9,7 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Kismet/KismetSystemLibrary.h"
+#include "Net/UnrealNetwork.h"
 #include "ProjectFA/HUD/InventoryWidget/InventorySlotWidget.h"
 #include "ProjectFA/Interactable/Looting/LootInteractable.h"
 
@@ -59,6 +60,11 @@ void APlayableCharacter::BeginPlay()
 	}
 	PlayerHealthChangedEvent.Broadcast(CurrentHealth, MaxHealth);
 	PlayerStaminaChangedEvent.Broadcast(CurrentStamina, MaxStamina);
+}
+
+void APlayableCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 }
 
 void APlayableCharacter::CharacterDead()
@@ -178,6 +184,8 @@ void APlayableCharacter::SetCharacterMoveSpeed()
 	const float CurrentCrouchSpeed = MaxCrouchSpeed - DecreaseFactors;
 	GetCharacterMovement()->MaxWalkSpeed = CurrentSpeed;
 	GetCharacterMovement()->MaxWalkSpeedCrouched = CurrentCrouchSpeed;
+
+	ServerSetCharacterMovement(bNowSprinting);
 }
 
 void APlayableCharacter::SetInventoryWeightSpeedFactor(const float& InventoryTotalWeight)
@@ -304,4 +312,16 @@ bool APlayableCharacter::CharacterCannotJump()
 {
 	if(CombatComponent == nullptr)	return CharacterCannotMove();
 	return CharacterCannotMove() || CombatComponent->GetNowAttacking();
+}
+
+void APlayableCharacter::ServerSetCharacterMovement_Implementation(bool bSprinting)
+{
+	if(GetCharacterMovement() == nullptr)	return;
+	
+	const float DecreaseFactors = InventoryWeightFactor;
+	const float CurrentSpeed = (bSprinting) ? MaxSprintSpeed - DecreaseFactors :
+												 MaxWalkSpeed - DecreaseFactors;
+	const float CurrentCrouchSpeed = MaxCrouchSpeed - DecreaseFactors;
+	GetCharacterMovement()->MaxWalkSpeed = CurrentSpeed;
+	GetCharacterMovement()->MaxWalkSpeedCrouched = CurrentCrouchSpeed;
 }
