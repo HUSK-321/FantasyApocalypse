@@ -10,6 +10,7 @@
 APickupItem::APickupItem()
 {
 	PrimaryActorTick.bCanEverTick = false;
+	bReplicates = true;
 
 	PickupItemMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("PickupItemMesh"));
 	SetRootComponent(PickupItemMesh);
@@ -38,8 +39,13 @@ void APickupItem::BeginPlay()
 {
 	Super::BeginPlay();
 
-	PickupAreaSphere->OnComponentBeginOverlap.AddDynamic(this, &APickupItem::PickupAreaBeginOverlap);
-	PickupAreaSphere->OnComponentEndOverlap.AddDynamic(this, &APickupItem::PickupAreaEndOverlap);
+	SetReplicateMovement(true);
+
+	if(HasAuthority())
+	{
+		PickupAreaSphere->OnComponentBeginOverlap.AddDynamic(this, &APickupItem::PickupAreaBeginOverlap);
+		PickupAreaSphere->OnComponentEndOverlap.AddDynamic(this, &APickupItem::PickupAreaEndOverlap);
+	}
 }
 
 void APickupItem::Destroyed()

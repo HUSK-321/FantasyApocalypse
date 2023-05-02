@@ -19,6 +19,8 @@ ALootingBox::ALootingBox()
 	DissolveTimeline(CreateDefaultSubobject<UTimelineComponent>(TEXT("Dissolve Timeline Component"))),
 	MaxTimeToSearch(2.f)
 {
+	bReplicates = true;
+	
 	PrimaryActorTick.bCanEverTick = false;
 
 	SetRootComponent(ItemGeneratePosition);
@@ -77,6 +79,7 @@ void ALootingBox::LootAreaBeginOverlap(UPrimitiveComponent* OverlappedComponent,
 {
 	if(const auto InteractableCharacter = Cast<IInteractableCharacter>(OtherActor))
 	{
+		if(OtherActor->GetLocalRole() < ENetRole::ROLE_AutonomousProxy)	return;
 		ProgressWidgetComponent->SetVisibility(true);
 		InteractableCharacter->SetInteractingActor(this);
 	}
@@ -87,6 +90,7 @@ void ALootingBox::LootAreaEndOverlap(UPrimitiveComponent* OverlappedComponent, A
 {
 	if(const auto InteractableCharacter = Cast<IInteractableCharacter>(OtherActor))
 	{
+		if(OtherActor->GetLocalRole() < ENetRole::ROLE_AutonomousProxy)	return;
 		ProgressWidgetComponent->SetVisibility(false);
 		InteractableCharacter->SetInteractingActor(nullptr);
 	}
