@@ -79,7 +79,8 @@ void ALootingBox::LootAreaBeginOverlap(UPrimitiveComponent* OverlappedComponent,
 {
 	if(const auto InteractableCharacter = Cast<IInteractableCharacter>(OtherActor))
 	{
-		if(OtherActor->GetLocalRole() < ENetRole::ROLE_AutonomousProxy)	return;
+		const auto OtherPawn = Cast<APawn>(OtherActor);
+		if(OtherPawn == nullptr || OtherPawn->IsLocallyControlled() == false)	return;
 		ProgressWidgetComponent->SetVisibility(true);
 		InteractableCharacter->SetInteractingActor(this);
 	}
@@ -90,7 +91,8 @@ void ALootingBox::LootAreaEndOverlap(UPrimitiveComponent* OverlappedComponent, A
 {
 	if(const auto InteractableCharacter = Cast<IInteractableCharacter>(OtherActor))
 	{
-		if(OtherActor->GetLocalRole() < ENetRole::ROLE_AutonomousProxy)	return;
+		const auto OtherPawn = Cast<APawn>(OtherActor);
+		if(OtherPawn == nullptr || OtherPawn->IsLocallyControlled() == false)	return;
 		ProgressWidgetComponent->SetVisibility(false);
 		InteractableCharacter->SetInteractingActor(nullptr);
 	}
