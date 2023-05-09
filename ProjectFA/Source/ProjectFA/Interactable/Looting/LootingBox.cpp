@@ -5,7 +5,9 @@
 #include "LootingItemComponent.h"
 #include "Components/SphereComponent.h"
 #include "Components/WidgetComponent.h"
+#include "Net/UnrealNetwork.h"
 #include "ProjectFA/FACharacter/InteractableCharacter.h"
+#include "ProjectFA/FACharacter/Player/PlayableController.h"
 #include "ProjectFA/HUD/InteractionWidget/ItemLootingProgressWidget.h"
 #include "ProjectFA/InGameItem/PickupItem.h"
 
@@ -17,7 +19,8 @@ ALootingBox::ALootingBox()
 	LootingItemComponent(CreateDefaultSubobject<ULootingItemComponent>(TEXT("Looting Component"))),
 	ProgressWidgetComponent(CreateDefaultSubobject<UWidgetComponent>(TEXT("Progress Widget"))),
 	DissolveTimeline(CreateDefaultSubobject<UTimelineComponent>(TEXT("Dissolve Timeline Component"))),
-	MaxTimeToSearch(2.f)
+	MaxTimeToSearch(2.f),
+	bLootingBoxDissolving(false)
 {
 	bReplicates = true;
 	
@@ -50,6 +53,11 @@ void ALootingBox::SetSpawnItemList(const TArray<APickupItem*>& ItemList)
 	LootingItemComponent->InitializeItemList(ItemList);
 }
 
+void ALootingBox::MulticastOpenLootingBox_Implementation()
+{
+	OpenLooting();
+}
+
 void ALootingBox::FindItem_Implementation(const float SearchTime)
 {
 	ProgressWidget = ProgressWidget == nullptr ?
@@ -61,16 +69,21 @@ void ALootingBox::FindItem_Implementation(const float SearchTime)
 	}
 	if(SearchTime >= MaxTimeToSearch)
 	{
-		LootingItemComponent->GenerateItemsToWorld();
-		OpenLooting();
+		// TODO : refactor
+		const auto PlayerController = GetGameInstance()->GetFirstLocalPlayerController(GetWorld());
+		if(const auto Controller = Cast<APlayableController>(PlayerController))
+		{
+			Controller->ServerOpenLootingBox(this);
+		}
 	}
 }
 
 void ALootingBox::OpenLooting()
 {
 	ProgressWidgetComponent->SetVisibility(false);
-	if(DissolveMaterialInstance == nullptr)	return;
+	if(LootingItemComponent == nullptr)	return;
 	
+	LootingItemComponent->GenerateItemsToWorld();
 	StartDissolve();
 }
 
@@ -106,14 +119,15 @@ void ALootingBox::UpdateMaterialDissolve(float DissolveTime)
 
 void ALootingBox::StartDissolve()
 {
-	if(DissolveMaterialInstance == nullptr)	return;
-	DynamicDissolveMaterialInstance = UMaterialInstanceDynamic::Create(DissolveMaterialInstance, this);
-	BoxMesh->SetMaterial(0, DynamicDissolveMaterialInstance);
-	DynamicDissolveMaterialInstance->SetScalarParameterValue(TEXT("Disslove"), -0.55f);
-	
+	if(DissolveMaterialInstance == nullptr || bLootingBoxDissolving)	return;
 	if(BoxMesh == nullptr || DissolveCurve == nullptr || DissolveTimeline == nullptr)	return;
 
+	UE_LOG(LogTemp, Warning, TEXT("start dissolve"));
+	bLootingBoxDissolving = true;
+	DynamicDissolveMaterialInstance = UMaterialInstanceDynamic::Create(DissolveMaterialInstance, this);
+	DynamicDissolveMaterialInstance->SetScalarParameterValue(TEXT("Disslove"), -0.55f);
 	BoxMesh->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
+	BoxMesh->SetMaterial(0, DynamicDissolveMaterialInstance);
 	
 	FOnTimelineFloat DissolveTrack;
 	DissolveTrack.BindDynamic(this, &ALootingBox::UpdateMaterialDissolve);

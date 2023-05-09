@@ -11,12 +11,18 @@
 #include "ProjectFA/HUD/ProjectFAHUD.h"
 #include "ProjectFA/HUD/InventoryWidget/InventoryWidget.h"
 #include "ProjectFA/HUD/PickupItemListWidget/PickupItemList.h"
+#include "ProjectFA/Interactable/Looting/LootingBox.h"
 
 void APlayableController::BeginPlay()
 {
 	Super::BeginPlay();
 
 	ProjectFAHUD = Cast<AProjectFAHUD>(GetHUD());
+}
+
+void APlayableController::ServerOpenLootingBox_Implementation(ALootingBox* LootingBox)
+{
+	LootingBox->MulticastOpenLootingBox();
 }
 
 void APlayableController::SetPlayerEvent(APlayableCharacter* ControllingPlayer)
