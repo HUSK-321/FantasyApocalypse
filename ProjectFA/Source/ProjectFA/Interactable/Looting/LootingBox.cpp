@@ -122,7 +122,6 @@ void ALootingBox::StartDissolve()
 	if(DissolveMaterialInstance == nullptr || bLootingBoxDissolving)	return;
 	if(BoxMesh == nullptr || DissolveCurve == nullptr || DissolveTimeline == nullptr)	return;
 
-	UE_LOG(LogTemp, Warning, TEXT("start dissolve"));
 	bLootingBoxDissolving = true;
 	DynamicDissolveMaterialInstance = UMaterialInstanceDynamic::Create(DissolveMaterialInstance, this);
 	DynamicDissolveMaterialInstance->SetScalarParameterValue(TEXT("Disslove"), -0.55f);

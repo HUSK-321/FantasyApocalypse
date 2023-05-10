@@ -57,7 +57,7 @@ protected:
 	float ItemPowerAmount;
 	UPROPERTY(EditAnywhere, Category = "Item Property")
 	float ItemWeight;
-	UPROPERTY()
+	UPROPERTY(ReplicatedUsing = OnRep_ItemState, VisibleAnywhere, Category = "Item Property")
 	EItemState ItemState;
 
 	FTimerHandle DropTimer;
@@ -79,6 +79,7 @@ public:
 protected:
 	virtual void BeginPlay() override;
 	virtual void Destroyed() override;
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
 private:
 	UFUNCTION()
@@ -88,4 +89,7 @@ private:
 	void PickupAreaEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 							UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 	void DropEnd();
+
+	UFUNCTION()
+	void OnRep_ItemState();
 };

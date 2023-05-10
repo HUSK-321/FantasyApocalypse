@@ -23,7 +23,7 @@ private:
 
 	UPROPERTY()
 	TObjectPtr<AFACharacter> Character;
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(ReplicatedUsing = OnRep_EquippedItem, VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<APickupItem> EquippedItem;
 	UPROPERTY(EditDefaultsOnly, Category = "Combat", meta = (AllowPrivateAccess = "true"))
 	TSubclassOf<APickupItem> DefaultPunchWeaponClass;
@@ -50,10 +50,13 @@ public:
 	FORCEINLINE bool GetNowAttacking() const { return bNowAttacking; }
 	
 protected:
-	
 	virtual void BeginPlay() override;
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
 private:
 	UFUNCTION()
 	void ItemDrop(APickupItem* UnEquipItem);
+
+	UFUNCTION()
+	void OnRep_EquippedItem();
 };
