@@ -73,18 +73,16 @@ void APickupItem::SetOwner(AActor* NewOwner)
 void APickupItem::SetItemState(const EItemState State)
 {
 	ItemState = State;
-	SetItemVisibilityByState();
+	OnRep_ItemState();
 }
 
 void APickupItem::OnRep_ItemState()
 {
-	UE_LOG(LogTemp, Warning, TEXT("OnRep itemState"));
 	SetItemVisibilityByState();
 }
 
 void APickupItem::SetItemVisibilityByState()
 {
-	UE_LOG(LogTemp, Warning, TEXT("[Pickup Item] Set Item Visibility"));
 	switch (ItemState)
 	{
 	case EItemState::EIS_Initial:

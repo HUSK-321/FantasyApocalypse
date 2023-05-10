@@ -13,7 +13,6 @@ AWeapon::AWeapon()
 {
 	WeaponMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("WeaponMesh"));
 	WeaponMesh->SetupAttachment(GetRootComponent());
-	WeaponMesh->SetIsReplicated(true);
 
 	AttackCollision = CreateDefaultSubobject<UBoxComponent>(TEXT("AttackCollision"));
 	AttackCollision->SetupAttachment(GetRootComponent());
@@ -53,8 +52,6 @@ void AWeapon::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeP
 void AWeapon::SetItemVisibilityByState()
 {
 	Super::SetItemVisibilityByState();
-
-	UE_LOG(LogTemp, Warning, TEXT("[Weapon] Set Item Visibility"));
 	
 	switch (ItemState)
 	{

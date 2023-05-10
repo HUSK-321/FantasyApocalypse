@@ -38,6 +38,8 @@ APlayableCharacter::APlayableCharacter()
 
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 	GetCharacterMovement()->NavAgentProps.bCanCrouch = true;
+
+	CombatComponent->SetIsReplicated(true);
 }
 
 void APlayableCharacter::BeginPlay()
