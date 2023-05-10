@@ -6,7 +6,7 @@
 #include "ProjectFA/InGameItem/Equipable.h"
 #include "ProjectFA/InGameItem/InventoryUsable.h"
 #include "ProjectFA/InGameItem/PickupItem.h"
-#include "WeaponType.h"
+#include "ProjectFA/InGameItem/ItemInfoData.h"
 #include "Weapon.generated.h"
 
 /**
@@ -27,10 +27,8 @@ public:
 private:
 	UPROPERTY(EditAnywhere, Category = "Weapon Properties")
 	TObjectPtr<USkeletalMeshComponent> WeaponMesh;
-	UPROPERTY(Replicated, EditAnywhere, Category = "Weapon Properties")
-	TSubclassOf<UDamageType> DamageTypeClass;
-	UPROPERTY(Replicated, EditDefaultsOnly, Category = "Weapon Properties")
-	EWeaponType WeaponType;
+	UPROPERTY(Replicated, VisibleAnywhere, Category = "Weapon Properties")
+	FWeaponItemInfoData WeaponInfo;
 	UPROPERTY(EditAnywhere, Category = "Weapon Properties")
 	TObjectPtr<UBoxComponent> AttackCollision;
 	

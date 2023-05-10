@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "ItemInfoData.h"
 #include "GameFramework/Actor.h"
 #include "Engine/DataTable.h"
 #include "PickupItem.generated.h"
@@ -47,16 +48,9 @@ protected:
 	UPROPERTY(EditAnywhere)
 	TObjectPtr<USphereComponent> PickupAreaSphere;
 
-	UPROPERTY(Replicated, EditAnywhere, BlueprintReadWrite, Category = "Item Property")
-	FString ItemName;
-	UPROPERTY(Replicated, EditAnywhere, BlueprintReadWrite, Category = "Item Property")
-	FString ItemDescription;
-	UPROPERTY(Replicated, EditAnywhere, BlueprintReadWrite, Category = "Item Property")
-	TObjectPtr<UTexture2D> ItemIcon;
-	UPROPERTY(Replicated, EditAnywhere, Category = "Item Property")
-	float ItemPowerAmount;
-	UPROPERTY(Replicated, EditAnywhere, Category = "Item Property")
-	float ItemWeight;
+	UPROPERTY(Replicated, VisibleAnywhere, Category = "Item Property")
+	FPickupItemInfoData ItemInfo;
+	
 	UPROPERTY(ReplicatedUsing = OnRep_ItemState, VisibleAnywhere, Category = "Item Property")
 	EItemState ItemState;
 
@@ -72,10 +66,10 @@ public:
 	
 	virtual void SetOwner(AActor* NewOwner) override;
 
-	FORCEINLINE FString GetItemName() const { return ItemName; }
-	FORCEINLINE FString GetItemDescription() const { return ItemDescription; }
-	FORCEINLINE float GetItemWeight() const { return ItemWeight; }
-	FORCEINLINE UTexture2D* GetItemIcon() const { return ItemIcon; }
+	FORCEINLINE FString GetItemName() const { return ItemInfo.ItemName; }
+	FORCEINLINE FString GetItemDescription() const { return ItemInfo.ItemDescription; }
+	FORCEINLINE float GetItemWeight() const { return ItemInfo.ItemWeight; }
+	FORCEINLINE UTexture2D* GetItemIcon() const { return ItemInfo.ItemIcon; }
 
 protected:
 	virtual void BeginPlay() override;

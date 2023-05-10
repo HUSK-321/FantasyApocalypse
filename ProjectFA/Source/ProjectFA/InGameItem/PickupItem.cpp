@@ -28,13 +28,14 @@ APickupItem::APickupItem()
 void APickupItem::SetItemPropertyFromDataAsset(const UItemDataAsset* DataAsset)
 {
 	if(DataAsset == nullptr)	return;
-
-	ItemName = DataAsset->Name;
-	ItemDescription = DataAsset->Description;
-	ItemIcon = DataAsset->Icon;
+	
 	PickupItemMesh->SetStaticMesh(DataAsset->Mesh);
-	ItemPowerAmount = DataAsset->PowerAmount;
-	ItemWeight = DataAsset->Weight;
+
+	ItemInfo.ItemName = DataAsset->Name;
+	ItemInfo.ItemDescription = DataAsset->Description;
+	ItemInfo.ItemIcon = DataAsset->Icon;
+	ItemInfo.ItemPowerAmount = DataAsset->PowerAmount;
+	ItemInfo.ItemWeight = DataAsset->Weight;
 }
 
 void APickupItem::BeginPlay()
@@ -57,11 +58,7 @@ void APickupItem::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifet
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(APickupItem, ItemState);
-	DOREPLIFETIME(APickupItem, ItemName);
-	DOREPLIFETIME(APickupItem, ItemDescription);
-	DOREPLIFETIME(APickupItem, ItemIcon);
-	DOREPLIFETIME(APickupItem, ItemPowerAmount);
-	DOREPLIFETIME(APickupItem, ItemWeight);
+	DOREPLIFETIME(APickupItem, ItemInfo);
 }
 
 void APickupItem::SetOwner(AActor* NewOwner)
