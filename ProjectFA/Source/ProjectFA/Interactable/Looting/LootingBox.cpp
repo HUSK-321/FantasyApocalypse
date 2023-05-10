@@ -90,10 +90,10 @@ void ALootingBox::OpenLooting()
 void ALootingBox::LootAreaBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
                                        UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
+	const auto OtherPawn = Cast<APawn>(OtherActor);
+	if(OtherPawn == nullptr || OtherPawn->IsLocallyControlled() == false)	return;
 	if(const auto InteractableCharacter = Cast<IInteractableCharacter>(OtherActor))
 	{
-		const auto OtherPawn = Cast<APawn>(OtherActor);
-		if(OtherPawn == nullptr || OtherPawn->IsLocallyControlled() == false)	return;
 		ProgressWidgetComponent->SetVisibility(true);
 		InteractableCharacter->SetInteractingActor(this);
 	}
@@ -102,10 +102,10 @@ void ALootingBox::LootAreaBeginOverlap(UPrimitiveComponent* OverlappedComponent,
 void ALootingBox::LootAreaEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
+	const auto OtherPawn = Cast<APawn>(OtherActor);
+	if(OtherPawn == nullptr || OtherPawn->IsLocallyControlled() == false)	return;
 	if(const auto InteractableCharacter = Cast<IInteractableCharacter>(OtherActor))
 	{
-		const auto OtherPawn = Cast<APawn>(OtherActor);
-		if(OtherPawn == nullptr || OtherPawn->IsLocallyControlled() == false)	return;
 		ProgressWidgetComponent->SetVisibility(false);
 		InteractableCharacter->SetInteractingActor(nullptr);
 	}
