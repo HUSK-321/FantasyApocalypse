@@ -17,11 +17,12 @@ APickupItem::APickupItem()
 	SetRootComponent(PickupItemMesh);
 	PickupItemMesh->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Block);
 	PickupItemMesh->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECollisionResponse::ECR_Ignore);
+	PickupItemMesh->SetIsReplicated(true);
 
 	PickupAreaSphere = CreateDefaultSubobject<USphereComponent>(TEXT("PickupAreaSphere"));
 	PickupAreaSphere->SetupAttachment(GetRootComponent());
 	PickupAreaSphere->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECollisionResponse::ECR_Ignore);
-	PickupAreaSphere->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Overlap);
+	PickupAreaSphere->SetIsReplicated(true);
 }
 
 void APickupItem::SetItemPropertyFromDataAsset(const UItemDataAsset* DataAsset)
@@ -40,13 +41,9 @@ void APickupItem::BeginPlay()
 {
 	Super::BeginPlay();
 
-	SetReplicateMovement(true);
-
-	if(HasAuthority())
-	{
-		PickupAreaSphere->OnComponentBeginOverlap.AddDynamic(this, &APickupItem::PickupAreaBeginOverlap);
-		PickupAreaSphere->OnComponentEndOverlap.AddDynamic(this, &APickupItem::PickupAreaEndOverlap);
-	}
+	PickupAreaSphere->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Overlap);
+	PickupAreaSphere->OnComponentBeginOverlap.AddDynamic(this, &APickupItem::PickupAreaBeginOverlap);
+	PickupAreaSphere->OnComponentEndOverlap.AddDynamic(this, &APickupItem::PickupAreaEndOverlap);
 }
 
 void APickupItem::Destroyed()
@@ -74,7 +71,19 @@ void APickupItem::SetOwner(AActor* NewOwner)
 void APickupItem::SetItemState(const EItemState State)
 {
 	ItemState = State;
-	switch (State)
+	SetItemVisibilityByState();
+}
+
+void APickupItem::OnRep_ItemState()
+{
+	UE_LOG(LogTemp, Warning, TEXT("OnRep itemState"));
+	SetItemVisibilityByState();
+}
+
+void APickupItem::SetItemVisibilityByState()
+{
+	UE_LOG(LogTemp, Warning, TEXT("[Pickup Item] Set Item Visibility"));
+	switch (ItemState)
 	{
 	case EItemState::EIS_Initial:
 		SetOwner(nullptr);
@@ -93,8 +102,8 @@ void APickupItem::SetItemState(const EItemState State)
 		PickupItemMesh->SetSimulatePhysics(false);
 		PickupItemMesh->SetEnableGravity(false);
 		PickupItemMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-		
-		PickupAreaSphere->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
+		PickupAreaSphere->SetCollisionEnabled(ECollisionEnabled::NoCollision);	
 		break;
 		
 	case EItemState::EIS_InInventory:
@@ -103,7 +112,7 @@ void APickupItem::SetItemState(const EItemState State)
 		PickupItemMesh->SetEnableGravity(false);
 		PickupItemMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 		
-		PickupAreaSphere->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		PickupAreaSphere->SetCollisionEnabled(ECollisionEnabled::NoCollision);	
 		break;
 		
 	case EItemState::EIS_Dropped:
@@ -114,12 +123,12 @@ void APickupItem::SetItemState(const EItemState State)
 		PickupItemMesh->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
 		PickupItemMesh->SetCollisionResponseToChannel(ECollisionChannel::ECC_WorldStatic, ECollisionResponse::ECR_Block);
 		
-		PickupAreaSphere->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		PickupAreaSphere->SetCollisionEnabled(ECollisionEnabled::NoCollision);	
 		break;
 		
 	default:
 		break;
-	}	
+	}
 }
 
 void APickupItem::DropItem(const float DropImpulsePower)
@@ -144,10 +153,6 @@ void APickupItem::DropItem(const float DropImpulsePower)
 void APickupItem::PickupAreaBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	if(const auto ActorPawn = Cast<APawn>(OtherActor))
-	{
-		if(ActorPawn->IsLocallyControlled() == false) return;
-	}
 	if(IPickupableCharacter* PickupableCharacter = Cast<IPickupableCharacter>(OtherActor))
 	{
 		PickupableCharacter->SetNearbyItem(this);
@@ -157,10 +162,6 @@ void APickupItem::PickupAreaBeginOverlap(UPrimitiveComponent* OverlappedComponen
 void APickupItem::PickupAreaEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
-	if(const auto ActorPawn = Cast<APawn>(OtherActor))
-	{
-		if(ActorPawn->IsLocallyControlled() == false) return;
-	}
 	if(IPickupableCharacter* PickupableCharacter = Cast<IPickupableCharacter>(OtherActor))
 	{
 		PickupableCharacter->UnsetNearbyItem(this);
@@ -170,55 +171,4 @@ void APickupItem::PickupAreaEndOverlap(UPrimitiveComponent* OverlappedComponent,
 void APickupItem::DropEnd()
 {
 	SetItemState(EItemState::EIS_Initial);
-}
-
-void APickupItem::OnRep_ItemState()
-{
-	UE_LOG(LogTemp, Warning, TEXT("Onrep Itemstate"));
-	switch (ItemState)
-	{
-	case EItemState::EIS_Initial:
-		SetOwner(nullptr);
-		PickupItemMesh->SetVisibility(true);
-		PickupItemMesh->SetSimulatePhysics(false);
-		PickupItemMesh->SetEnableGravity(false);
-		PickupItemMesh->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
-		PickupItemMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-
-		PickupAreaSphere->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
-		PickupAreaSphere->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Overlap);
-		break;
-		
-	case EItemState::EIS_Equipped:
-		PickupItemMesh->SetVisibility(false);
-		PickupItemMesh->SetSimulatePhysics(false);
-		PickupItemMesh->SetEnableGravity(false);
-		PickupItemMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-		
-		PickupAreaSphere->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-		break;
-		
-	case EItemState::EIS_InInventory:
-		PickupItemMesh->SetVisibility(false);
-		PickupItemMesh->SetSimulatePhysics(false);
-		PickupItemMesh->SetEnableGravity(false);
-		PickupItemMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-		
-		PickupAreaSphere->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-		break;
-		
-	case EItemState::EIS_Dropped:
-		PickupItemMesh->SetVisibility(true);
-		PickupItemMesh->SetSimulatePhysics(true);
-		PickupItemMesh->SetEnableGravity(true);
-		PickupItemMesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
-		PickupItemMesh->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
-		PickupItemMesh->SetCollisionResponseToChannel(ECollisionChannel::ECC_WorldStatic, ECollisionResponse::ECR_Block);
-		
-		PickupAreaSphere->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-		break;
-		
-	default:
-		break;
-	}	
 }

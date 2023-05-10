@@ -67,7 +67,8 @@ public:
 	virtual void SetItemPropertyFromDataAsset(const UItemDataAsset* DataAsset);
 
 	void DropItem(const float DropImpulsePower = 5000.f);
-	virtual void SetItemState(const EItemState State);
+	void SetItemState(const EItemState State);
+	virtual void SetItemVisibilityByState();
 	
 	virtual void SetOwner(AActor* NewOwner) override;
 

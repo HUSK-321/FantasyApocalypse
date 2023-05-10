@@ -40,7 +40,7 @@ private:
 public:
 	AWeapon();
 	virtual void SetItemPropertyFromDataAsset(const UItemDataAsset* DataAsset) override;
-	virtual void SetItemState(const EItemState State) override;
+	virtual void SetItemVisibilityByState() override;
 	
 	virtual FName GetNormalAttackMontageSectionName() const override;
 	virtual void UnEquip() override;

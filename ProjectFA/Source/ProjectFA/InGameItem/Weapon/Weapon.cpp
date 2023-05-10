@@ -20,6 +20,7 @@ AWeapon::AWeapon()
 	AttackCollision->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
 	AttackCollision->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Overlap);
 	AttackCollision->bHiddenInGame = false;
+	AttackCollision->SetIsReplicated(true);
 }
 
 void AWeapon::SetItemPropertyFromDataAsset(const UItemDataAsset* DataAsset)
@@ -33,11 +34,13 @@ void AWeapon::SetItemPropertyFromDataAsset(const UItemDataAsset* DataAsset)
 	DamageTypeClass = WeaponDataAsset->DamageTypeClass;
 }
 
-void AWeapon::SetItemState(const EItemState State)
+void AWeapon::SetItemVisibilityByState()
 {
-	Super::SetItemState(State);
+	Super::SetItemVisibilityByState();
 
-	switch (State)
+	UE_LOG(LogTemp, Warning, TEXT("[Weapon] Set Item Visibility"));
+	
+	switch (ItemState)
 	{
 	case EItemState::EIS_Initial:
 		WeaponMesh->SetVisibility(false);
