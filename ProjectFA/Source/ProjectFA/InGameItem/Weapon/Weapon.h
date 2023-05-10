@@ -27,9 +27,9 @@ public:
 private:
 	UPROPERTY(EditAnywhere, Category = "Weapon Properties")
 	TObjectPtr<USkeletalMeshComponent> WeaponMesh;
-	UPROPERTY(EditAnywhere, Category = "Weapon Properties")
+	UPROPERTY(Replicated, EditAnywhere, Category = "Weapon Properties")
 	TSubclassOf<UDamageType> DamageTypeClass;
-	UPROPERTY(EditDefaultsOnly, Category = "Weapon Properties")
+	UPROPERTY(Replicated, EditDefaultsOnly, Category = "Weapon Properties")
 	EWeaponType WeaponType;
 	UPROPERTY(EditAnywhere, Category = "Weapon Properties")
 	TObjectPtr<UBoxComponent> AttackCollision;
@@ -57,4 +57,5 @@ public:
 
 protected:
 	virtual void BeginPlay() override;
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 };

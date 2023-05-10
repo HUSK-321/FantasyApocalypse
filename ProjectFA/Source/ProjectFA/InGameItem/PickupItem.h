@@ -47,15 +47,15 @@ protected:
 	UPROPERTY(EditAnywhere)
 	TObjectPtr<USphereComponent> PickupAreaSphere;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item Property")
+	UPROPERTY(Replicated, EditAnywhere, BlueprintReadWrite, Category = "Item Property")
 	FString ItemName;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item Property")
+	UPROPERTY(Replicated, EditAnywhere, BlueprintReadWrite, Category = "Item Property")
 	FString ItemDescription;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item Property")
+	UPROPERTY(Replicated, EditAnywhere, BlueprintReadWrite, Category = "Item Property")
 	TObjectPtr<UTexture2D> ItemIcon;
-	UPROPERTY(EditAnywhere, Category = "Item Property")
+	UPROPERTY(Replicated, EditAnywhere, Category = "Item Property")
 	float ItemPowerAmount;
-	UPROPERTY(EditAnywhere, Category = "Item Property")
+	UPROPERTY(Replicated, EditAnywhere, Category = "Item Property")
 	float ItemWeight;
 	UPROPERTY(ReplicatedUsing = OnRep_ItemState, VisibleAnywhere, Category = "Item Property")
 	EItemState ItemState;

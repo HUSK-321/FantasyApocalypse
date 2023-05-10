@@ -7,11 +7,13 @@
 #include "Components/SkeletalMeshComponent.h"
 #include "Engine/SkeletalMeshSocket.h"
 #include "Kismet/GameplayStatics.h"
+#include "Net/UnrealNetwork.h"
 
 AWeapon::AWeapon()
 {
 	WeaponMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("WeaponMesh"));
 	WeaponMesh->SetupAttachment(GetRootComponent());
+	WeaponMesh->SetIsReplicated(true);
 
 	AttackCollision = CreateDefaultSubobject<UBoxComponent>(TEXT("AttackCollision"));
 	AttackCollision->SetupAttachment(GetRootComponent());
@@ -32,6 +34,21 @@ void AWeapon::SetItemPropertyFromDataAsset(const UItemDataAsset* DataAsset)
 	WeaponMesh->SetSkeletalMesh(WeaponDataAsset->WeaponSkeletalMesh);
 	WeaponType = WeaponDataAsset->WeaponType;
 	DamageTypeClass = WeaponDataAsset->DamageTypeClass;
+}
+
+void AWeapon::BeginPlay()
+{
+	Super::BeginPlay();
+
+	AttackCollision->OnComponentBeginOverlap.AddDynamic(this, &AWeapon::AttackCollisionOnOverlapBegin);
+}
+
+void AWeapon::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(AWeapon, DamageTypeClass);
+	DOREPLIFETIME(AWeapon, WeaponType);
 }
 
 void AWeapon::SetItemVisibilityByState()
@@ -72,13 +89,6 @@ void AWeapon::SetItemVisibilityByState()
 	default:
 		break;
 	}
-}
-
-void AWeapon::BeginPlay()
-{
-	Super::BeginPlay();
-
-	AttackCollision->OnComponentBeginOverlap.AddDynamic(this, &AWeapon::AttackCollisionOnOverlapBegin);
 }
 
 FName AWeapon::GetNormalAttackMontageSectionName() const

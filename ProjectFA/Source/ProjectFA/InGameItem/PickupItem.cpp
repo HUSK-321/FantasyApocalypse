@@ -57,6 +57,11 @@ void APickupItem::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifet
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(APickupItem, ItemState);
+	DOREPLIFETIME(APickupItem, ItemName);
+	DOREPLIFETIME(APickupItem, ItemDescription);
+	DOREPLIFETIME(APickupItem, ItemIcon);
+	DOREPLIFETIME(APickupItem, ItemPowerAmount);
+	DOREPLIFETIME(APickupItem, ItemWeight);
 }
 
 void APickupItem::SetOwner(AActor* NewOwner)
