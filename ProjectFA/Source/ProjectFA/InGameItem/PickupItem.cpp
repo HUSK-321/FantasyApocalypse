@@ -5,39 +5,44 @@
 #include "ItemDataAsset.h"
 #include "Components/SphereComponent.h"
 #include "Components/StaticMeshComponent.h"
+#include "Net/UnrealNetwork.h"
 #include "ProjectFA/FACharacter/PickupableCharacter.h"
 
 APickupItem::APickupItem()
 {
 	PrimaryActorTick.bCanEverTick = false;
+	bReplicates = true;
 
 	PickupItemMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("PickupItemMesh"));
 	SetRootComponent(PickupItemMesh);
 	PickupItemMesh->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Block);
 	PickupItemMesh->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECollisionResponse::ECR_Ignore);
+	PickupItemMesh->SetIsReplicated(true);
 
 	PickupAreaSphere = CreateDefaultSubobject<USphereComponent>(TEXT("PickupAreaSphere"));
 	PickupAreaSphere->SetupAttachment(GetRootComponent());
 	PickupAreaSphere->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECollisionResponse::ECR_Ignore);
-	PickupAreaSphere->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Overlap);
+	PickupAreaSphere->SetIsReplicated(true);
 }
 
 void APickupItem::SetItemPropertyFromDataAsset(const UItemDataAsset* DataAsset)
 {
 	if(DataAsset == nullptr)	return;
-
-	ItemName = DataAsset->Name;
-	ItemDescription = DataAsset->Description;
-	ItemIcon = DataAsset->Icon;
+	
 	PickupItemMesh->SetStaticMesh(DataAsset->Mesh);
-	ItemPowerAmount = DataAsset->PowerAmount;
-	ItemWeight = DataAsset->Weight;
+
+	ItemInfo.ItemName = DataAsset->Name;
+	ItemInfo.ItemDescription = DataAsset->Description;
+	ItemInfo.ItemIcon = DataAsset->Icon;
+	ItemInfo.ItemPowerAmount = DataAsset->PowerAmount;
+	ItemInfo.ItemWeight = DataAsset->Weight;
 }
 
 void APickupItem::BeginPlay()
 {
 	Super::BeginPlay();
 
+	PickupAreaSphere->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Overlap);
 	PickupAreaSphere->OnComponentBeginOverlap.AddDynamic(this, &APickupItem::PickupAreaBeginOverlap);
 	PickupAreaSphere->OnComponentEndOverlap.AddDynamic(this, &APickupItem::PickupAreaEndOverlap);
 }
@@ -46,6 +51,14 @@ void APickupItem::Destroyed()
 {
 	ItemDroppedEvent.Broadcast(this);
 	Super::Destroyed();
+}
+
+void APickupItem::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(APickupItem, ItemState);
+	DOREPLIFETIME(APickupItem, ItemInfo);
 }
 
 void APickupItem::SetOwner(AActor* NewOwner)
@@ -60,7 +73,17 @@ void APickupItem::SetOwner(AActor* NewOwner)
 void APickupItem::SetItemState(const EItemState State)
 {
 	ItemState = State;
-	switch (State)
+	OnRep_ItemState();
+}
+
+void APickupItem::OnRep_ItemState()
+{
+	SetItemVisibilityByState();
+}
+
+void APickupItem::SetItemVisibilityByState()
+{
+	switch (ItemState)
 	{
 	case EItemState::EIS_Initial:
 		SetOwner(nullptr);
@@ -79,8 +102,8 @@ void APickupItem::SetItemState(const EItemState State)
 		PickupItemMesh->SetSimulatePhysics(false);
 		PickupItemMesh->SetEnableGravity(false);
 		PickupItemMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-		
-		PickupAreaSphere->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
+		PickupAreaSphere->SetCollisionEnabled(ECollisionEnabled::NoCollision);	
 		break;
 		
 	case EItemState::EIS_InInventory:
@@ -89,7 +112,7 @@ void APickupItem::SetItemState(const EItemState State)
 		PickupItemMesh->SetEnableGravity(false);
 		PickupItemMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 		
-		PickupAreaSphere->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		PickupAreaSphere->SetCollisionEnabled(ECollisionEnabled::NoCollision);	
 		break;
 		
 	case EItemState::EIS_Dropped:
@@ -100,12 +123,12 @@ void APickupItem::SetItemState(const EItemState State)
 		PickupItemMesh->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
 		PickupItemMesh->SetCollisionResponseToChannel(ECollisionChannel::ECC_WorldStatic, ECollisionResponse::ECR_Block);
 		
-		PickupAreaSphere->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		PickupAreaSphere->SetCollisionEnabled(ECollisionEnabled::NoCollision);	
 		break;
 		
 	default:
 		break;
-	}	
+	}
 }
 
 void APickupItem::DropItem(const float DropImpulsePower)

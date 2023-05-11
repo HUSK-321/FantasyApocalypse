@@ -3,6 +3,7 @@
 
 #include "PlayableCharacterCombatComponent.h"
 #include "Engine/SkeletalMeshSocket.h"
+#include "Net/UnrealNetwork.h"
 #include "ProjectFA/FACharacter/FACharacter.h"
 #include "ProjectFA/InGameItem/Weapon/Weapon.h"
 
@@ -25,6 +26,13 @@ void UPlayableCharacterCombatComponent::BeginPlay()
 	}
 }
 
+void UPlayableCharacterCombatComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(UPlayableCharacterCombatComponent, EquippedItem);
+}
+
 void UPlayableCharacterCombatComponent::EquipItemToCharacter(APickupItem* ItemToEquip)
 {
 	if(Character == nullptr)	return;
@@ -44,6 +52,18 @@ void UPlayableCharacterCombatComponent::EquipItemToCharacter(APickupItem* ItemTo
 		FEquipItemEvent Event;
 		Event.AddDynamic(this, &UPlayableCharacterCombatComponent::ItemDrop);
 		Equipable->SetUnEquipEvent(Event);
+	}
+}
+
+void UPlayableCharacterCombatComponent::OnRep_EquippedItem()
+{
+	UE_LOG(LogTemp, Warning, TEXT("Onrep EquippedItem"));
+	if(Character == nullptr || EquippedItem == nullptr)	return;
+	
+	EquippedItem->SetItemState(EItemState::EIS_Equipped);
+	if(const auto RightHandSocket = Character->GetMesh()->GetSocketByName("hand_r_weapon_socket"))
+	{
+		RightHandSocket->AttachActor(EquippedItem, Character->GetMesh());
 	}
 }
 

@@ -13,6 +13,7 @@ void UPickupItemListElement::NativeOnListItemObjectSet(UObject* ListItemObject)
 	if(Item == nullptr)	return;
 
 	ItemName->SetText(FText::FromString(Item->GetItemName()));
+	ItemImage->SetBrushFromTexture(Item->GetItemIcon());
 	SetCursorDeactive();
 }
 

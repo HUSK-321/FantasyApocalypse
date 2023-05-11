@@ -6,7 +6,7 @@
 #include "ProjectFA/InGameItem/Equipable.h"
 #include "ProjectFA/InGameItem/InventoryUsable.h"
 #include "ProjectFA/InGameItem/PickupItem.h"
-#include "WeaponType.h"
+#include "ProjectFA/InGameItem/ItemInfoData.h"
 #include "Weapon.generated.h"
 
 /**
@@ -27,10 +27,8 @@ public:
 private:
 	UPROPERTY(EditAnywhere, Category = "Weapon Properties")
 	TObjectPtr<USkeletalMeshComponent> WeaponMesh;
-	UPROPERTY(EditAnywhere, Category = "Weapon Properties")
-	TSubclassOf<UDamageType> DamageTypeClass;
-	UPROPERTY(EditDefaultsOnly, Category = "Weapon Properties")
-	EWeaponType WeaponType;
+	UPROPERTY(Replicated, VisibleAnywhere, Category = "Weapon Properties")
+	FWeaponItemInfoData WeaponInfo;
 	UPROPERTY(EditAnywhere, Category = "Weapon Properties")
 	TObjectPtr<UBoxComponent> AttackCollision;
 	
@@ -40,7 +38,7 @@ private:
 public:
 	AWeapon();
 	virtual void SetItemPropertyFromDataAsset(const UItemDataAsset* DataAsset) override;
-	virtual void SetItemState(const EItemState State) override;
+	virtual void SetItemVisibilityByState() override;
 	
 	virtual FName GetNormalAttackMontageSectionName() const override;
 	virtual void UnEquip() override;
@@ -57,4 +55,5 @@ public:
 
 protected:
 	virtual void BeginPlay() override;
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 };

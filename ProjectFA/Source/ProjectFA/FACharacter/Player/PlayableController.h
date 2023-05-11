@@ -20,10 +20,11 @@ class PROJECTFA_API APlayableController : public APlayerController
 	GENERATED_BODY()
 	
 protected:
-
 	virtual void BeginPlay() override;
 
 public:
+	UFUNCTION(Server, Reliable)
+	void ServerOpenLootingBox(ALootingBox* LootingBox);
 
 	void SetPlayerEvent(APlayableCharacter* ControllingPlayer);
 	void SetInventoryEvent(UInventoryComponent* InventoryComponent);
@@ -45,7 +46,6 @@ public:
 	void ToggleInventoryWidget();
 
 private:
-
 	UFUNCTION()
 	void SetInventoryWeight(const float& Weight);
 	
@@ -58,6 +58,5 @@ private:
 	void SetInputModeGameOnly();
 
 private:
-
 	TObjectPtr<AProjectFAHUD> ProjectFAHUD;
 };

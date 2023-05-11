@@ -7,6 +7,7 @@
 #include "Components/SkeletalMeshComponent.h"
 #include "Engine/SkeletalMeshSocket.h"
 #include "Kismet/GameplayStatics.h"
+#include "Net/UnrealNetwork.h"
 
 AWeapon::AWeapon()
 {
@@ -20,6 +21,7 @@ AWeapon::AWeapon()
 	AttackCollision->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
 	AttackCollision->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Overlap);
 	AttackCollision->bHiddenInGame = false;
+	AttackCollision->SetIsReplicated(true);
 }
 
 void AWeapon::SetItemPropertyFromDataAsset(const UItemDataAsset* DataAsset)
@@ -29,15 +31,29 @@ void AWeapon::SetItemPropertyFromDataAsset(const UItemDataAsset* DataAsset)
 	if(WeaponDataAsset == nullptr)	return;
 
 	WeaponMesh->SetSkeletalMesh(WeaponDataAsset->WeaponSkeletalMesh);
-	WeaponType = WeaponDataAsset->WeaponType;
-	DamageTypeClass = WeaponDataAsset->DamageTypeClass;
+	WeaponInfo.WeaponType = WeaponDataAsset->WeaponType;
+	WeaponInfo.DamageTypeClass = WeaponDataAsset->DamageTypeClass;
 }
 
-void AWeapon::SetItemState(const EItemState State)
+void AWeapon::BeginPlay()
 {
-	Super::SetItemState(State);
+	Super::BeginPlay();
 
-	switch (State)
+	AttackCollision->OnComponentBeginOverlap.AddDynamic(this, &AWeapon::AttackCollisionOnOverlapBegin);
+}
+
+void AWeapon::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(AWeapon, WeaponInfo);
+}
+
+void AWeapon::SetItemVisibilityByState()
+{
+	Super::SetItemVisibilityByState();
+	
+	switch (ItemState)
 	{
 	case EItemState::EIS_Initial:
 		WeaponMesh->SetVisibility(false);
@@ -71,16 +87,9 @@ void AWeapon::SetItemState(const EItemState State)
 	}
 }
 
-void AWeapon::BeginPlay()
-{
-	Super::BeginPlay();
-
-	AttackCollision->OnComponentBeginOverlap.AddDynamic(this, &AWeapon::AttackCollisionOnOverlapBegin);
-}
-
 FName AWeapon::GetNormalAttackMontageSectionName() const
 {
-	switch (WeaponType)
+	switch (WeaponInfo.WeaponType)
 	{
 	case EWeaponType::EWT_OneHandSword:
 		return FName(TEXT("OneHandSword"));
@@ -109,14 +118,14 @@ void AWeapon::AttackStart_Implementation()
 void AWeapon::AttackCollisionOnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	if(DamageTypeClass == nullptr || HittedActors.Contains(OtherActor) || DamageTypeClass == nullptr)	return;
+	if(WeaponInfo.DamageTypeClass == nullptr || HittedActors.Contains(OtherActor))	return;
 	
 	const APawn* AttackingPawn = Cast<APawn>(GetOwner());
 	if(AttackingPawn == nullptr)	return;
 	const auto AttackingInstigator = AttackingPawn->GetController();
 	if(AttackingInstigator == nullptr)	return;
 	
-	UGameplayStatics::ApplyDamage(OtherActor, ItemPowerAmount, AttackingInstigator, this, DamageTypeClass);
+	UGameplayStatics::ApplyDamage(OtherActor, ItemInfo.ItemPowerAmount, AttackingInstigator, this, WeaponInfo.DamageTypeClass);
 	HittedActors.AddUnique(OtherActor);
 
 	if(GetWorld())

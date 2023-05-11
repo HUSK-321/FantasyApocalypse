@@ -11,7 +11,7 @@ ARecoveryItem::ARecoveryItem()
 void ARecoveryItem::InventoryAction_Implementation()
 {
 	if(GetOwner()->GetInstigatorController() == nullptr)	return;
-	UGameplayStatics::ApplyDamage(GetOwner(), -ItemPowerAmount, GetOwner()->GetInstigatorController(), this, UDamageType::StaticClass());
+	UGameplayStatics::ApplyDamage(GetOwner(), -ItemInfo.ItemPowerAmount, GetOwner()->GetInstigatorController(), this, UDamageType::StaticClass());
 	Destroy();
 }
 

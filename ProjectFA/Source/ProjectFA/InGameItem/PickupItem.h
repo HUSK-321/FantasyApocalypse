@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "ItemInfoData.h"
 #include "GameFramework/Actor.h"
 #include "Engine/DataTable.h"
 #include "PickupItem.generated.h"
@@ -47,17 +48,10 @@ protected:
 	UPROPERTY(EditAnywhere)
 	TObjectPtr<USphereComponent> PickupAreaSphere;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item Property")
-	FString ItemName;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item Property")
-	FString ItemDescription;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item Property")
-	TObjectPtr<UTexture2D> ItemIcon;
-	UPROPERTY(EditAnywhere, Category = "Item Property")
-	float ItemPowerAmount;
-	UPROPERTY(EditAnywhere, Category = "Item Property")
-	float ItemWeight;
-	UPROPERTY()
+	UPROPERTY(Replicated, VisibleAnywhere, Category = "Item Property")
+	FPickupItemInfoData ItemInfo;
+	
+	UPROPERTY(ReplicatedUsing = OnRep_ItemState, VisibleAnywhere, Category = "Item Property")
 	EItemState ItemState;
 
 	FTimerHandle DropTimer;
@@ -67,18 +61,20 @@ public:
 	virtual void SetItemPropertyFromDataAsset(const UItemDataAsset* DataAsset);
 
 	void DropItem(const float DropImpulsePower = 5000.f);
-	virtual void SetItemState(const EItemState State);
+	void SetItemState(const EItemState State);
+	virtual void SetItemVisibilityByState();
 	
 	virtual void SetOwner(AActor* NewOwner) override;
 
-	FORCEINLINE FString GetItemName() const { return ItemName; }
-	FORCEINLINE FString GetItemDescription() const { return ItemDescription; }
-	FORCEINLINE float GetItemWeight() const { return ItemWeight; }
-	FORCEINLINE UTexture2D* GetItemIcon() const { return ItemIcon; }
+	FORCEINLINE FString GetItemName() const { return ItemInfo.ItemName; }
+	FORCEINLINE FString GetItemDescription() const { return ItemInfo.ItemDescription; }
+	FORCEINLINE float GetItemWeight() const { return ItemInfo.ItemWeight; }
+	FORCEINLINE UTexture2D* GetItemIcon() const { return ItemInfo.ItemIcon; }
 
 protected:
 	virtual void BeginPlay() override;
 	virtual void Destroyed() override;
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
 private:
 	UFUNCTION()
@@ -88,4 +84,7 @@ private:
 	void PickupAreaEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 							UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 	void DropEnd();
+
+	UFUNCTION()
+	void OnRep_ItemState();
 };
