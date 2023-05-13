@@ -25,6 +25,8 @@ public:
 	FEquipItemEvent UnEquipEvent;
 
 private:
+	UPROPERTY(ReplicatedUsing = OnRep_WeaponSkeletal)
+	TObjectPtr<USkeletalMesh> WeaponSkeletal;
 	UPROPERTY(EditAnywhere, Category = "Weapon Properties")
 	TObjectPtr<USkeletalMeshComponent> WeaponMesh;
 	UPROPERTY(Replicated, VisibleAnywhere, Category = "Weapon Properties")
@@ -56,4 +58,8 @@ public:
 protected:
 	virtual void BeginPlay() override;
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+
+private:
+	UFUNCTION()
+	void OnRep_WeaponSkeletal();
 };
