@@ -33,7 +33,17 @@ void UInventoryComponent::SetNearbyItemToInventory()
 	if(NearbyItemList.IsEmpty() || InventoryItemList.Num() >= InventoryCapacity)	return;
 	ScrollNearbyItemList(0);
 	APickupItem* ItemToGetIn = NearbyItemList[NearbyItemIndex];
-	AddItemToInventory(ItemToGetIn);
+	ServerAddItemToPlayerInventory(ItemToGetIn);
+}
+
+void UInventoryComponent::ServerAddItemToPlayerInventory_Implementation(APickupItem* Item)
+{
+	MulticastAddItemToPlayerInventory(Item);
+}
+
+void UInventoryComponent::MulticastAddItemToPlayerInventory_Implementation(APickupItem* Item)
+{
+	AddItemToInventory(Item);
 }
 
 void UInventoryComponent::AddItemToInventory(APickupItem* ItemToIn)

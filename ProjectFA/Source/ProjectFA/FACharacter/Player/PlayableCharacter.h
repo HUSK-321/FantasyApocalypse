@@ -130,7 +130,7 @@ private:
 	void InteractWithActors(const FInputActionValue& Value);
 	void InteractWithActorsEnd();
 	void AttackButtonPressed();
-	void SetNearbyItemByScroll(const FInputActionValue& Value);
+	void ScrollNearbyItemList(const FInputActionValue& Value);
 	void InventoryButtonPressed();
 	virtual void ReceiveDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType, AController* InstigatorController, AActor* DamageCauser) override;
 	void SetSprinting(bool bSprinting);

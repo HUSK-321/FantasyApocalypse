@@ -44,6 +44,9 @@ private:
 
 public:
 	UInventoryComponent();
+
+	UFUNCTION(Server, Reliable)
+	void ServerAddItemToPlayerInventory(APickupItem* Item);
 	
 	void ScrollNearbyItemList(int32 AddAmount);
 	UFUNCTION()
@@ -67,4 +70,7 @@ private:
 	void DropItemFromInventory(APickupItem* ItemToOut);
 	UFUNCTION()
 	void EquipItem(APickupItem* Item);
+
+	UFUNCTION(NetMulticast, Reliable)
+	void MulticastAddItemToPlayerInventory(APickupItem* Item);
 };
