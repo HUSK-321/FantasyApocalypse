@@ -57,7 +57,6 @@ void UPlayableCharacterCombatComponent::EquipItemToCharacter(APickupItem* ItemTo
 
 void UPlayableCharacterCombatComponent::OnRep_EquippedItem()
 {
-	UE_LOG(LogTemp, Warning, TEXT("Onrep EquippedItem"));
 	if(Character == nullptr || EquippedItem == nullptr)	return;
 	
 	EquippedItem->SetItemState(EItemState::EIS_Equipped);

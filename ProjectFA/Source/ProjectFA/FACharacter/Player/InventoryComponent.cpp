@@ -59,7 +59,7 @@ void UInventoryComponent::AddItemToInventory(APickupItem* ItemToIn)
 	if(const auto EquipableItem = Cast<IEquipable>(ItemToIn))
 	{
 		FEquipItemEvent EquipItemEvent;
-		EquipItemEvent.AddDynamic(this, &UInventoryComponent::EquipItem);
+		EquipItemEvent.AddDynamic(this, &UInventoryComponent::ServerEquipItemToPlayer);
 		EquipableItem->SetEquipItemEvent(EquipItemEvent);
 	}
 }
@@ -104,7 +104,7 @@ void UInventoryComponent::DeleteNearbyItem(AActor* Item)
 	ScrollNearbyItemList(0);
 }
 
-void UInventoryComponent::EquipItem(APickupItem* Item)
+void UInventoryComponent::ServerEquipItemToPlayer_Implementation(APickupItem* Item)
 {
 	PlayerCombatComponent->EquipItemToCharacter(Item);
 }

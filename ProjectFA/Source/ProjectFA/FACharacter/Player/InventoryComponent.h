@@ -68,9 +68,9 @@ private:
 	void AddItemToInventory(APickupItem* ItemToIn);
 	UFUNCTION()
 	void DropItemFromInventory(APickupItem* ItemToOut);
-	UFUNCTION()
-	void EquipItem(APickupItem* Item);
 
 	UFUNCTION(NetMulticast, Reliable)
 	void MulticastAddItemToPlayerInventory(APickupItem* Item);
+	UFUNCTION(Server, Reliable)
+	void ServerEquipItemToPlayer(APickupItem* Item);
 };
