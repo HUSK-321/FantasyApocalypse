@@ -9,7 +9,6 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Kismet/KismetSystemLibrary.h"
-#include "Net/UnrealNetwork.h"
 #include "ProjectFA/HUD/InventoryWidget/InventorySlotWidget.h"
 #include "ProjectFA/Interactable/Looting/LootInteractable.h"
 
@@ -314,6 +313,11 @@ bool APlayableCharacter::CharacterCannotJump()
 {
 	if(CombatComponent == nullptr)	return CharacterCannotMove();
 	return CharacterCannotMove() || CombatComponent->GetNowAttacking();
+}
+
+void APlayableCharacter::CurrentHealthChanged()
+{
+	UE_LOG(LogTemp, Warning, TEXT("Onrep health changed"));
 }
 
 void APlayableCharacter::ServerSetCharacterMovement_Implementation(bool bSprinting)

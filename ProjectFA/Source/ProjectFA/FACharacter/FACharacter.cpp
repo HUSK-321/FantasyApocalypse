@@ -4,6 +4,7 @@
 #include "FACharacter.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/TimelineComponent.h"
+#include "Net/UnrealNetwork.h"
 
 AFACharacter::AFACharacter()
 	:
@@ -16,6 +17,13 @@ AFACharacter::AFACharacter()
 void AFACharacter::BeginPlay()
 {
 	Super::BeginPlay();
+}
+
+void AFACharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(AFACharacter, CurrentHealth);
 }
 
 void AFACharacter::Tick(float DeltaTime)
@@ -104,6 +112,9 @@ void AFACharacter::StartDeadDissolve()
 	DissolveTimeline->Play();
 }
 
+void AFACharacter::CurrentHealthChanged()
+{}
+
 void AFACharacter::UpdateMaterialDissolve(float DissolveTime)
 {
 	if(DynamicDissolveMaterialInstance == nullptr)	return;
@@ -113,4 +124,9 @@ void AFACharacter::UpdateMaterialDissolve(float DissolveTime)
 void AFACharacter::AfterDeadDissolve()
 {
 	Destroy();
+}
+
+void AFACharacter::OnRep_CurrentHealthChanged()
+{
+	CurrentHealthChanged();
 }
