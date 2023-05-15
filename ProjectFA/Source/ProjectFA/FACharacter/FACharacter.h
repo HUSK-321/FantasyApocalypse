@@ -46,15 +46,14 @@ protected:
 
 	/* This function call in OnRep_CurrentHealthChanged */
 	virtual void CurrentHealthChanged();
+	UFUNCTION()
+	void OnRep_CurrentHealthChanged();
 
 private:
 	UFUNCTION()
 	void UpdateMaterialDissolve(float DissolveTime);
 	UFUNCTION()
 	void AfterDeadDissolve();
-
-	UFUNCTION()
-	void OnRep_CurrentHealthChanged();
 
 protected:
 

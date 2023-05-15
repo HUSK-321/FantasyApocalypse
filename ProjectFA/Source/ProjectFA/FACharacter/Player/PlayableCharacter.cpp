@@ -199,6 +199,7 @@ void APlayableCharacter::ReceiveDamage(AActor* DamagedActor, float Damage, const
                                        AController* InstigatorController, AActor* DamageCauser)
 {
 	CurrentHealth = FMath::Clamp(CurrentHealth - Damage, 0.f, MaxHealth);
+	OnRep_CurrentHealthChanged();
 }
 
 void APlayableCharacter::SetNearbyItem(AActor* PickupItem)
