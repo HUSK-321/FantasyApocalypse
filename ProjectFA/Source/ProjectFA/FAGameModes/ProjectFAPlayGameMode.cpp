@@ -24,8 +24,8 @@ void AProjectFAPlayGameMode::InitializeSpawnPoolList()
 {
 	for(const auto PoolClass : ItemSpawnPoolClasses)
 	{
-		auto ItemPool = NewObject<UItemSpawnPool>(this, PoolClass);
-		ItemSpawnPools.Emplace(ItemPool);
+		const auto ItemPool = NewObject<UItemSpawnPool>(this, PoolClass);
+		ItemPools.Emplace(ItemPool->GetItemCategory(), ItemPool);
 	}
 }
 
@@ -57,20 +57,25 @@ TArray<APickupItem*> AProjectFAPlayGameMode::GetRandomItemList(IItemSpawnable* S
 		const auto AmountToSpawn = FMath::RandRange(SpawnInfo.SpawnAmountMin, SpawnInfo.SpawnAmountMax);
 		for(int32 SpawnCount = 0; SpawnCount < AmountToSpawn; SpawnCount++)
 		{
-			const auto Item = ItemSpawnPools[SpawnInfo.CategoryIndex]->GetItemFromPool();
-			Item->SetItemPropertyFromDataAsset(GetRandomItemData(SpawnInfo.CategoryIndex));
-			ItemList.Emplace(Item);
+			ItemList.Emplace(GetItemFromPool(SpawnInfo.ItemCategory));
 		}
 	}
 	return ItemList;
 }
 
-UItemDataAsset* AProjectFAPlayGameMode::GetRandomItemData(int32 CategoryIndex)
+APickupItem* AProjectFAPlayGameMode::GetItemFromPool(FName ItemCategory)
 {
-	const int32 DataCount = ItemDataTables[CategoryIndex]->GetRowNames().Num();
+	const auto ItemFromPool = ItemPools[ItemCategory]->GetItemFromPool();
+	ItemFromPool->SetItemPropertyFromDataAsset(GetRandomItemDataAsset(ItemCategory));
+	return ItemFromPool;
+}
+
+UItemDataAsset* AProjectFAPlayGameMode::GetRandomItemDataAsset(FName ItemCategory)
+{
+	const int32 DataCount = ItemDataTables[ItemCategory]->GetRowNames().Num();
 	const int32 ItemIndex = FMath::RandRange(0, DataCount - 1);
-	const FName ItemNameInRow = ItemDataTables[CategoryIndex]->GetRowNames()[ItemIndex];
-	const FItemDataTable* ItemRow = ItemDataTables[CategoryIndex]->FindRow<FItemDataTable>(ItemNameInRow, TEXT(""));
+	const FName ItemNameInRow = ItemDataTables[ItemCategory]->GetRowNames()[ItemIndex];
+	const FItemDataTable* ItemRow = ItemDataTables[ItemCategory]->FindRow<FItemDataTable>(ItemNameInRow, TEXT(""));
 	if(ItemRow == nullptr)	return nullptr;
 
 	return ItemRow->ItemDataAsset;	
