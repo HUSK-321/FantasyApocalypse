@@ -199,11 +199,6 @@ void APlayableCharacter::ReceiveDamage(AActor* DamagedActor, float Damage, const
                                        AController* InstigatorController, AActor* DamageCauser)
 {
 	CurrentHealth = FMath::Clamp(CurrentHealth - Damage, 0.f, MaxHealth);
-	PlayerHealthChangedEvent.Broadcast(CurrentHealth, MaxHealth);
-	if(CurrentHealth <= 0.f)
-	{
-		CharacterDead();
-	}
 }
 
 void APlayableCharacter::SetNearbyItem(AActor* PickupItem)
@@ -318,6 +313,11 @@ bool APlayableCharacter::CharacterCannotJump()
 void APlayableCharacter::CurrentHealthChanged()
 {
 	UE_LOG(LogTemp, Warning, TEXT("Onrep health changed"));
+	PlayerHealthChangedEvent.Broadcast(CurrentHealth, MaxHealth);
+	if(CurrentHealth <= 0.f)
+	{
+		CharacterDead();
+	}
 }
 
 void APlayableCharacter::ServerSetCharacterMovement_Implementation(bool bSprinting)

@@ -41,7 +41,13 @@ public:
 	virtual void WeaponAttackEnd() override;
 
 	void EquipItemToCharacter(APickupItem* ItemToEquip);
+
 	void Attack();
+	UFUNCTION(Server, Reliable)
+	void ServerAttack();
+	UFUNCTION(NetMulticast, Reliable)
+	void MulticastAttack();
+	
 	UFUNCTION(BlueprintCallable)
 	void CheckShouldStopAttack();
 	UFUNCTION(BlueprintCallable)

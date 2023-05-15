@@ -68,6 +68,16 @@ void UPlayableCharacterCombatComponent::OnRep_EquippedItem()
 
 void UPlayableCharacterCombatComponent::Attack()
 {
+	ServerAttack();
+}
+
+void UPlayableCharacterCombatComponent::ServerAttack_Implementation()
+{
+	MulticastAttack();
+}
+
+void UPlayableCharacterCombatComponent::MulticastAttack_Implementation()
+{
 	if(EquippedItem == nullptr || Character == nullptr)	return;
 	if(bNowAttacking)
 	{
