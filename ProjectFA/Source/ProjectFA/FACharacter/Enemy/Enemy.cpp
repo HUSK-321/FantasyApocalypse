@@ -8,8 +8,9 @@
 #include "Components/SphereComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "Net/UnrealNetwork.h"
 #include "Perception/PawnSensingComponent.h"
-#include "ProjectFA/FACharacter/Player/PlayableCharacter.h"
+#include "ProjectFA/FACharacter/PickupableCharacter.h"
 #include "ProjectFA/Interactable/Looting/LootingItemComponent.h"
 
 AEnemy::AEnemy()
@@ -17,8 +18,11 @@ AEnemy::AEnemy()
 	PawnSensingComponent(CreateDefaultSubobject<UPawnSensingComponent>(TEXT("PawnSensingComponent"))),
 	AttackSphere(CreateDefaultSubobject<USphereComponent>(TEXT("AttackSphere"))),
 	AttackCollision(CreateDefaultSubobject<UBoxComponent>(TEXT("AttackCollision"))),
-	LootingItemComponent(CreateDefaultSubobject<ULootingItemComponent>(TEXT("Looting Item Component")))
+	LootingItemComponent(CreateDefaultSubobject<ULootingItemComponent>(TEXT("Looting Item Component"))),
+	bAttackTrigger(false)
 {
+	bReplicates = true;
+	
 	PrimaryActorTick.bCanEverTick = false;
 
 	AttackSphere->SetupAttachment(GetRootComponent());
@@ -36,6 +40,8 @@ AEnemy::AEnemy()
 void AEnemy::BeginPlay()
 {
 	Super::BeginPlay();
+	
+	if(HasAuthority() == false)	return;
 
 	EnemyController = Cast<AEnemyController>(GetController());
 	if(EnemyController)
@@ -56,29 +62,36 @@ void AEnemy::BeginPlay()
 	OnTakeAnyDamage.AddDynamic(this, &AEnemy::ReceiveDamage);
 }
 
+void AEnemy::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(AEnemy, bAttackTrigger);
+}
+
 void AEnemy::OnSensingPawn(APawn* OtherPawn)
 {
-	const auto PlayableCharacter = Cast<APlayableCharacter>(OtherPawn);
-	if(PlayableCharacter == nullptr)	return;
+	const auto PlayableCharacter = Cast<IPickupableCharacter>(OtherPawn);
+	if(PlayableCharacter == nullptr || IsValid(EnemyController) == false)	return;
 
-	EnemyController->GetEnemyBlackboardComponent()->SetValueAsObject(TEXT("TargetPlayer"), PlayableCharacter);
+	EnemyController->GetEnemyBlackboardComponent()->SetValueAsObject(TEXT("TargetPlayer"), OtherPawn);
 }
 
 void AEnemy::AttackSphereOnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	// TODO : refactor not to refer APlayableCharacter
-	const auto PlayableCharacter = Cast<APlayableCharacter>(OtherActor);
-	if(PlayableCharacter == nullptr)	return;
+	const auto PlayableCharacter = Cast<IPickupableCharacter>(OtherActor);
+	if(PlayableCharacter == nullptr || IsValid(EnemyController) == false)	return;
 
+	// TODO : refactor
 	EnemyController->GetEnemyBlackboardComponent()->SetValueAsBool(TEXT("TargetPlayerIsNear"), true);
 }
 
 void AEnemy::AttackSphereOnOverlapEnd(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
-	const auto PlayableCharacter = Cast<APlayableCharacter>(OtherActor);
-	if(PlayableCharacter == nullptr)	return;
+	const auto PlayableCharacter = Cast<IPickupableCharacter>(OtherActor);
+	if(PlayableCharacter == nullptr || IsValid(EnemyController) == false)	return;
 	
 	EnemyController->GetEnemyBlackboardComponent()->SetValueAsBool(TEXT("TargetPlayerIsNear"), false);
 }
@@ -131,4 +144,15 @@ void AEnemy::SetSpawnItemList(const TArray<APickupItem*>& ItemList)
 TArray<FSpawnerInitializeInfo> AEnemy::GetSpawnCategoryPercent()
 {
 	return SpawnCategoryInfo;
+}
+
+void AEnemy::TriggerAttackToTarget()
+{
+	bAttackTrigger = !bAttackTrigger;
+	OnRep_AttackToTarget();
+}
+
+void AEnemy::OnRep_AttackToTarget()
+{
+	PlayNormalAttackMontage();
 }

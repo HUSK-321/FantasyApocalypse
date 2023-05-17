@@ -23,3 +23,9 @@ void AEnemyController::OnPossess(APawn* InPawn)
 	
 	EnemyBlackboardComponent->InitializeBlackboard(*(Enemy->GetEnemyBehaviorTree()->BlackboardAsset));
 }
+
+void AEnemyController::SetControllingEnemyAttack()
+{
+	const auto EnemyCharacter = Cast<AEnemy>(GetPawn());
+	EnemyCharacter->TriggerAttackToTarget();
+}

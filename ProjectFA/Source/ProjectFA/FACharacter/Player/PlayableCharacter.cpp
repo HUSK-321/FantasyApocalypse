@@ -313,7 +313,6 @@ bool APlayableCharacter::CharacterCannotJump()
 
 void APlayableCharacter::CurrentHealthChanged()
 {
-	UE_LOG(LogTemp, Warning, TEXT("Onrep health changed"));
 	PlayerHealthChangedEvent.Broadcast(CurrentHealth, MaxHealth);
 	if(CurrentHealth <= 0.f)
 	{
