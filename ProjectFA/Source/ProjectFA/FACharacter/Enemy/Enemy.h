@@ -9,7 +9,6 @@
 
 class UPawnSensingComponent;
 class UBehaviorTree;
-class AEnemyController;
 class USphereComponent;
 class UBoxComponent;
 class ULootingItemComponent;
@@ -29,7 +28,6 @@ private:
 	UPROPERTY(VisibleAnywhere, Category = "Spawn Item", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<ULootingItemComponent> LootingItemComponent;
 	
-	TObjectPtr<AEnemyController> EnemyController;
 	UPROPERTY(EditAnywhere, Category = "Behaviour Tree", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UBehaviorTree> EnemyBehaviorTree;
 	UPROPERTY(EditAnywhere, Category = "Behaviour Tree", meta = (AllowPrivateAccess = "true"))

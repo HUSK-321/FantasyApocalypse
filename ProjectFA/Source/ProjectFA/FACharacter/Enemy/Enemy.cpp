@@ -2,7 +2,7 @@
 
 
 #include "Enemy.h"
-#include "EnemyController.h"
+#include "AIController.h"
 #include "Components/BoxComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/SphereComponent.h"
@@ -11,6 +11,7 @@
 #include "Net/UnrealNetwork.h"
 #include "Perception/PawnSensingComponent.h"
 #include "ProjectFA/FACharacter/PickupableCharacter.h"
+#include "ProjectFA/FAInterfaces/Controller/EnemyControllable.h"
 #include "ProjectFA/Interactable/Looting/LootingItemComponent.h"
 
 AEnemy::AEnemy()
@@ -41,18 +42,22 @@ void AEnemy::BeginPlay()
 {
 	Super::BeginPlay();
 	
-	if(HasAuthority() == false)	return;
+	if(HasAuthority() == false || IsValid(GetController()) == false)	return;
 
-	EnemyController = Cast<AEnemyController>(GetController());
+	const auto EnemyController = Cast<IEnemyControllable>(GetController());
 	if(EnemyController)
 	{
 		const FVector WorldPatrolStartPoint = UKismetMathLibrary::TransformLocation(GetActorTransform(), PatrolStartPoint);
 		const FVector WorldPatrolEndPoint = UKismetMathLibrary::TransformLocation(GetActorTransform(), PatrolEndPoint);
 		DrawDebugSphere(GetWorld(), WorldPatrolStartPoint, 10.f, 12, FColor::Red, true);
 		DrawDebugSphere(GetWorld(), WorldPatrolEndPoint, 10.f, 12, FColor::Red, true);
-		EnemyController->GetEnemyBlackboardComponent()->SetValueAsVector(TEXT("PatrolStartPoint"), WorldPatrolStartPoint);
-		EnemyController->GetEnemyBlackboardComponent()->SetValueAsVector(TEXT("PatrolEndPoint"), WorldPatrolEndPoint);
-		EnemyController->RunBehaviorTree(EnemyBehaviorTree);
+		EnemyController->SetEnemyBlackboardValueAsVector(TEXT("PatrolStartPoint"), WorldPatrolStartPoint);
+		EnemyController->SetEnemyBlackboardValueAsVector(TEXT("PatrolEndPoint"), WorldPatrolEndPoint);
+
+		if(const auto AIController = Cast<AAIController>(GetController()))
+		{
+			AIController->RunBehaviorTree(EnemyBehaviorTree);
+		}
 	}
 	
 	PawnSensingComponent->OnSeePawn.AddDynamic(this, &AEnemy::OnSensingPawn);
@@ -72,28 +77,33 @@ void AEnemy::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimePr
 void AEnemy::OnSensingPawn(APawn* OtherPawn)
 {
 	const auto PlayableCharacter = Cast<IPickupableCharacter>(OtherPawn);
-	if(PlayableCharacter == nullptr || IsValid(EnemyController) == false)	return;
+	if(PlayableCharacter == nullptr || IsValid(GetController()) == false)	return;
+	const auto EnemyController = Cast<IEnemyControllable>(GetController());
+	if(EnemyController == nullptr)	return;
 
-	EnemyController->GetEnemyBlackboardComponent()->SetValueAsObject(TEXT("TargetPlayer"), OtherPawn);
+	EnemyController->SetEnemyBlackboardValueAsObject(TEXT("TargetPlayer"), OtherPawn);
 }
 
 void AEnemy::AttackSphereOnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	const auto PlayableCharacter = Cast<IPickupableCharacter>(OtherActor);
-	if(PlayableCharacter == nullptr || IsValid(EnemyController) == false)	return;
-
-	// TODO : refactor
-	EnemyController->GetEnemyBlackboardComponent()->SetValueAsBool(TEXT("TargetPlayerIsNear"), true);
+	if(PlayableCharacter == nullptr || IsValid(GetController()) == false)	return;
+	const auto EnemyController = Cast<IEnemyControllable>(GetController());
+	if(EnemyController == nullptr)	return;
+	
+	EnemyController->SetEnemyBlackboardValueAsBool(TEXT("TargetPlayerIsNear"), true);
 }
 
 void AEnemy::AttackSphereOnOverlapEnd(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
 	const auto PlayableCharacter = Cast<IPickupableCharacter>(OtherActor);
-	if(PlayableCharacter == nullptr || IsValid(EnemyController) == false)	return;
+	if(PlayableCharacter == nullptr || IsValid(GetController()) == false)	return;
+	const auto EnemyController = Cast<IEnemyControllable>(GetController());
+	if(EnemyController == nullptr)	return;
 	
-	EnemyController->GetEnemyBlackboardComponent()->SetValueAsBool(TEXT("TargetPlayerIsNear"), false);
+	EnemyController->SetEnemyBlackboardValueAsBool(TEXT("TargetPlayerIsNear"), false);
 }
 
 void AEnemy::ReceiveDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType,

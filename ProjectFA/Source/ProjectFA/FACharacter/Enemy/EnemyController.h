@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "AIController.h"
 #include "BehaviorTree/BlackboardComponent.h"
+#include "ProjectFA/FAInterfaces/Controller/EnemyControllable.h"
 #include "EnemyController.generated.h"
 
 /**
@@ -14,7 +15,7 @@ class UBlackboardComponent;
 class UBehaviorTreeComponent;
 
 UCLASS()
-class PROJECTFA_API AEnemyController : public AAIController
+class PROJECTFA_API AEnemyController : public AAIController, public IEnemyControllable
 {
 	GENERATED_BODY()
 
@@ -28,8 +29,8 @@ public:
 	AEnemyController();
 	virtual void OnPossess(APawn* InPawn) override;
 
-	void SetControllingEnemyAttack();
-
-	FORCEINLINE UBlackboardComponent* GetEnemyBlackboardComponent() const { return EnemyBlackboardComponent; }
-	
+	virtual void SetControllingEnemyAttack() override;
+	virtual void SetEnemyBlackboardValueAsBool(const FName& KeyName, bool BoolValue) override;
+	virtual void SetEnemyBlackboardValueAsObject(const FName& KeyName, UObject* ObjectValue) override;
+	virtual void SetEnemyBlackboardValueAsVector(const FName& KeyName, FVector VectorValue) override;
 };
