@@ -20,6 +20,16 @@ void APlayableController::BeginPlay()
 	ProjectFAHUD = Cast<AProjectFAHUD>(GetHUD());
 }
 
+void APlayableController::OpenLootingBox(ALootingBox* LootingBox)
+{
+	ServerOpenLootingBox(LootingBox);
+}
+
+void APlayableController::DropItem(APickupItem* Item)
+{
+	ServerDropItem(Item);
+}
+
 void APlayableController::ServerOpenLootingBox_Implementation(ALootingBox* LootingBox)
 {
 	LootingBox->MulticastOpenLootingBox();

@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/PlayerController.h"
+#include "ProjectFA/FAInterfaces/Controller/ItemRPCableController.h"
 #include "PlayableController.generated.h"
 
 /**
@@ -15,19 +16,19 @@ class AProjectFAHUD;
 class APickupItem;
 
 UCLASS()
-class PROJECTFA_API APlayableController : public APlayerController
+class PROJECTFA_API APlayableController : public APlayerController, public IItemRPCableController
 {
 	GENERATED_BODY()
+
+private:
+	TObjectPtr<AProjectFAHUD> ProjectFAHUD;
 	
 protected:
 	virtual void BeginPlay() override;
 
 public:
-	UFUNCTION(Server, Reliable)
-	void ServerOpenLootingBox(ALootingBox* LootingBox);
-
-	UFUNCTION(Server, Reliable)
-	void ServerDropItem(APickupItem* Item);
+	virtual void OpenLootingBox(ALootingBox* LootingBox) override;
+	virtual void DropItem(APickupItem* Item) override;
 
 	void SetPlayerEvent(APlayableCharacter* ControllingPlayer);
 	void SetInventoryEvent(UInventoryComponent* InventoryComponent);
@@ -60,6 +61,8 @@ private:
 	void SetInputModeGameAndUI();
 	void SetInputModeGameOnly();
 
-private:
-	TObjectPtr<AProjectFAHUD> ProjectFAHUD;
+	UFUNCTION(Server, Reliable)
+	void ServerOpenLootingBox(ALootingBox* LootingBox);
+	UFUNCTION(Server, Reliable)
+	void ServerDropItem(APickupItem* Item);
 };

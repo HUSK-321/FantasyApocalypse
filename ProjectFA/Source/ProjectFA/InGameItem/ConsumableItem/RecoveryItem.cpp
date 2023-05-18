@@ -3,7 +3,7 @@
 
 #include "RecoveryItem.h"
 #include "Kismet/GameplayStatics.h"
-#include "ProjectFA/FACharacter/Player/PlayableController.h"
+#include "ProjectFA/FAInterfaces/Controller/ItemRPCableController.h"
 
 ARecoveryItem::ARecoveryItem()
 {
@@ -20,8 +20,8 @@ void ARecoveryItem::RemoveFromInventoryAction_Implementation()
 {
 	const auto OwnerPawn = Cast<APawn>(GetOwner());
 	if(OwnerPawn == nullptr)	return;
-	if(const auto OwnerController = OwnerPawn->GetController<APlayableController>())
+	if(const auto OwnerController = OwnerPawn->GetController<IItemRPCableController>())
 	{
-		OwnerController->ServerDropItem(this);
+		OwnerController->DropItem(this);
 	}
 }
