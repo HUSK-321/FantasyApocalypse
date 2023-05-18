@@ -48,7 +48,7 @@ void AWeapon::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeP
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(AWeapon, WeaponInfo);
-	DOREPLIFETIME(AWeapon, WeaponSkeletal);
+	DOREPLIFETIME_CONDITION(AWeapon, WeaponSkeletal, COND_SkipOwner);
 }
 
 void AWeapon::OnRep_WeaponSkeletal()
