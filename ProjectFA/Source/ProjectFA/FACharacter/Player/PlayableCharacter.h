@@ -26,12 +26,10 @@ class PROJECTFA_API APlayableCharacter : public AFACharacter, public IPickupable
 	GENERATED_BODY()
 
 public:
-	
 	FPlayerCurrentMaxDelegate PlayerHealthChangedEvent;
 	FPlayerCurrentMaxDelegate PlayerStaminaChangedEvent;
 
 private:
-
 	UPROPERTY()
 	TObjectPtr<USpringArmComponent> CameraSpringArm;
 	UPROPERTY()
@@ -91,7 +89,6 @@ private:
 	TObjectPtr<AActor> InteractingActor;
 
 public:
-	
 	APlayableCharacter();
 	virtual void Tick(float DeltaTime) override;
 	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
@@ -104,7 +101,6 @@ public:
 	virtual void SetInteractingActor(AActor* Actor) override;
 
 protected:
-	
 	virtual void BeginPlay() override;
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
@@ -113,13 +109,14 @@ protected:
 	virtual bool CharacterCannotMove() override;
 	virtual bool CharacterCannotAttack() override;
 	virtual bool CharacterCannotJump() override;
+
+	virtual void CurrentHealthChanged() override;
 	
 private:
 	UFUNCTION(Server, Reliable)
 	void ServerSetCharacterMovement(bool bSprinting);
 
 private:
-
 	void CharacterMove(const FInputActionValue& Value);
 	void CameraMove(const FInputActionValue& Value);
 	virtual void Jump() override;
@@ -130,7 +127,7 @@ private:
 	void InteractWithActors(const FInputActionValue& Value);
 	void InteractWithActorsEnd();
 	void AttackButtonPressed();
-	void SetNearbyItemByScroll(const FInputActionValue& Value);
+	void ScrollNearbyItemList(const FInputActionValue& Value);
 	void InventoryButtonPressed();
 	virtual void ReceiveDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType, AController* InstigatorController, AActor* DamageCauser) override;
 	void SetSprinting(bool bSprinting);

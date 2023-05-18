@@ -2,14 +2,16 @@
 
 
 #include "Enemy.h"
-#include "EnemyController.h"
+#include "AIController.h"
 #include "Components/BoxComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/SphereComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "Net/UnrealNetwork.h"
 #include "Perception/PawnSensingComponent.h"
-#include "ProjectFA/FACharacter/Player/PlayableCharacter.h"
+#include "ProjectFA/FACharacter/PickupableCharacter.h"
+#include "ProjectFA/FAInterfaces/Controller/EnemyControllable.h"
 #include "ProjectFA/Interactable/Looting/LootingItemComponent.h"
 
 AEnemy::AEnemy()
@@ -17,8 +19,11 @@ AEnemy::AEnemy()
 	PawnSensingComponent(CreateDefaultSubobject<UPawnSensingComponent>(TEXT("PawnSensingComponent"))),
 	AttackSphere(CreateDefaultSubobject<USphereComponent>(TEXT("AttackSphere"))),
 	AttackCollision(CreateDefaultSubobject<UBoxComponent>(TEXT("AttackCollision"))),
-	LootingItemComponent(CreateDefaultSubobject<ULootingItemComponent>(TEXT("Looting Item Component")))
+	LootingItemComponent(CreateDefaultSubobject<ULootingItemComponent>(TEXT("Looting Item Component"))),
+	bAttackTrigger(false)
 {
+	bReplicates = true;
+	
 	PrimaryActorTick.bCanEverTick = false;
 
 	AttackSphere->SetupAttachment(GetRootComponent());
@@ -36,17 +41,23 @@ AEnemy::AEnemy()
 void AEnemy::BeginPlay()
 {
 	Super::BeginPlay();
+	
+	if(HasAuthority() == false || IsValid(GetController()) == false)	return;
 
-	EnemyController = Cast<AEnemyController>(GetController());
+	const auto EnemyController = Cast<IEnemyControllable>(GetController());
 	if(EnemyController)
 	{
 		const FVector WorldPatrolStartPoint = UKismetMathLibrary::TransformLocation(GetActorTransform(), PatrolStartPoint);
 		const FVector WorldPatrolEndPoint = UKismetMathLibrary::TransformLocation(GetActorTransform(), PatrolEndPoint);
 		DrawDebugSphere(GetWorld(), WorldPatrolStartPoint, 10.f, 12, FColor::Red, true);
 		DrawDebugSphere(GetWorld(), WorldPatrolEndPoint, 10.f, 12, FColor::Red, true);
-		EnemyController->GetEnemyBlackboardComponent()->SetValueAsVector(TEXT("PatrolStartPoint"), WorldPatrolStartPoint);
-		EnemyController->GetEnemyBlackboardComponent()->SetValueAsVector(TEXT("PatrolEndPoint"), WorldPatrolEndPoint);
-		EnemyController->RunBehaviorTree(EnemyBehaviorTree);
+		EnemyController->SetEnemyBlackboardValueAsVector(TEXT("PatrolStartPoint"), WorldPatrolStartPoint);
+		EnemyController->SetEnemyBlackboardValueAsVector(TEXT("PatrolEndPoint"), WorldPatrolEndPoint);
+
+		if(const auto AIController = Cast<AAIController>(GetController()))
+		{
+			AIController->RunBehaviorTree(EnemyBehaviorTree);
+		}
 	}
 	
 	PawnSensingComponent->OnSeePawn.AddDynamic(this, &AEnemy::OnSensingPawn);
@@ -56,31 +67,43 @@ void AEnemy::BeginPlay()
 	OnTakeAnyDamage.AddDynamic(this, &AEnemy::ReceiveDamage);
 }
 
+void AEnemy::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(AEnemy, bAttackTrigger);
+}
+
 void AEnemy::OnSensingPawn(APawn* OtherPawn)
 {
-	const auto PlayableCharacter = Cast<APlayableCharacter>(OtherPawn);
+	const auto PlayableCharacter = Cast<IPickupableCharacter>(OtherPawn);
 	if(PlayableCharacter == nullptr)	return;
+	const auto EnemyController = GetController<IEnemyControllable>();
+	if(EnemyController == nullptr)	return;
 
-	EnemyController->GetEnemyBlackboardComponent()->SetValueAsObject(TEXT("TargetPlayer"), PlayableCharacter);
+	EnemyController->SetEnemyBlackboardValueAsObject(TEXT("TargetPlayer"), OtherPawn);
 }
 
 void AEnemy::AttackSphereOnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	// TODO : refactor not to refer APlayableCharacter
-	const auto PlayableCharacter = Cast<APlayableCharacter>(OtherActor);
+	const auto PlayableCharacter = Cast<IPickupableCharacter>(OtherActor);
 	if(PlayableCharacter == nullptr)	return;
-
-	EnemyController->GetEnemyBlackboardComponent()->SetValueAsBool(TEXT("TargetPlayerIsNear"), true);
+	const auto EnemyController = GetController<IEnemyControllable>();
+	if(EnemyController == nullptr)	return;
+	
+	EnemyController->SetEnemyBlackboardValueAsBool(TEXT("TargetPlayerIsNear"), true);
 }
 
 void AEnemy::AttackSphereOnOverlapEnd(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
-	const auto PlayableCharacter = Cast<APlayableCharacter>(OtherActor);
+	const auto PlayableCharacter = Cast<IPickupableCharacter>(OtherActor);
 	if(PlayableCharacter == nullptr)	return;
+	const auto EnemyController = GetController<IEnemyControllable>();
+	if(EnemyController == nullptr)	return;
 	
-	EnemyController->GetEnemyBlackboardComponent()->SetValueAsBool(TEXT("TargetPlayerIsNear"), false);
+	EnemyController->SetEnemyBlackboardValueAsBool(TEXT("TargetPlayerIsNear"), false);
 }
 
 void AEnemy::ReceiveDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType,
@@ -131,4 +154,15 @@ void AEnemy::SetSpawnItemList(const TArray<APickupItem*>& ItemList)
 TArray<FSpawnerInitializeInfo> AEnemy::GetSpawnCategoryPercent()
 {
 	return SpawnCategoryInfo;
+}
+
+void AEnemy::TriggerAttackToTarget()
+{
+	bAttackTrigger = !bAttackTrigger;
+	OnRep_AttackToTarget();
+}
+
+void AEnemy::OnRep_AttackToTarget()
+{
+	PlayNormalAttackMontage();
 }

@@ -9,7 +9,6 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Kismet/KismetSystemLibrary.h"
-#include "Net/UnrealNetwork.h"
 #include "ProjectFA/HUD/InventoryWidget/InventorySlotWidget.h"
 #include "ProjectFA/Interactable/Looting/LootInteractable.h"
 
@@ -91,7 +90,7 @@ void APlayableCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 		EnhancedInputComponent->BindAction(CrouchAction, ETriggerEvent::Started, this, &APlayableCharacter::CrouchButtonPressed);
 		EnhancedInputComponent->BindAction(SprintAction, ETriggerEvent::Started, this, &APlayableCharacter::SprintButtonPressed);
 		EnhancedInputComponent->BindAction(SprintAction, ETriggerEvent::Completed, this, &APlayableCharacter::SprintButtonReleased);
-		EnhancedInputComponent->BindAction(ScrollAction, ETriggerEvent::Triggered, this, &APlayableCharacter::SetNearbyItemByScroll);
+		EnhancedInputComponent->BindAction(ScrollAction, ETriggerEvent::Triggered, this, &APlayableCharacter::ScrollNearbyItemList);
 
 		EnhancedInputComponent->BindAction(InteractWithObject, ETriggerEvent::Triggered, this, &APlayableCharacter::InteractWithActors);
 		EnhancedInputComponent->BindAction(InteractWithObject, ETriggerEvent::Completed, this, &APlayableCharacter::InteractWithActorsEnd);
@@ -200,11 +199,7 @@ void APlayableCharacter::ReceiveDamage(AActor* DamagedActor, float Damage, const
                                        AController* InstigatorController, AActor* DamageCauser)
 {
 	CurrentHealth = FMath::Clamp(CurrentHealth - Damage, 0.f, MaxHealth);
-	PlayerHealthChangedEvent.Broadcast(CurrentHealth, MaxHealth);
-	if(CurrentHealth <= 0.f)
-	{
-		CharacterDead();
-	}
+	OnRep_CurrentHealthChanged();
 }
 
 void APlayableCharacter::SetNearbyItem(AActor* PickupItem)
@@ -263,7 +258,7 @@ void APlayableCharacter::AttackButtonPressed()
 	CombatComponent->Attack();
 }
 
-void APlayableCharacter::SetNearbyItemByScroll(const FInputActionValue& Value)
+void APlayableCharacter::ScrollNearbyItemList(const FInputActionValue& Value)
 {
 	if(GetController() == nullptr || InventoryComponent == nullptr)	return;
 	
@@ -314,6 +309,15 @@ bool APlayableCharacter::CharacterCannotJump()
 {
 	if(CombatComponent == nullptr)	return CharacterCannotMove();
 	return CharacterCannotMove() || CombatComponent->GetNowAttacking();
+}
+
+void APlayableCharacter::CurrentHealthChanged()
+{
+	PlayerHealthChangedEvent.Broadcast(CurrentHealth, MaxHealth);
+	if(CurrentHealth <= 0.f)
+	{
+		CharacterDead();
+	}
 }
 
 void APlayableCharacter::ServerSetCharacterMovement_Implementation(bool bSprinting)

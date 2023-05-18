@@ -9,7 +9,6 @@
 
 class UPawnSensingComponent;
 class UBehaviorTree;
-class AEnemyController;
 class USphereComponent;
 class UBoxComponent;
 class ULootingItemComponent;
@@ -20,7 +19,6 @@ class PROJECTFA_API AEnemy : public AFACharacter, public IItemSpawnable
 	GENERATED_BODY()
 
 private:
-
 	UPROPERTY(EditAnywhere)
 	TObjectPtr<UPawnSensingComponent> PawnSensingComponent;
 	UPROPERTY(EditAnywhere)
@@ -30,7 +28,6 @@ private:
 	UPROPERTY(VisibleAnywhere, Category = "Spawn Item", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<ULootingItemComponent> LootingItemComponent;
 	
-	TObjectPtr<AEnemyController> EnemyController;
 	UPROPERTY(EditAnywhere, Category = "Behaviour Tree", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UBehaviorTree> EnemyBehaviorTree;
 	UPROPERTY(EditAnywhere, Category = "Behaviour Tree", meta = (AllowPrivateAccess = "true"))
@@ -46,9 +43,13 @@ private:
 	UPROPERTY()
 	TSet<AActor*> HittedActors;
 
+	UPROPERTY(ReplicatedUsing = OnRep_AttackToTarget)
+	bool bAttackTrigger;
+
 public:
-	
 	AEnemy();
+
+	void TriggerAttackToTarget();
 
 	virtual void AfterDeath() override;
 
@@ -61,8 +62,9 @@ public:
 	FORCEINLINE UBehaviorTree* GetEnemyBehaviorTree() const { return EnemyBehaviorTree; }
 
 protected:
-	
 	virtual void BeginPlay() override;
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+	
 	UFUNCTION()
 	void OnSensingPawn(APawn* OtherPawn);
 	UFUNCTION()
@@ -75,4 +77,7 @@ protected:
 	UFUNCTION()
 	void AttackCollisionOnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp,
 											int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+
+	UFUNCTION()
+	void OnRep_AttackToTarget();
 };

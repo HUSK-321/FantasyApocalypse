@@ -24,12 +24,12 @@ class PROJECTFA_API AProjectFAPlayGameMode : public AGameMode
 	GENERATED_BODY()
 
 private:
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category = "Item Pool")
 	TArray<TSubclassOf<UItemSpawnPool>> ItemSpawnPoolClasses;
-	UPROPERTY(EditAnywhere)
-	TArray<UItemSpawnPool*> ItemSpawnPools;
-	UPROPERTY(EditAnywhere)
-	TArray<TObjectPtr<UDataTable>> ItemDataTables;
+	UPROPERTY(EditAnywhere, Category = "Item Pool")
+	TMap<FName, TObjectPtr<UItemSpawnPool>> ItemPools;
+	UPROPERTY(EditAnywhere, Category = "Item Pool")
+	TMap<FName, TObjectPtr<UDataTable>> ItemDataTables;
 	
 public:
 	void PlayerDead(APlayableCharacter* VictimCharacter, APlayableController* VictimController, APlayableController* InstigatorController);
@@ -42,5 +42,6 @@ private:
 	void SpawnItemToAllSpawner();
 	
 	TArray<APickupItem*> GetRandomItemList(IItemSpawnable* Spawner);
-	UItemDataAsset* GetRandomItemData(int32 CategoryIndex);
+	APickupItem* GetItemFromPool(FName ItemCategory);
+	UItemDataAsset* GetRandomItemDataAsset(FName ItemCategory);
 };

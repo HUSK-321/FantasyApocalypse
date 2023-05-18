@@ -30,7 +30,8 @@ void AWeapon::SetItemPropertyFromDataAsset(const UItemDataAsset* DataAsset)
 	const auto WeaponDataAsset = Cast<UWeaponItemDataAsset>(DataAsset);
 	if(WeaponDataAsset == nullptr)	return;
 
-	WeaponMesh->SetSkeletalMesh(WeaponDataAsset->WeaponSkeletalMesh);
+	WeaponSkeletal = WeaponDataAsset->WeaponSkeletalMesh;
+	OnRep_WeaponSkeletal();
 	WeaponInfo.WeaponType = WeaponDataAsset->WeaponType;
 	WeaponInfo.DamageTypeClass = WeaponDataAsset->DamageTypeClass;
 }
@@ -47,6 +48,12 @@ void AWeapon::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeP
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(AWeapon, WeaponInfo);
+	DOREPLIFETIME_CONDITION(AWeapon, WeaponSkeletal, COND_SkipOwner);
+}
+
+void AWeapon::OnRep_WeaponSkeletal()
+{
+	WeaponMesh->SetSkeletalMesh(WeaponSkeletal);
 }
 
 void AWeapon::SetItemVisibilityByState()

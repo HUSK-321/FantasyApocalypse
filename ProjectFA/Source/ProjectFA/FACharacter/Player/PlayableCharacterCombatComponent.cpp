@@ -57,7 +57,6 @@ void UPlayableCharacterCombatComponent::EquipItemToCharacter(APickupItem* ItemTo
 
 void UPlayableCharacterCombatComponent::OnRep_EquippedItem()
 {
-	UE_LOG(LogTemp, Warning, TEXT("Onrep EquippedItem"));
 	if(Character == nullptr || EquippedItem == nullptr)	return;
 	
 	EquippedItem->SetItemState(EItemState::EIS_Equipped);
@@ -68,6 +67,16 @@ void UPlayableCharacterCombatComponent::OnRep_EquippedItem()
 }
 
 void UPlayableCharacterCombatComponent::Attack()
+{
+	ServerAttack();
+}
+
+void UPlayableCharacterCombatComponent::ServerAttack_Implementation()
+{
+	MulticastAttack();
+}
+
+void UPlayableCharacterCombatComponent::MulticastAttack_Implementation()
 {
 	if(EquippedItem == nullptr || Character == nullptr)	return;
 	if(bNowAttacking)
