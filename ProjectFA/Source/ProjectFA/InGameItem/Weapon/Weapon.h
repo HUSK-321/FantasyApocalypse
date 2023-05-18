@@ -41,6 +41,8 @@ public:
 	AWeapon();
 	virtual void SetItemPropertyFromDataAsset(const UItemDataAsset* DataAsset) override;
 	virtual void SetItemVisibilityByState() override;
+
+	virtual void DropItem(const float DropImpulsePower) override;
 	
 	virtual FName GetNormalAttackMontageSectionName() const override;
 	virtual void UnEquip() override;

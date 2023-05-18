@@ -8,6 +8,7 @@
 #include "Engine/SkeletalMeshSocket.h"
 #include "Kismet/GameplayStatics.h"
 #include "Net/UnrealNetwork.h"
+#include "ProjectFA/FACharacter/Player/PlayableController.h"
 
 AWeapon::AWeapon()
 {
@@ -94,6 +95,12 @@ void AWeapon::SetItemVisibilityByState()
 	}
 }
 
+void AWeapon::DropItem(const float DropImpulsePower)
+{
+	UnEquip();
+	Super::DropItem(DropImpulsePower);
+}
+
 FName AWeapon::GetNormalAttackMontageSectionName() const
 {
 	switch (WeaponInfo.WeaponType)
@@ -109,6 +116,7 @@ FName AWeapon::GetNormalAttackMontageSectionName() const
 
 void AWeapon::UnEquip()
 {
+	UE_LOG(LogTemp, Warning, TEXT("un equip"));
 	const FDetachmentTransformRules DetachRules{ EDetachmentRule::KeepWorld, true };
 	this->DetachFromActor(DetachRules);
 	SetItemState(EItemState::EIS_InInventory);
@@ -168,6 +176,10 @@ void AWeapon::InventoryAction_Implementation()
 
 void AWeapon::RemoveFromInventoryAction_Implementation()
 {
-	UnEquip();
-	DropItem();
+	const auto OwnerPawn = Cast<APawn>(GetOwner());
+	if(OwnerPawn == nullptr)	return;
+	if(const auto OwnerController = OwnerPawn->GetController<APlayableController>())
+	{
+		OwnerController->ServerDropItem(this);
+	}
 }

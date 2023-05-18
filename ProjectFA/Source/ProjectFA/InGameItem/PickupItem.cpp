@@ -131,6 +131,11 @@ void APickupItem::SetItemVisibilityByState()
 	}
 }
 
+void APickupItem::MulticastDrop_Implementation(const float DropImpulsePower)
+{
+	DropItem();
+}
+
 void APickupItem::DropItem(const float DropImpulsePower)
 {
 	if(GetOwner() == nullptr)	return;

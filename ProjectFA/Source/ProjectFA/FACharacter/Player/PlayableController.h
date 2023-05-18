@@ -26,6 +26,9 @@ public:
 	UFUNCTION(Server, Reliable)
 	void ServerOpenLootingBox(ALootingBox* LootingBox);
 
+	UFUNCTION(Server, Reliable)
+	void ServerDropItem(APickupItem* Item);
+
 	void SetPlayerEvent(APlayableCharacter* ControllingPlayer);
 	void SetInventoryEvent(UInventoryComponent* InventoryComponent);
 	UFUNCTION()

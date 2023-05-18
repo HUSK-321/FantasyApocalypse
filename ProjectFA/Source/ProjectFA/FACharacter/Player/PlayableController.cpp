@@ -25,6 +25,11 @@ void APlayableController::ServerOpenLootingBox_Implementation(ALootingBox* Looti
 	LootingBox->MulticastOpenLootingBox();
 }
 
+void APlayableController::ServerDropItem_Implementation(APickupItem* Item)
+{
+	Item->MulticastDrop();
+}
+
 void APlayableController::SetPlayerEvent(APlayableCharacter* ControllingPlayer)
 {
 	ControllingPlayer->PlayerHealthChangedEvent.AddDynamic(this, &APlayableController::SetHealthHUD);
