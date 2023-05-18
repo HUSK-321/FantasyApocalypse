@@ -77,8 +77,8 @@ void AEnemy::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimePr
 void AEnemy::OnSensingPawn(APawn* OtherPawn)
 {
 	const auto PlayableCharacter = Cast<IPickupableCharacter>(OtherPawn);
-	if(PlayableCharacter == nullptr || IsValid(GetController()) == false)	return;
-	const auto EnemyController = Cast<IEnemyControllable>(GetController());
+	if(PlayableCharacter == nullptr)	return;
+	const auto EnemyController = GetController<IEnemyControllable>();
 	if(EnemyController == nullptr)	return;
 
 	EnemyController->SetEnemyBlackboardValueAsObject(TEXT("TargetPlayer"), OtherPawn);
@@ -88,8 +88,8 @@ void AEnemy::AttackSphereOnOverlapBegin(UPrimitiveComponent* OverlappedComponent
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	const auto PlayableCharacter = Cast<IPickupableCharacter>(OtherActor);
-	if(PlayableCharacter == nullptr || IsValid(GetController()) == false)	return;
-	const auto EnemyController = Cast<IEnemyControllable>(GetController());
+	if(PlayableCharacter == nullptr)	return;
+	const auto EnemyController = GetController<IEnemyControllable>();
 	if(EnemyController == nullptr)	return;
 	
 	EnemyController->SetEnemyBlackboardValueAsBool(TEXT("TargetPlayerIsNear"), true);
@@ -99,8 +99,8 @@ void AEnemy::AttackSphereOnOverlapEnd(UPrimitiveComponent* OverlappedComponent, 
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
 	const auto PlayableCharacter = Cast<IPickupableCharacter>(OtherActor);
-	if(PlayableCharacter == nullptr || IsValid(GetController()) == false)	return;
-	const auto EnemyController = Cast<IEnemyControllable>(GetController());
+	if(PlayableCharacter == nullptr)	return;
+	const auto EnemyController = GetController<IEnemyControllable>();
 	if(EnemyController == nullptr)	return;
 	
 	EnemyController->SetEnemyBlackboardValueAsBool(TEXT("TargetPlayerIsNear"), false);

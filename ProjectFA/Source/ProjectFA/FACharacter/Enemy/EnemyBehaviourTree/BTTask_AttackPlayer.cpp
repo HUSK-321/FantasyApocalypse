@@ -14,7 +14,7 @@ UBTTask_AttackPlayer::UBTTask_AttackPlayer()
 EBTNodeResult::Type UBTTask_AttackPlayer::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
 	const auto ControllingPawn = OwnerComp.GetAIOwner()->GetPawn();
-	const auto EnemyController = Cast<IEnemyControllable>(ControllingPawn->GetController());
+	const auto EnemyController = ControllingPawn->GetController<IEnemyControllable>();
 	const auto TargetObject = OwnerComp.GetBlackboardComponent()->GetValueAsObject(TargetPlayerKey);
 	const auto TargetActor = Cast<AActor>(TargetObject);
 	if(IsValid(TargetActor) == false || EnemyController == nullptr)	return EBTNodeResult::Failed;
