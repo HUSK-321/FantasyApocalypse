@@ -116,7 +116,6 @@ FName AWeapon::GetNormalAttackMontageSectionName() const
 
 void AWeapon::UnEquip()
 {
-	UE_LOG(LogTemp, Warning, TEXT("un equip"));
 	const FDetachmentTransformRules DetachRules{ EDetachmentRule::KeepWorld, true };
 	this->DetachFromActor(DetachRules);
 	SetItemState(EItemState::EIS_InInventory);
@@ -143,14 +142,14 @@ void AWeapon::AttackCollisionOnOverlapBegin(UPrimitiveComponent* OverlappedCompo
 	UGameplayStatics::ApplyDamage(OtherActor, ItemInfo.ItemPowerAmount, AttackingInstigator, this, WeaponInfo.DamageTypeClass);
 	HittedActors.AddUnique(OtherActor);
 
-	if(GetWorld())
-	{
-		const FVector DebugLineStart = SweepResult.ImpactPoint;
-		const FVector DebugLineEnd = DebugLineStart + SweepResult.ImpactNormal * 10.f;
-		UE_LOG(LogTemp, Warning, TEXT("impact normal : %s"), *SweepResult.ImpactNormal.ToString());
-		UE_LOG(LogTemp, Warning, TEXT("start : %s, end : %s"), *DebugLineStart.ToString(), *DebugLineEnd.ToString());
-		DrawDebugLine(GetWorld(), DebugLineStart, DebugLineEnd, FColor::Cyan, false, 20.f, 0, 1.f);	
-	}
+	// if(GetWorld())
+	// {
+	// 	const FVector DebugLineStart = SweepResult.ImpactPoint;
+	// 	const FVector DebugLineEnd = DebugLineStart + SweepResult.ImpactNormal * 10.f;
+	// 	UE_LOG(LogTemp, Warning, TEXT("impact normal : %s"), *SweepResult.ImpactNormal.ToString());
+	// 	UE_LOG(LogTemp, Warning, TEXT("start : %s, end : %s"), *DebugLineStart.ToString(), *DebugLineEnd.ToString());
+	// 	DrawDebugLine(GetWorld(), DebugLineStart, DebugLineEnd, FColor::Cyan, false, 20.f, 0, 1.f);	
+	// }
 }
 
 void AWeapon::AttackEnd_Implementation()

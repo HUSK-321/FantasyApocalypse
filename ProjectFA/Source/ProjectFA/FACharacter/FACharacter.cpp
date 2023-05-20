@@ -64,15 +64,16 @@ void AFACharacter::ReceiveDamage(AActor* DamagedActor, float Damage, const UDama
 void AFACharacter::CharacterDead()
 {
 	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
-	if(DieMontage == nullptr || AnimInstance == nullptr)	return;
+	if(AnimInstance == nullptr)	return;
 	
 	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	AnimInstance->Montage_Play(DieMontage);
-	Controller->UnPossess();
-}
+	if(DieMontage)
+	{
+		AnimInstance->Montage_Play(DieMontage);
+	}
 
-void AFACharacter::AfterDeath()
-{
+	GenerateInventoryItems();
+	StartDeadDissolve();
 }
 
 bool AFACharacter::CharacterCannotMove()

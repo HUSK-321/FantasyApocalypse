@@ -32,9 +32,9 @@ public:
 protected:
 	UFUNCTION()
 	virtual void ReceiveDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType, AController* InstigatorController, AActor* DamageCauser);
-	virtual void CharacterDead();
-	UFUNCTION(BlueprintCallable)
-	virtual void AfterDeath();
+	void CharacterDead();
+	virtual void GenerateInventoryItems(){};
+	
 	UFUNCTION(BlueprintCallable)
 	virtual bool CharacterCannotMove();
 	UFUNCTION(BlueprintCallable)

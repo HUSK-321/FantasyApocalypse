@@ -104,8 +104,8 @@ protected:
 	virtual void BeginPlay() override;
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
-	virtual void CharacterDead() override;
-	virtual void AfterDeath() override;
+	virtual void GenerateInventoryItems() override;
+	
 	virtual bool CharacterCannotMove() override;
 	virtual bool CharacterCannotAttack() override;
 	virtual bool CharacterCannotJump() override;
