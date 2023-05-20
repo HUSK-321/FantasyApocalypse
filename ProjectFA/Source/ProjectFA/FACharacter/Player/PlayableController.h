@@ -29,6 +29,7 @@ protected:
 public:
 	virtual void OpenLootingBox(ALootingBox* LootingBox) override;
 	virtual void DropItem(APickupItem* Item) override;
+	virtual void UseItem(UObject* Item) override;
 
 	void SetPlayerEvent(APlayableCharacter* ControllingPlayer);
 	void SetInventoryEvent(UInventoryComponent* InventoryComponent);
@@ -65,4 +66,6 @@ private:
 	void ServerOpenLootingBox(ALootingBox* LootingBox);
 	UFUNCTION(Server, Reliable)
 	void ServerDropItem(APickupItem* Item);
+	UFUNCTION(Server, Reliable)
+	void ServerUseItem(UObject* Item);
 };

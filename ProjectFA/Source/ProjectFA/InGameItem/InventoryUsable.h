@@ -25,4 +25,6 @@ public:
 	void InventoryAction();
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "InventoryAction")
 	void RemoveFromInventoryAction();
+	UFUNCTION()
+	virtual void UseAction(){};
 };

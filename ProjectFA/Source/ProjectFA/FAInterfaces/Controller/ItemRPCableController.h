@@ -25,4 +25,5 @@ class PROJECTFA_API IItemRPCableController
 public:
 	virtual void OpenLootingBox(ALootingBox* LootingBox){}
 	virtual void DropItem(APickupItem* Item){}
+	virtual void UseItem(UObject* Item){}
 };

@@ -11,9 +11,7 @@ ARecoveryItem::ARecoveryItem()
 
 void ARecoveryItem::InventoryAction_Implementation()
 {
-	if(GetOwner()->GetInstigatorController() == nullptr)	return;
-	UGameplayStatics::ApplyDamage(GetOwner(), -ItemInfo.ItemPowerAmount, GetOwner()->GetInstigatorController(), this, UDamageType::StaticClass());
-	Destroy();
+	RequestControllerUseItem();
 }
 
 void ARecoveryItem::RemoveFromInventoryAction_Implementation()
@@ -23,5 +21,21 @@ void ARecoveryItem::RemoveFromInventoryAction_Implementation()
 	if(const auto OwnerController = OwnerPawn->GetController<IItemRPCableController>())
 	{
 		OwnerController->DropItem(this);
+	}
+}
+
+void ARecoveryItem::UseAction()
+{
+	if(GetOwner()->GetInstigatorController() == nullptr)	return;
+	UGameplayStatics::ApplyDamage(GetOwner(), -ItemInfo.ItemPowerAmount, GetOwner()->GetInstigatorController(), this, UDamageType::StaticClass());
+	Destroy();
+}
+
+void ARecoveryItem::RequestControllerUseItem()
+{
+	const auto PlayerController = GetGameInstance()->GetFirstLocalPlayerController(GetWorld());
+	if(const auto Controller = Cast<IItemRPCableController>(PlayerController))
+	{
+		Controller->UseItem(this);
 	}
 }
