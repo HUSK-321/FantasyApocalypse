@@ -116,6 +116,8 @@ FName AWeapon::GetNormalAttackMontageSectionName() const
 
 void AWeapon::UnEquip()
 {
+	if(GetAttachParentActor() == nullptr)	return;
+	
 	const FDetachmentTransformRules DetachRules{ EDetachmentRule::KeepWorld, true };
 	this->DetachFromActor(DetachRules);
 	SetItemState(EItemState::EIS_InInventory);
