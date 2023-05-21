@@ -22,4 +22,6 @@ class PROJECTFA_API ILootInteractable
 public:
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Looting Action")
 	void FindItem(const float SearchTime);
+
+	virtual void OpenLooting(){}
 };

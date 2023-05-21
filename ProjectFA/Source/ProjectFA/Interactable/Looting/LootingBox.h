@@ -57,18 +57,15 @@ public:
 	ALootingBox();
 
 	virtual void FindItem_Implementation(const float SearchTime) override;
+	virtual void OpenLooting() override;	
 
 	virtual TArray<FSpawnerInitializeInfo> GetSpawnCategoryPercent() override;
 	virtual void SetSpawnItemList(const TArray<APickupItem*>& ItemList) override;
-
-	UFUNCTION(NetMulticast, Reliable)
-	void MulticastOpenLootingBox();
 
 protected:
 	virtual void BeginPlay() override;
 	
 private:
-	void OpenLooting();	
 	void StartDissolve();
 	UFUNCTION()
 	void LootAreaBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp,
@@ -81,4 +78,7 @@ private:
 	void UpdateMaterialDissolve(float DissolveTime);
 	UFUNCTION()
 	void AfterDissolve();
+	
+	UFUNCTION(NetMulticast, Reliable)
+	void MulticastOpenLootingBox();
 };

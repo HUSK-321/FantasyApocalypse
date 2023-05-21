@@ -55,7 +55,11 @@ void ALootingBox::SetSpawnItemList(const TArray<APickupItem*>& ItemList)
 
 void ALootingBox::MulticastOpenLootingBox_Implementation()
 {
-	OpenLooting();
+	ProgressWidgetComponent->SetVisibility(false);
+	if(LootingItemComponent == nullptr)	return;
+	
+	LootingItemComponent->GenerateItemsToWorld();
+	StartDissolve();
 }
 
 void ALootingBox::FindItem_Implementation(const float SearchTime)
@@ -79,11 +83,7 @@ void ALootingBox::FindItem_Implementation(const float SearchTime)
 
 void ALootingBox::OpenLooting()
 {
-	ProgressWidgetComponent->SetVisibility(false);
-	if(LootingItemComponent == nullptr)	return;
-	
-	LootingItemComponent->GenerateItemsToWorld();
-	StartDissolve();
+	MulticastOpenLootingBox();
 }
 
 void ALootingBox::LootAreaBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
