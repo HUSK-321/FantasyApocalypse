@@ -7,7 +7,7 @@
 #include "Components/WidgetComponent.h"
 #include "Net/UnrealNetwork.h"
 #include "ProjectFA/FACharacter/InteractableCharacter.h"
-#include "ProjectFA/FACharacter/Player/PlayableController.h"
+#include "ProjectFA/FAInterfaces/Controller/ItemRPCableController.h"
 #include "ProjectFA/HUD/InteractionWidget/ItemLootingProgressWidget.h"
 #include "ProjectFA/InGameItem/PickupItem.h"
 
@@ -55,7 +55,11 @@ void ALootingBox::SetSpawnItemList(const TArray<APickupItem*>& ItemList)
 
 void ALootingBox::MulticastOpenLootingBox_Implementation()
 {
-	OpenLooting();
+	ProgressWidgetComponent->SetVisibility(false);
+	if(LootingItemComponent == nullptr)	return;
+	
+	LootingItemComponent->GenerateItemsToWorld();
+	StartDissolve();
 }
 
 void ALootingBox::FindItem_Implementation(const float SearchTime)
@@ -69,22 +73,17 @@ void ALootingBox::FindItem_Implementation(const float SearchTime)
 	}
 	if(SearchTime >= MaxTimeToSearch)
 	{
-		// TODO : refactor
 		const auto PlayerController = GetGameInstance()->GetFirstLocalPlayerController(GetWorld());
-		if(const auto Controller = Cast<APlayableController>(PlayerController))
+		if(const auto Controller = Cast<IItemRPCableController>(PlayerController))
 		{
-			Controller->ServerOpenLootingBox(this);
+			Controller->OpenLootingBox(this);
 		}
 	}
 }
 
 void ALootingBox::OpenLooting()
 {
-	ProgressWidgetComponent->SetVisibility(false);
-	if(LootingItemComponent == nullptr)	return;
-	
-	LootingItemComponent->GenerateItemsToWorld();
-	StartDissolve();
+	MulticastOpenLootingBox();
 }
 
 void ALootingBox::LootAreaBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,

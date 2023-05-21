@@ -19,4 +19,8 @@ public:
 	ARecoveryItem();
 	virtual void InventoryAction_Implementation() override;
 	virtual void RemoveFromInventoryAction_Implementation() override;
+	virtual void UseAction() override;
+
+private:
+	void RequestControllerUseItem();
 };

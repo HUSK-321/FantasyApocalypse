@@ -60,7 +60,9 @@ public:
 	APickupItem();
 	virtual void SetItemPropertyFromDataAsset(const UItemDataAsset* DataAsset);
 
-	void DropItem(const float DropImpulsePower = 5000.f);
+	UFUNCTION(NetMulticast, Reliable)
+	void MulticastDrop(const float DropImpulsePower = 5000.f);	
+	virtual void DropItem(const float DropImpulsePower = 5000.f);
 	void SetItemState(const EItemState State);
 	virtual void SetItemVisibilityByState();
 	

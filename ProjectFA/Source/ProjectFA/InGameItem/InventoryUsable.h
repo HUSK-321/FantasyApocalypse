@@ -21,9 +21,10 @@ class PROJECTFA_API IInventoryUsable
 	GENERATED_BODY()
 
 public:
-
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "InventoryAction")
 	void InventoryAction();
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "InventoryAction")
 	void RemoveFromInventoryAction();
+	UFUNCTION()
+	virtual void UseAction(){};
 };

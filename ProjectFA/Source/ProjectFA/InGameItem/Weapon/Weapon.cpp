@@ -8,6 +8,7 @@
 #include "Engine/SkeletalMeshSocket.h"
 #include "Kismet/GameplayStatics.h"
 #include "Net/UnrealNetwork.h"
+#include "ProjectFA/FAInterfaces/Controller/ItemRPCableController.h"
 
 AWeapon::AWeapon()
 {
@@ -94,6 +95,12 @@ void AWeapon::SetItemVisibilityByState()
 	}
 }
 
+void AWeapon::DropItem(const float DropImpulsePower)
+{
+	UnEquip();
+	Super::DropItem(DropImpulsePower);
+}
+
 FName AWeapon::GetNormalAttackMontageSectionName() const
 {
 	switch (WeaponInfo.WeaponType)
@@ -109,6 +116,8 @@ FName AWeapon::GetNormalAttackMontageSectionName() const
 
 void AWeapon::UnEquip()
 {
+	if(GetAttachParentActor() == nullptr)	return;
+	
 	const FDetachmentTransformRules DetachRules{ EDetachmentRule::KeepWorld, true };
 	this->DetachFromActor(DetachRules);
 	SetItemState(EItemState::EIS_InInventory);
@@ -135,14 +144,14 @@ void AWeapon::AttackCollisionOnOverlapBegin(UPrimitiveComponent* OverlappedCompo
 	UGameplayStatics::ApplyDamage(OtherActor, ItemInfo.ItemPowerAmount, AttackingInstigator, this, WeaponInfo.DamageTypeClass);
 	HittedActors.AddUnique(OtherActor);
 
-	if(GetWorld())
-	{
-		const FVector DebugLineStart = SweepResult.ImpactPoint;
-		const FVector DebugLineEnd = DebugLineStart + SweepResult.ImpactNormal * 10.f;
-		UE_LOG(LogTemp, Warning, TEXT("impact normal : %s"), *SweepResult.ImpactNormal.ToString());
-		UE_LOG(LogTemp, Warning, TEXT("start : %s, end : %s"), *DebugLineStart.ToString(), *DebugLineEnd.ToString());
-		DrawDebugLine(GetWorld(), DebugLineStart, DebugLineEnd, FColor::Cyan, false, 20.f, 0, 1.f);	
-	}
+	// if(GetWorld())
+	// {
+	// 	const FVector DebugLineStart = SweepResult.ImpactPoint;
+	// 	const FVector DebugLineEnd = DebugLineStart + SweepResult.ImpactNormal * 10.f;
+	// 	UE_LOG(LogTemp, Warning, TEXT("impact normal : %s"), *SweepResult.ImpactNormal.ToString());
+	// 	UE_LOG(LogTemp, Warning, TEXT("start : %s, end : %s"), *DebugLineStart.ToString(), *DebugLineEnd.ToString());
+	// 	DrawDebugLine(GetWorld(), DebugLineStart, DebugLineEnd, FColor::Cyan, false, 20.f, 0, 1.f);	
+	// }
 }
 
 void AWeapon::AttackEnd_Implementation()
@@ -168,6 +177,10 @@ void AWeapon::InventoryAction_Implementation()
 
 void AWeapon::RemoveFromInventoryAction_Implementation()
 {
-	UnEquip();
-	DropItem();
+	const auto OwnerPawn = Cast<APawn>(GetOwner());
+	if(OwnerPawn == nullptr)	return;
+	if(const auto OwnerController = OwnerPawn->GetController<IItemRPCableController>())
+	{
+		OwnerController->DropItem(this);
+	}
 }

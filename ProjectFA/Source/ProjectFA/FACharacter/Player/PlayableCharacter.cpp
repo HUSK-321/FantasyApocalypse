@@ -68,14 +68,6 @@ void APlayableCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& O
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 }
 
-void APlayableCharacter::CharacterDead()
-{
-	// TODO : call AfterDeath in anim montage, not here
-	Super::CharacterDead();
-
-	AfterDeath();
-}
-
 void APlayableCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
@@ -289,12 +281,6 @@ void APlayableCharacter::SetInteractMappingContext(bool bIsActive)
 	}
 }
 
-void APlayableCharacter::AfterDeath()
-{
-	InventoryComponent->GenerateItemsToWorld();
-	StartDeadDissolve();
-}
-
 bool APlayableCharacter::CharacterCannotMove()
 {
 	return false;
@@ -318,6 +304,11 @@ void APlayableCharacter::CurrentHealthChanged()
 	{
 		CharacterDead();
 	}
+}
+
+void APlayableCharacter::GenerateInventoryItems()
+{
+	InventoryComponent->GenerateItemsToWorld();
 }
 
 void APlayableCharacter::ServerSetCharacterMovement_Implementation(bool bSprinting)

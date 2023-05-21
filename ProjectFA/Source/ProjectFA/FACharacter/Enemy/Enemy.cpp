@@ -110,7 +110,12 @@ void AEnemy::ReceiveDamage(AActor* DamagedActor, float Damage, const UDamageType
                            AController* InstigatorController, AActor* DamageCauser)
 {
 	CurrentHealth = FMath::Clamp(CurrentHealth - Damage, 0.f, MaxHealth);
+	OnRep_CurrentHealthChanged();
 	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("Enemy Damaged : %f"), Damage));
+}
+
+void AEnemy::CurrentHealthChanged()
+{
 	if(CurrentHealth <= 0)
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Enemy Dead"));
@@ -140,12 +145,6 @@ void AEnemy::AttackCollisionOnOverlapBegin(UPrimitiveComponent* OverlappedCompon
 	UGameplayStatics::ApplyDamage(OtherActor, 10.f, AttackingInstigator, this, DamageTypeClass);
 }
 
-void AEnemy::AfterDeath()
-{
-	LootingItemComponent->GenerateItemsToWorld();
-	StartDeadDissolve();
-}
-
 void AEnemy::SetSpawnItemList(const TArray<APickupItem*>& ItemList)
 {
 	LootingItemComponent->InitializeItemList(ItemList);
@@ -160,6 +159,11 @@ void AEnemy::TriggerAttackToTarget()
 {
 	bAttackTrigger = !bAttackTrigger;
 	OnRep_AttackToTarget();
+}
+
+void AEnemy::GenerateInventoryItems()
+{
+	LootingItemComponent->GenerateItemsToWorld();
 }
 
 void AEnemy::OnRep_AttackToTarget()

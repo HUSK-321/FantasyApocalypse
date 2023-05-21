@@ -11,7 +11,8 @@
 #include "ProjectFA/HUD/ProjectFAHUD.h"
 #include "ProjectFA/HUD/InventoryWidget/InventoryWidget.h"
 #include "ProjectFA/HUD/PickupItemListWidget/PickupItemList.h"
-#include "ProjectFA/Interactable/Looting/LootingBox.h"
+#include "ProjectFA/InGameItem/InventoryUsable.h"
+#include "ProjectFA/Interactable/Looting/LootInteractable.h"
 
 void APlayableController::BeginPlay()
 {
@@ -20,9 +21,41 @@ void APlayableController::BeginPlay()
 	ProjectFAHUD = Cast<AProjectFAHUD>(GetHUD());
 }
 
-void APlayableController::ServerOpenLootingBox_Implementation(ALootingBox* LootingBox)
+void APlayableController::OpenLootingBox(UObject* LootingBox)
 {
-	LootingBox->MulticastOpenLootingBox();
+	ServerOpenLootingBox(LootingBox);
+}
+
+void APlayableController::DropItem(APickupItem* Item)
+{
+	ServerDropItem(Item);
+}
+
+void APlayableController::UseItem(UObject* Item)
+{
+	ServerUseItem(Item);
+}
+
+void APlayableController::ServerOpenLootingBox_Implementation(UObject* LootingBox)
+{
+	if(IsValid(LootingBox) == false)	return;
+	const auto LootableBox = Cast<ILootInteractable>(LootingBox);
+	if(LootableBox == nullptr)	return;
+	
+	LootableBox->OpenLooting();
+}
+
+void APlayableController::ServerDropItem_Implementation(APickupItem* Item)
+{
+	if(IsValid(Item) == false)	return;
+	Item->MulticastDrop();
+}
+
+void APlayableController::ServerUseItem_Implementation(UObject* Item)
+{
+	const auto UsableItem = Cast<IInventoryUsable>(Item);
+	if(UsableItem == nullptr)	return;
+	UsableItem->UseAction();
 }
 
 void APlayableController::SetPlayerEvent(APlayableCharacter* ControllingPlayer)
