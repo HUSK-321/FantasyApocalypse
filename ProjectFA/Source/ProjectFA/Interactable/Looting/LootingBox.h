@@ -40,7 +40,7 @@ private:
 	TObjectPtr<UMaterialInstanceDynamic> DynamicDissolveMaterialInstance;
 	/** Material instance set on the bp, use with dynamic material instance */
 	UPROPERTY(EditAnywhere, Category = "Dissolve", meta = (AllowPrivateAccess = "true"))
-	TObjectPtr<UMaterialInstance> DissolveMaterialInstance;
+	TSoftObjectPtr<UMaterialInstance> DissolveMaterialInstance;
 	UPROPERTY(VisibleAnywhere, Category = "Dissolve", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UTimelineComponent> DissolveTimeline;
 	UPROPERTY(EditAnywhere, Category = "Dissolve")
@@ -66,6 +66,9 @@ protected:
 	virtual void BeginPlay() override;
 	
 private:
+	UMaterialInstance* GetDissolveMaterialInstance() const
+	{ return (DissolveMaterialInstance.IsValid()) ? DissolveMaterialInstance.Get() : DissolveMaterialInstance.LoadSynchronous(); }
+	
 	void StartDissolve();
 	UFUNCTION()
 	void LootAreaBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp,

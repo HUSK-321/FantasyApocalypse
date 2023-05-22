@@ -98,7 +98,7 @@ void AFACharacter::StartDeadDissolve()
 	GetMesh()->bPauseAnims = true;
 	GetMesh()->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
 	
-	DynamicDissolveMaterialInstance = UMaterialInstanceDynamic::Create(DissolveMaterialInstance, this);
+	DynamicDissolveMaterialInstance = UMaterialInstanceDynamic::Create(GetDissolveMaterialInstance(), this);
 	const int32 MaterialCount = GetMesh()->GetNumOverrideMaterials();
 	for(int i = 0; i < MaterialCount; i++)
 	{
