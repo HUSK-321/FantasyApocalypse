@@ -29,8 +29,6 @@ void APickupItem::SetItemPropertyFromDataAsset(const UItemDataAsset* DataAsset)
 {
 	if(DataAsset == nullptr)	return;
 	
-	PickupItemMesh->SetStaticMesh(DataAsset->Mesh);
-
 	ItemInfo.ItemName = DataAsset->Name;
 	ItemInfo.ItemDescription = DataAsset->Description;
 	ItemInfo.ItemIcon = DataAsset->Icon;
