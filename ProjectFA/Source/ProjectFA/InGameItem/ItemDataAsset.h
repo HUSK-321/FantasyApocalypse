@@ -22,8 +22,6 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TObjectPtr<UTexture2D> Icon;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TObjectPtr<UStaticMesh> Mesh;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float PowerAmount;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float Weight;
