@@ -122,7 +122,7 @@ void ALootingBox::StartDissolve()
 	if(BoxMesh == nullptr || DissolveCurve == nullptr || DissolveTimeline == nullptr)	return;
 
 	bLootingBoxDissolving = true;
-	DynamicDissolveMaterialInstance = UMaterialInstanceDynamic::Create(GetDissolveMaterialInstance(), this);
+	DynamicDissolveMaterialInstance = UMaterialInstanceDynamic::Create(DissolveMaterialInstance, this);
 	DynamicDissolveMaterialInstance->SetScalarParameterValue(TEXT("Disslove"), -0.55f);
 	BoxMesh->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
 	BoxMesh->SetMaterial(0, DynamicDissolveMaterialInstance);

@@ -55,9 +55,6 @@ private:
 	UFUNCTION()
 	void AfterDeadDissolve();
 
-	UMaterialInstance* GetDissolveMaterialInstance() const
-	{ return (DissolveMaterialInstance.IsValid()) ? DissolveMaterialInstance.Get() : DissolveMaterialInstance.LoadSynchronous(); }
-
 protected:
 
 	UPROPERTY(EditAnywhere, Category = "Character Property")
@@ -74,7 +71,7 @@ private:
 	UPROPERTY(VisibleAnywhere, Category = "Dead", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UMaterialInstanceDynamic> DynamicDissolveMaterialInstance;
 	UPROPERTY(EditAnywhere, Category = "Dead", meta = (AllowPrivateAccess = "true"))
-	TSoftObjectPtr<UMaterialInstance> DissolveMaterialInstance;
+	TObjectPtr<UMaterialInstance> DissolveMaterialInstance;
 	UPROPERTY(VisibleAnywhere, Category = "Dead", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UTimelineComponent> DissolveTimeline;
 	UPROPERTY(EditAnywhere, Category = "Dead")
