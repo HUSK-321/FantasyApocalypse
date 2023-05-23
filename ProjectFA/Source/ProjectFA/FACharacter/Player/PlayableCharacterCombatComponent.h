@@ -31,9 +31,9 @@ private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<APickupItem> DefaultPunchWeapon;
 
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Skill", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<USkillDataAsset> SkillSlotQ;
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Skill", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<USkillDataAsset> SkillSlotE;
 	
 	bool bNowAttacking;
