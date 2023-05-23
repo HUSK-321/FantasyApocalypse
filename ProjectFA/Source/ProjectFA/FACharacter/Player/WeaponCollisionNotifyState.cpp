@@ -9,6 +9,7 @@ void UWeaponCollisionNotifyState::NotifyBegin(USkeletalMeshComponent* MeshComp, 
 {
 	Super::NotifyBegin(MeshComp, Animation, TotalDuration, EventReference);
 	const auto MeshOwnerActor = MeshComp->GetOwner();
+	if(MeshOwnerActor == nullptr)	return; 
 	const auto ActorComponents = MeshOwnerActor->GetComponentsByInterface(UWeaponAttackableComponent::StaticClass());
 	for(const auto ActorComponent : ActorComponents)
 	{
@@ -23,6 +24,7 @@ void UWeaponCollisionNotifyState::NotifyEnd(USkeletalMeshComponent* MeshComp, UA
 {
 	Super::NotifyEnd(MeshComp, Animation, EventReference);
 	const auto MeshOwnerActor = MeshComp->GetOwner();
+	if(MeshOwnerActor == nullptr)	return; 
 	const auto ActorComponents = MeshOwnerActor->GetComponentsByInterface(UWeaponAttackableComponent::StaticClass());
 	for(const auto ActorComponent : ActorComponents)
 	{

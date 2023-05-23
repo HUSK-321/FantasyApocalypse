@@ -56,6 +56,10 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Player Input", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UInputAction> AttackAction;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Player Input", meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UInputAction> SkillEAction;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Player Input", meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UInputAction> SkillQAction;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Player Input", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UInputAction> CrouchAction;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Player Input", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UInputAction> SprintAction;
@@ -127,6 +131,8 @@ private:
 	void InteractWithActors(const FInputActionValue& Value);
 	void InteractWithActorsEnd();
 	void AttackButtonPressed();
+	void SkillEButtonPressed();
+	void SkillQButtonPressed();
 	void ScrollNearbyItemList(const FInputActionValue& Value);
 	void InventoryButtonPressed();
 	virtual void ReceiveDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType, AController* InstigatorController, AActor* DamageCauser) override;

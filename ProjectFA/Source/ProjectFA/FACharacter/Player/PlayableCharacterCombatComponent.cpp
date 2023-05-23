@@ -130,12 +130,16 @@ void UPlayableCharacterCombatComponent::EndAttack()
 void UPlayableCharacterCombatComponent::PressQButton()
 {
 	if(SkillSlotQ == nullptr)	return;
+	const auto CharacterController = Cast<APlayerController>(Character->GetController());
+	SkillSlotQ->SetSkillInstigatorController(CharacterController);
 	SkillSlotQ->DoSkill();
 }
 
 void UPlayableCharacterCombatComponent::PressEButton()
 {
 	if(SkillSlotE == nullptr)	return;
+	const auto CharacterController = Cast<APlayerController>(Character->GetController());
+	SkillSlotE->SetSkillInstigatorController(CharacterController);
 	SkillSlotE->DoSkill();
 }
 

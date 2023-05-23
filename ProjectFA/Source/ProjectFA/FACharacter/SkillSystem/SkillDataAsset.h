@@ -30,13 +30,22 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Skill Data", meta = (AllowPrivateAccess = "true"))
 	FString SkillDescription;
 
+	UPROPERTY()
+	TObjectPtr<APlayerController> SkillInstigatorController;
+
 public:
+	FORCEINLINE void SetSkillInstigatorController(APlayerController* Controller) { SkillInstigatorController = Controller; }
+	
 	FORCEINLINE float GetDamageAmplify() const { return DamageAmplify; }
 	FORCEINLINE float GetCoolTime() const { return CoolTime; }
 	FORCEINLINE float GetCost() const { return Cost; }
 	FORCEINLINE UTexture2D* GetThumbnail() const { return Thumbnail; }
 	FORCEINLINE FString GetSkillName() const { return SkillName; }
 	FORCEINLINE FString GetSkillDescription() const { return SkillDescription; }
+	FORCEINLINE APlayerController* GetSkillInstigatorController() const { return SkillInstigatorController; }
 
-	virtual void DoSkill() { }	
+	virtual void DoSkill();
+
+protected:
+	void PlaySkillMontage();
 };

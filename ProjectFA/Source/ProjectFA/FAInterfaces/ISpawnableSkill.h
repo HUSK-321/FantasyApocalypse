@@ -20,5 +20,5 @@ class PROJECTFA_API IISpawnableSkill
 	GENERATED_BODY()
 
 public:
-	virtual void SpawnSkillObject();	
+	virtual void SpawnSkillObject(FVector SpawnPosition){}
 };
