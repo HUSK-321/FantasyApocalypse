@@ -13,6 +13,7 @@ class AFACharacter;
 class AWeapon;
 class UEquipable;
 class APickupItem;
+class USkillDataAsset;
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class PROJECTFA_API UPlayableCharacterCombatComponent : public UActorComponent, public IWeaponAttackableComponent
@@ -29,9 +30,16 @@ private:
 	TSubclassOf<APickupItem> DefaultPunchWeaponClass;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<APickupItem> DefaultPunchWeapon;
+
+	UPROPERTY()
+	TObjectPtr<USkillDataAsset> SkillSlotQ;
+	UPROPERTY()
+	TObjectPtr<USkillDataAsset> SkillSlotE;
 	
 	bool bNowAttacking;
 	bool bDoNextAttack;
+
+	bool bNowDoingSkill;
 
 public:
 
@@ -53,7 +61,15 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void EndAttack();
 
+	UFUNCTION()
+	void PressQButton();
+	UFUNCTION()
+	void PressEButton();
+
 	FORCEINLINE bool GetNowAttacking() const { return bNowAttacking; }
+	FORCEINLINE void SetSkillSlotQ(USkillDataAsset* SkillDataAsset) { SkillSlotQ = SkillDataAsset; }
+	FORCEINLINE void SetSkillSlotE(USkillDataAsset* SkillDataAsset) { SkillSlotE = SkillDataAsset; }
+	float GetCharacterAttackDamage();
 	
 protected:
 	virtual void BeginPlay() override;

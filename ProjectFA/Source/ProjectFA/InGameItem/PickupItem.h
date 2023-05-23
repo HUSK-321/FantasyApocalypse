@@ -72,6 +72,7 @@ public:
 	FORCEINLINE FString GetItemDescription() const { return ItemInfo.ItemDescription; }
 	FORCEINLINE float GetItemWeight() const { return ItemInfo.ItemWeight; }
 	FORCEINLINE UTexture2D* GetItemIcon() const { return ItemInfo.ItemIcon; }
+	FORCEINLINE float GetItemPower() const { return ItemInfo.ItemPowerAmount; }
 
 protected:
 	virtual void BeginPlay() override;

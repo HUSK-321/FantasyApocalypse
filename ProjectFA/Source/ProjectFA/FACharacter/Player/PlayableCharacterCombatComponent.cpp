@@ -5,6 +5,7 @@
 #include "Engine/SkeletalMeshSocket.h"
 #include "Net/UnrealNetwork.h"
 #include "ProjectFA/FACharacter/FACharacter.h"
+#include "ProjectFA/FACharacter/SkillSystem/SkillDataAsset.h"
 #include "ProjectFA/InGameItem/Weapon/Weapon.h"
 
 UPlayableCharacterCombatComponent::UPlayableCharacterCombatComponent()
@@ -126,10 +127,28 @@ void UPlayableCharacterCombatComponent::EndAttack()
 	Character->StopNormalAttackMontage();
 }
 
+void UPlayableCharacterCombatComponent::PressQButton()
+{
+	if(SkillSlotQ == nullptr)	return;
+	SkillSlotQ->DoSkill();
+}
+
+void UPlayableCharacterCombatComponent::PressEButton()
+{
+	if(SkillSlotE == nullptr)	return;
+	SkillSlotE->DoSkill();
+}
+
 void UPlayableCharacterCombatComponent::ItemDrop(APickupItem* UnEquipItem)
 {
 	if(UnEquipItem == EquippedItem)
 	{
 		EquippedItem = nullptr;
 	}
+}
+
+float UPlayableCharacterCombatComponent::GetCharacterAttackDamage()
+{
+	if(EquippedItem == nullptr)	return 0.f;
+	return EquippedItem->GetItemPower();
 }
