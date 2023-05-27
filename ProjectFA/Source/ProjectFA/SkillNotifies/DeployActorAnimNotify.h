@@ -4,13 +4,13 @@
 
 #include "CoreMinimal.h"
 #include "Animation/AnimNotifies/AnimNotify.h"
-#include "DeployBombAnimNotify.generated.h"
+#include "DeployActorAnimNotify.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class PROJECTFA_API UDeployBombAnimNotify : public UAnimNotify
+class PROJECTFA_API UDeployActorAnimNotify : public UAnimNotify
 {
 	GENERATED_BODY()
 	
@@ -20,4 +20,6 @@ public:
 private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	TSubclassOf<AActor> DeployObjectClass;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
+	FVector SpawnOffset;
 };
