@@ -13,6 +13,7 @@ class AFACharacter;
 class AWeapon;
 class UEquipable;
 class APickupItem;
+class USkillDataAsset;
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class PROJECTFA_API UPlayableCharacterCombatComponent : public UActorComponent, public IWeaponAttackableComponent
@@ -20,7 +21,6 @@ class PROJECTFA_API UPlayableCharacterCombatComponent : public UActorComponent, 
 	GENERATED_BODY()
 
 private:
-
 	UPROPERTY()
 	TObjectPtr<AFACharacter> Character;
 	UPROPERTY(ReplicatedUsing = OnRep_EquippedItem, VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
@@ -29,12 +29,18 @@ private:
 	TSubclassOf<APickupItem> DefaultPunchWeaponClass;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<APickupItem> DefaultPunchWeapon;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Skill", meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<USkillDataAsset> SkillSlotQ;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Skill", meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<USkillDataAsset> SkillSlotE;
 	
 	bool bNowAttacking;
 	bool bDoNextAttack;
 
-public:
+	bool bNowDoingSkill;
 
+public:
 	UPlayableCharacterCombatComponent();
 
 	virtual void WeaponAttackStart() override;
@@ -53,7 +59,17 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void EndAttack();
 
+	UFUNCTION()
+	void PressQButton();
+	UFUNCTION()
+	void PressEButton();
+
 	FORCEINLINE bool GetNowAttacking() const { return bNowAttacking; }
+	FORCEINLINE void SetSkillSlotQ(USkillDataAsset* SkillDataAsset) { SkillSlotQ = SkillDataAsset; }
+	FORCEINLINE void SetSkillSlotE(USkillDataAsset* SkillDataAsset) { SkillSlotE = SkillDataAsset; }
+	FORCEINLINE USkillDataAsset* GetSkillSlotQ() const { return SkillSlotQ; }
+	FORCEINLINE USkillDataAsset* GetSkillSlotE() const { return SkillSlotE; }
+	float GetCharacterAttackDamage();
 	
 protected:
 	virtual void BeginPlay() override;

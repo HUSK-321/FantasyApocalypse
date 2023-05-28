@@ -8,6 +8,7 @@
 #include "Components/ProgressBar.h"
 #include "Components/TextBlock.h"
 #include "ProjectFA/HUD/PlayerOverlay.h"
+#include "ProjectFA/HUD/SkillWidget/SkillWidget.h"
 #include "ProjectFA/HUD/ProjectFAHUD.h"
 #include "ProjectFA/HUD/InventoryWidget/InventoryWidget.h"
 #include "ProjectFA/HUD/PickupItemListWidget/PickupItemList.h"
@@ -128,6 +129,12 @@ void APlayableController::ToggleInventoryWidget()
 	Visibility == ESlateVisibility::Visible ? SetInputModeGameAndUI() : SetInputModeGameOnly();
 }
 
+void APlayableController::InitializeSkillWidget(USkillDataAsset* QSkillData, USkillDataAsset* ESkillData)
+{
+	if(SkillWidgetNotValid())	return;
+	ProjectFAHUD->PlayerOverlay->SkillWidget->SetSkillSlotWidget(QSkillData, ESkillData);
+}
+
 void APlayableController::SetInventoryWeight(const float& Weight)
 {
 	if(InventoryWidgetNotValid() || ProjectFAHUD->Inventory->TotalWeight == nullptr)	return;
@@ -153,6 +160,11 @@ bool APlayableController::PlayerStaminaOverlayNotValid() const
 bool APlayableController::InventoryWidgetNotValid() const
 {
 	return ProjectFAHUD == nullptr || ProjectFAHUD->Inventory == nullptr;
+}
+
+bool APlayableController::SkillWidgetNotValid() const
+{
+	return ProjectFAHUD == nullptr || ProjectFAHUD->PlayerOverlay == nullptr || ProjectFAHUD->PlayerOverlay->SkillWidget == nullptr;
 }
 
 void APlayableController::SetInputModeGameAndUI()

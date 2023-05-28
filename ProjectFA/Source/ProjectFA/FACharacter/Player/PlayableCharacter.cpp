@@ -79,6 +79,8 @@ void APlayableCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Started, this, &APlayableCharacter::Jump);
 		EnhancedInputComponent->BindAction(InteractNearbyItem, ETriggerEvent::Started, this, &APlayableCharacter::InteractWithNearbyItem);
 		EnhancedInputComponent->BindAction(AttackAction, ETriggerEvent::Started, this, &APlayableCharacter::AttackButtonPressed);
+		EnhancedInputComponent->BindAction(SkillEAction, ETriggerEvent::Started, this, &APlayableCharacter::SkillEButtonPressed);
+		EnhancedInputComponent->BindAction(SkillQAction, ETriggerEvent::Started, this, &APlayableCharacter::SkillQButtonPressed);
 		EnhancedInputComponent->BindAction(CrouchAction, ETriggerEvent::Started, this, &APlayableCharacter::CrouchButtonPressed);
 		EnhancedInputComponent->BindAction(SprintAction, ETriggerEvent::Started, this, &APlayableCharacter::SprintButtonPressed);
 		EnhancedInputComponent->BindAction(SprintAction, ETriggerEvent::Completed, this, &APlayableCharacter::SprintButtonReleased);
@@ -248,6 +250,18 @@ void APlayableCharacter::AttackButtonPressed()
 {
 	if(CombatComponent == nullptr || CharacterCannotAttack())	return;
 	CombatComponent->Attack();
+}
+
+void APlayableCharacter::SkillEButtonPressed()
+{
+	if(CombatComponent == nullptr)	return;
+	CombatComponent->PressEButton();
+}
+
+void APlayableCharacter::SkillQButtonPressed()
+{
+	if(CombatComponent == nullptr)	return;
+	CombatComponent->PressQButton();
 }
 
 void APlayableCharacter::ScrollNearbyItemList(const FInputActionValue& Value)

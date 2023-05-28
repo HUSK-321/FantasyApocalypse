@@ -2,9 +2,11 @@
 
 
 #include "PlayableCharacterCombatComponent.h"
+#include "PlayableController.h"
 #include "Engine/SkeletalMeshSocket.h"
 #include "Net/UnrealNetwork.h"
 #include "ProjectFA/FACharacter/FACharacter.h"
+#include "ProjectFA/FACharacter/SkillSystem/SkillDataAsset.h"
 #include "ProjectFA/InGameItem/Weapon/Weapon.h"
 
 UPlayableCharacterCombatComponent::UPlayableCharacterCombatComponent()
@@ -23,6 +25,22 @@ void UPlayableCharacterCombatComponent::BeginPlay()
 	{
 		DefaultPunchWeapon = GetWorld()->SpawnActor<APickupItem>(DefaultPunchWeaponClass);
 		EquipItemToCharacter(DefaultPunchWeapon);
+	}
+
+	const auto CharacterController = Cast<APlayerController>(Character->GetController());
+	if(CharacterController == nullptr)	return;
+	const auto PlayableController = Cast<APlayableController>(CharacterController);
+	if(PlayableController == nullptr)	return;
+
+	// TODO : refactor
+	PlayableController->InitializeSkillWidget(GetSkillSlotQ(), GetSkillSlotE());
+	if(SkillSlotQ)
+	{
+		SkillSlotQ->Rename(TEXT("SkillQ"), Character);
+	}
+	if(SkillSlotE)
+	{
+		SkillSlotE->Rename(TEXT("SkillE"), Character);
 	}
 }
 
@@ -126,10 +144,32 @@ void UPlayableCharacterCombatComponent::EndAttack()
 	Character->StopNormalAttackMontage();
 }
 
+void UPlayableCharacterCombatComponent::PressQButton()
+{
+	if(SkillSlotQ == nullptr)	return;
+	const auto CharacterController = Cast<APlayerController>(Character->GetController());
+	SkillSlotQ->SetSkillInstigatorController(CharacterController);
+	SkillSlotQ->DoSkill();
+}
+
+void UPlayableCharacterCombatComponent::PressEButton()
+{
+	if(SkillSlotE == nullptr)	return;
+	const auto CharacterController = Cast<APlayerController>(Character->GetController());
+	SkillSlotE->SetSkillInstigatorController(CharacterController);
+	SkillSlotE->DoSkill();
+}
+
 void UPlayableCharacterCombatComponent::ItemDrop(APickupItem* UnEquipItem)
 {
 	if(UnEquipItem == EquippedItem)
 	{
 		EquippedItem = nullptr;
 	}
+}
+
+float UPlayableCharacterCombatComponent::GetCharacterAttackDamage()
+{
+	if(EquippedItem == nullptr)	return 0.f;
+	return EquippedItem->GetItemPower();
 }
