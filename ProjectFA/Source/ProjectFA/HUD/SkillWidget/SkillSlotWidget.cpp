@@ -4,6 +4,20 @@
 #include "SkillSlotWidget.h"
 #include "Components/Image.h"
 #include "Components/TextBlock.h"
+#include "ProjectFA/FACharacter/SkillSystem/SkillDataAsset.h"
+
+void USkillSlotWidget::SetSkill(USkillDataAsset* SkillDataAsset)
+{
+	SkillData = SkillDataAsset;
+	if(const auto Data = SkillData.Get())
+	{
+		SkillImage->SetBrushFromTexture(Data->GetThumbnail());
+		Data->SkillCoolTimeStartEvent.AddDynamic(this, &USkillSlotWidget::SetCoolDownWidgetVisible);
+		Data->SkillDoingEvent.AddDynamic(this, &USkillSlotWidget::SetSkillCoolTimeText);
+		Data->SkillCoolTimeEndEvent.AddDynamic(this, &USkillSlotWidget::SetCoolDownWidgetHidden);
+		SetCoolDownWidgetHidden();
+	}
+}
 
 void USkillSlotWidget::SetSkillImage(UTexture2D* Image)
 {
@@ -12,7 +26,7 @@ void USkillSlotWidget::SetSkillImage(UTexture2D* Image)
 	SetCooldownWidgetVisibility(ESlateVisibility::Hidden);
 }
 
-void USkillSlotWidget::SetSkillCoolTimeText(const float RemainTime)
+void USkillSlotWidget::SetSkillCoolTimeText(const float& RemainTime)
 {
 	CooldownTimer->SetText(FText::AsNumber(RemainTime));
 }
@@ -21,4 +35,14 @@ void USkillSlotWidget::SetCooldownWidgetVisibility(const ESlateVisibility SlateV
 {
 	CooldownImage->SetVisibility(SlateVisibility);
 	CooldownTimer->SetVisibility(SlateVisibility);
+}
+
+void USkillSlotWidget::SetCoolDownWidgetVisible()
+{
+	SetCooldownWidgetVisibility(ESlateVisibility::Visible);
+}
+
+void USkillSlotWidget::SetCoolDownWidgetHidden()
+{
+	SetCooldownWidgetVisibility(ESlateVisibility::Hidden);
 }

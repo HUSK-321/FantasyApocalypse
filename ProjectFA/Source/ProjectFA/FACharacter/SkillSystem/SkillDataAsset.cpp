@@ -17,8 +17,8 @@ void USkillDataAsset::DoSkill()
 	bNowCooldown = true;
 	if(GetWorld())
 	{
-		GetWorld()->GetTimerManager().SetTimer(SkillTimerHandle, this, &USkillDataAsset::ResetSkill, CoolTime);
 		SkillCoolTimeStartEvent.Broadcast();
+		GetWorld()->GetTimerManager().SetTimer(SkillTimerHandle, this, &USkillDataAsset::ResetSkill, CoolTime);
 	}
 	PlaySkillMontage();
 }

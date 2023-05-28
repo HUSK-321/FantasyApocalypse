@@ -5,17 +5,15 @@
 #include "SkillSlotWidget.h"
 #include "ProjectFA/FACharacter/SkillSystem/SkillDataAsset.h"
 
-void USkillWidget::SetSkillSlotWidget(const USkillDataAsset* QSkill, const USkillDataAsset* ESkill)
+void USkillWidget::SetSkillSlotWidget(USkillDataAsset* QSkill, USkillDataAsset* ESkill)
 {
 	if(QSkill)
 	{
-		const auto QSkillThumbnail = QSkill->GetThumbnail();
-		SkillSlotQ->SetSkillImage(QSkillThumbnail);
+		SkillSlotQ->SetSkill(QSkill);
 	}
 	if(ESkill)
 	{
-		const auto ESkillThumbnail = ESkill->GetThumbnail();
-		SkillSlotE->SetSkillImage(ESkillThumbnail);
+		SkillSlotE->SetSkill(ESkill);
 	}
 }
 

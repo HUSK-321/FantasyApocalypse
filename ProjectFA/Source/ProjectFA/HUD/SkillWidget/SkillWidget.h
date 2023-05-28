@@ -21,7 +21,7 @@ private:
 	TObjectPtr<USkillSlotWidget> SkillSlotE;
 
 public:
-	void SetSkillSlotWidget(const USkillDataAsset* QSkill, const USkillDataAsset* ESkill);
+	void SetSkillSlotWidget(USkillDataAsset* QSkill, USkillDataAsset* ESkill);
 	void SetSkillQCoolTimeVisible();
 	void SetSkillECoolTimeVisible();
 	void SetSkillQCoolTimeHidden();

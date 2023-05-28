@@ -32,19 +32,15 @@ void UPlayableCharacterCombatComponent::BeginPlay()
 	const auto PlayableController = Cast<APlayableController>(CharacterController);
 	if(PlayableController == nullptr)	return;
 
-	PlayableController->InitializeSkillWidget(GetSkillSlotQ(), GetSkillSlotE());
 	// TODO : refactor
+	PlayableController->InitializeSkillWidget(GetSkillSlotQ(), GetSkillSlotE());
 	if(SkillSlotQ)
 	{
 		SkillSlotQ->Rename(TEXT("SkillQ"), Character);
-		SkillSlotQ->SkillCoolTimeStartEvent.AddDynamic(PlayableController, &APlayableController::SetSkillQCoolTimeVisible);
-		SkillSlotQ->SkillCoolTimeEndEvent.AddDynamic(PlayableController, &APlayableController::SetSkillQCoolTimeHidden);
 	}
 	if(SkillSlotE)
 	{
 		SkillSlotE->Rename(TEXT("SkillE"), Character);
-		SkillSlotE->SkillCoolTimeStartEvent.AddDynamic(PlayableController, &APlayableController::SetSkillECoolTimeVisible);
-		SkillSlotE->SkillCoolTimeEndEvent.AddDynamic(PlayableController, &APlayableController::SetSkillECoolTimeHidden);
 	}
 }
 

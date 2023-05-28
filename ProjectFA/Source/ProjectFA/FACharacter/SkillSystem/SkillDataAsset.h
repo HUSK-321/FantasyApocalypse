@@ -7,6 +7,7 @@
 #include "SkillDataAsset.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FSkillEvent);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FSkillDoingEvent, const float&, RemainTime);
 
 UCLASS()
 class PROJECTFA_API USkillDataAsset : public UDataAsset
@@ -15,6 +16,7 @@ class PROJECTFA_API USkillDataAsset : public UDataAsset
 
 public:
 	FSkillEvent SkillCoolTimeStartEvent;
+	FSkillDoingEvent SkillDoingEvent;
 	FSkillEvent SkillCoolTimeEndEvent;
 
 private:
@@ -53,8 +55,6 @@ public:
 	FORCEINLINE APlayerController* GetSkillInstigatorController() const { return SkillInstigatorController; }
 
 	virtual void DoSkill();
-
-	void CoolTimeCalculate();
 
 protected:
 	void PlaySkillMontage();
