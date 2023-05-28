@@ -37,6 +37,7 @@ private:
 
 	bool bNowCooldown;
 	FTimerHandle SkillTimerHandle;
+	FTimerHandle SkillCoolTimeHandle;
 
 	UPROPERTY()
 	TObjectPtr<APlayerController> SkillInstigatorController;
@@ -60,5 +61,8 @@ protected:
 	void PlaySkillMontage();
 
 private:
+	UFUNCTION()
 	void ResetSkill();
+	UFUNCTION()
+	void UpdateCoolTime();
 };

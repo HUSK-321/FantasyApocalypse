@@ -19,6 +19,7 @@ void USkillDataAsset::DoSkill()
 	{
 		SkillCoolTimeStartEvent.Broadcast();
 		GetWorld()->GetTimerManager().SetTimer(SkillTimerHandle, this, &USkillDataAsset::ResetSkill, CoolTime);
+		GetWorld()->GetTimerManager().SetTimer(SkillCoolTimeHandle, this, &USkillDataAsset::UpdateCoolTime, 0.1f, true, 0.f);
 	}
 	PlaySkillMontage();
 }
@@ -41,6 +42,16 @@ void USkillDataAsset::ResetSkill()
 {
 	bNowCooldown = false;
 	SkillCoolTimeEndEvent.Broadcast();
+}
+
+void USkillDataAsset::UpdateCoolTime()
+{
+	const auto RemainTime = GetNowCoolTime();
+	if(GetNowCoolTime() < KINDA_SMALL_NUMBER && GetWorld())
+	{
+		GetWorld()->GetTimerManager().ClearTimer(SkillCoolTimeHandle);
+	}
+	SkillDoingEvent.Broadcast(RemainTime);
 }
 
 float USkillDataAsset::GetNowCoolTime() const

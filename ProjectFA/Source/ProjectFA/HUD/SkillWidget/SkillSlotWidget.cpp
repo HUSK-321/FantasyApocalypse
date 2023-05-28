@@ -28,7 +28,10 @@ void USkillSlotWidget::SetSkillImage(UTexture2D* Image)
 
 void USkillSlotWidget::SetSkillCoolTimeText(const float& RemainTime)
 {
-	CooldownTimer->SetText(FText::AsNumber(RemainTime));
+	FNumberFormattingOptions Options;
+	Options.SetMinimumFractionalDigits(2);
+	Options.SetMaximumFractionalDigits(2);
+	CooldownTimer->SetText(FText::AsNumber(RemainTime, &Options));
 }
 
 void USkillSlotWidget::SetCooldownWidgetVisibility(const ESlateVisibility SlateVisibility)
