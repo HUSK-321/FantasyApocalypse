@@ -21,7 +21,6 @@ class PROJECTFA_API UPlayableCharacterCombatComponent : public UActorComponent, 
 	GENERATED_BODY()
 
 private:
-
 	UPROPERTY()
 	TObjectPtr<AFACharacter> Character;
 	UPROPERTY(ReplicatedUsing = OnRep_EquippedItem, VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
@@ -42,7 +41,6 @@ private:
 	bool bNowDoingSkill;
 
 public:
-
 	UPlayableCharacterCombatComponent();
 
 	virtual void WeaponAttackStart() override;
@@ -69,6 +67,8 @@ public:
 	FORCEINLINE bool GetNowAttacking() const { return bNowAttacking; }
 	FORCEINLINE void SetSkillSlotQ(USkillDataAsset* SkillDataAsset) { SkillSlotQ = SkillDataAsset; }
 	FORCEINLINE void SetSkillSlotE(USkillDataAsset* SkillDataAsset) { SkillSlotE = SkillDataAsset; }
+	FORCEINLINE USkillDataAsset* GetSkillSlotQ() const { return SkillSlotQ; }
+	FORCEINLINE USkillDataAsset* GetSkillSlotE() const { return SkillSlotE; }
 	float GetCharacterAttackDamage();
 	
 protected:

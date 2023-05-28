@@ -7,9 +7,14 @@
 
 void USkillWidget::SetSkillSlotWidget(const USkillDataAsset* QSkill, const USkillDataAsset* ESkill)
 {
-	const auto QSkillThumbnail = QSkill->GetThumbnail();
-	const auto ESkillThumbnail = ESkill->GetThumbnail();
-
-	SkillSlotE->SetSkillImage(ESkillThumbnail);
-	SkillSlotQ->SetSkillImage(QSkillThumbnail);
+	if(QSkill)
+	{
+		const auto QSkillThumbnail = QSkill->GetThumbnail();
+		SkillSlotQ->SetSkillImage(QSkillThumbnail);
+	}
+	if(ESkill)
+	{
+		const auto ESkillThumbnail = ESkill->GetThumbnail();
+		SkillSlotE->SetSkillImage(ESkillThumbnail);
+	}
 }

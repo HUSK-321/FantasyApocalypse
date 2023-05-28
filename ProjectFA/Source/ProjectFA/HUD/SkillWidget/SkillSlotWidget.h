@@ -11,6 +11,7 @@
  */
 
 class UImage;
+class UTextBlock;
 
 UCLASS()
 class PROJECTFA_API USkillSlotWidget : public UUserWidget
@@ -20,7 +21,12 @@ class PROJECTFA_API USkillSlotWidget : public UUserWidget
 private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta=(BindWidget, AllowPrivateAccess = "true"))
 	TObjectPtr<UImage> SkillImage;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta=(BindWidget, AllowPrivateAccess = "true"))
+	TObjectPtr<UImage> CooldownImage;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta=(BindWidget, AllowPrivateAccess = "true"))
+	TObjectPtr<UTextBlock> CooldownTimer;
 
 public:
 	void SetSkillImage(UTexture2D* Image);
+	void SetCooldownWidgetVisibility(ESlateVisibility SlateVisibility);
 };

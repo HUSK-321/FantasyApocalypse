@@ -2,6 +2,8 @@
 
 
 #include "PlayableCharacterCombatComponent.h"
+
+#include "PlayableController.h"
 #include "Engine/SkeletalMeshSocket.h"
 #include "Net/UnrealNetwork.h"
 #include "ProjectFA/FACharacter/FACharacter.h"
@@ -24,6 +26,14 @@ void UPlayableCharacterCombatComponent::BeginPlay()
 	{
 		DefaultPunchWeapon = GetWorld()->SpawnActor<APickupItem>(DefaultPunchWeaponClass);
 		EquipItemToCharacter(DefaultPunchWeapon);
+	}
+
+	// TODO : refactor
+	const auto CharacterController = Cast<APlayerController>(Character->GetController());
+	if(CharacterController == nullptr)	return;
+	if(const auto PlayableController = Cast<APlayableController>(CharacterController))
+	{
+		PlayableController->InitializeSkillWidget(GetSkillSlotQ(), GetSkillSlotE());
 	}
 }
 

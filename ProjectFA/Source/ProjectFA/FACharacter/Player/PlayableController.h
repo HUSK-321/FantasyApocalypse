@@ -14,6 +14,8 @@ class APlayableCharacter;
 class UInventoryComponent;
 class AProjectFAHUD;
 class APickupItem;
+class USkillDataAsset;
+class UPlayableCharacterCombatComponent;
 
 UCLASS()
 class PROJECTFA_API APlayableController : public APlayerController, public IItemRPCableController
@@ -26,7 +28,7 @@ private:
 protected:
 	virtual void BeginPlay() override;
 
-public:
+public:	
 	virtual void OpenLootingBox(UObject* LootingBox) override;
 	virtual void DropItem(APickupItem* Item) override;
 	virtual void UseItem(UObject* Item) override;
@@ -50,6 +52,9 @@ public:
 	UFUNCTION()
 	void ToggleInventoryWidget();
 
+	UFUNCTION()
+	void InitializeSkillWidget(const USkillDataAsset* QSkillData, const USkillDataAsset* ESkillData);
+
 private:
 	UFUNCTION()
 	void SetInventoryWeight(const float& Weight);
@@ -58,6 +63,7 @@ private:
 	bool NearbyItemListNotValid() const;
 	bool PlayerStaminaOverlayNotValid() const;
 	bool InventoryWidgetNotValid() const;
+	bool SkillWidgetNotValid() const;
 
 	void SetInputModeGameAndUI();
 	void SetInputModeGameOnly();

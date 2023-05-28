@@ -9,6 +9,9 @@
 /**
  * 
  */
+
+class USkillWidget;
+
 UCLASS()
 class PROJECTFA_API UPlayerOverlay : public UUserWidget
 {
@@ -22,5 +25,7 @@ public:
 	TObjectPtr<class UProgressBar> StaminaBar;
 	UPROPERTY(meta=(BindWidget))
 	TObjectPtr<class UTextBlock> HealthText;
-	
+
+	UPROPERTY(meta=(BindWidget))
+	TObjectPtr<USkillWidget> SkillWidget;
 };
