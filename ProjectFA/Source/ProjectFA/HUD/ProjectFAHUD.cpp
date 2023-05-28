@@ -15,10 +15,6 @@ void AProjectFAHUD::BeginPlay()
 	{ 
 		PlayerOverlay = CreateWidget<UPlayerOverlay>(PlayerController, PlayerOverlayClass);
 		PlayerOverlay->AddToViewport();
-		if(PlayerOverlay->SkillWidget)
-		{
-			UE_LOG(LogTemp ,Warning ,TEXT("SkillWidget"));
-		}
 		PickupItemList = CreateWidget<UPickupItemList>(PlayerController, PickupItemListClass);
 		PickupItemList->AddToViewport();
 		PickupItemList->SetVisibility(ESlateVisibility::Hidden);
