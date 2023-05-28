@@ -22,4 +22,10 @@ private:
 
 public:
 	void SetSkillSlotWidget(const USkillDataAsset* QSkill, const USkillDataAsset* ESkill);
+	void SetSkillQCoolTimeVisible();
+	void SetSkillECoolTimeVisible();
+	void SetSkillQCoolTimeHidden();
+	void SetSkillECoolTimeHidden();
+	void SetSkillQTime(const float RemainTime);
+	void SetSkillETime(const float RemainTime);
 };

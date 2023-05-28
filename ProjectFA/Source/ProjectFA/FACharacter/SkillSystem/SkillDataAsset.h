@@ -6,13 +6,16 @@
 #include "Engine/DataAsset.h"
 #include "SkillDataAsset.generated.h"
 
-/**
- * 
- */
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FSkillEvent);
+
 UCLASS()
 class PROJECTFA_API USkillDataAsset : public UDataAsset
 {
 	GENERATED_BODY()
+
+public:
+	FSkillEvent SkillCoolTimeStartEvent;
+	FSkillEvent SkillCoolTimeEndEvent;
 
 private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Skill Data", meta = (AllowPrivateAccess = "true"))
@@ -30,14 +33,19 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Skill Data", meta = (AllowPrivateAccess = "true"))
 	FString SkillDescription;
 
+	bool bNowCooldown;
+	FTimerHandle SkillTimerHandle;
+
 	UPROPERTY()
 	TObjectPtr<APlayerController> SkillInstigatorController;
 
 public:
+	USkillDataAsset();
 	FORCEINLINE void SetSkillInstigatorController(APlayerController* Controller) { SkillInstigatorController = Controller; }
 	
+	float GetNowCoolTime() const;
 	FORCEINLINE float GetDamageAmplify() const { return DamageAmplify; }
-	FORCEINLINE float GetCoolTime() const { return CoolTime; }
+	FORCEINLINE float GetSkillCoolTime() const { return CoolTime; }
 	FORCEINLINE float GetCost() const { return Cost; }
 	FORCEINLINE UTexture2D* GetThumbnail() const { return Thumbnail; }
 	FORCEINLINE FString GetSkillName() const { return SkillName; }
@@ -46,6 +54,11 @@ public:
 
 	virtual void DoSkill();
 
+	void CoolTimeCalculate();
+
 protected:
 	void PlaySkillMontage();
+
+private:
+	void ResetSkill();
 };

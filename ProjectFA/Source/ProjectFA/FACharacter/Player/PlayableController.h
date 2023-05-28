@@ -54,6 +54,18 @@ public:
 
 	UFUNCTION()
 	void InitializeSkillWidget(const USkillDataAsset* QSkillData, const USkillDataAsset* ESkillData);
+	UFUNCTION()
+	void SetSkillQCoolTimeVisible();
+	UFUNCTION()
+	void SetSkillECoolTimeVisible();
+	UFUNCTION()
+	void SetSkillQCoolTimeHidden();
+	UFUNCTION()
+	void SetSkillECoolTimeHidden();
+	UFUNCTION()
+	void SetQSkillTimer(const float RemainTime);
+	UFUNCTION()
+	void SetESkillTimer(const float RemainTime);
 
 private:
 	UFUNCTION()

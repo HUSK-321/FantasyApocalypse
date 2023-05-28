@@ -4,9 +4,22 @@
 #include "SkillDataAsset.h"
 #include "GameFramework/Character.h"
 
+USkillDataAsset::USkillDataAsset()
+	:
+	bNowCooldown(false)
+{
+}
+
 void USkillDataAsset::DoSkill()
 {
-	UE_LOG(LogTemp, Warning, TEXT("do skill"));
+	if(bNowCooldown)	return;
+	
+	bNowCooldown = true;
+	if(GetWorld())
+	{
+		GetWorld()->GetTimerManager().SetTimer(SkillTimerHandle, this, &USkillDataAsset::ResetSkill, CoolTime);
+		SkillCoolTimeStartEvent.Broadcast();
+	}
 	PlaySkillMontage();
 }
 
@@ -22,4 +35,15 @@ void USkillDataAsset::PlaySkillMontage()
 	
 	CharacterAnimInstance->StopAllMontages(0.0f);
 	CharacterAnimInstance->Montage_Play(SkillMontage);
+}
+
+void USkillDataAsset::ResetSkill()
+{
+	bNowCooldown = false;
+	SkillCoolTimeEndEvent.Broadcast();
+}
+
+float USkillDataAsset::GetNowCoolTime() const
+{
+	return (GetWorld() != nullptr && bNowCooldown) ? GetWorld()->GetTimerManager().GetTimerRemaining(SkillTimerHandle) : 0.f;	
 }

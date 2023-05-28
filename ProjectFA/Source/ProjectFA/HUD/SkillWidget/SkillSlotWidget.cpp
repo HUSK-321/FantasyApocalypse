@@ -12,6 +12,11 @@ void USkillSlotWidget::SetSkillImage(UTexture2D* Image)
 	SetCooldownWidgetVisibility(ESlateVisibility::Hidden);
 }
 
+void USkillSlotWidget::SetSkillCoolTimeText(const float RemainTime)
+{
+	CooldownTimer->SetText(FText::AsNumber(RemainTime));
+}
+
 void USkillSlotWidget::SetCooldownWidgetVisibility(const ESlateVisibility SlateVisibility)
 {
 	CooldownImage->SetVisibility(SlateVisibility);

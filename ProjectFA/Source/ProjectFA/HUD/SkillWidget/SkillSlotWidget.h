@@ -28,5 +28,6 @@ private:
 
 public:
 	void SetSkillImage(UTexture2D* Image);
+	void SetSkillCoolTimeText(const float RemainTime);
 	void SetCooldownWidgetVisibility(ESlateVisibility SlateVisibility);
 };

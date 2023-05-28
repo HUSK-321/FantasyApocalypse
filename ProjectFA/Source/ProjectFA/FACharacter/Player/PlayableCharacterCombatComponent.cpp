@@ -2,7 +2,6 @@
 
 
 #include "PlayableCharacterCombatComponent.h"
-
 #include "PlayableController.h"
 #include "Engine/SkeletalMeshSocket.h"
 #include "Net/UnrealNetwork.h"
@@ -28,12 +27,24 @@ void UPlayableCharacterCombatComponent::BeginPlay()
 		EquipItemToCharacter(DefaultPunchWeapon);
 	}
 
-	// TODO : refactor
 	const auto CharacterController = Cast<APlayerController>(Character->GetController());
 	if(CharacterController == nullptr)	return;
-	if(const auto PlayableController = Cast<APlayableController>(CharacterController))
+	const auto PlayableController = Cast<APlayableController>(CharacterController);
+	if(PlayableController == nullptr)	return;
+
+	PlayableController->InitializeSkillWidget(GetSkillSlotQ(), GetSkillSlotE());
+	// TODO : refactor
+	if(SkillSlotQ)
 	{
-		PlayableController->InitializeSkillWidget(GetSkillSlotQ(), GetSkillSlotE());
+		SkillSlotQ->Rename(TEXT("SkillQ"), Character);
+		SkillSlotQ->SkillCoolTimeStartEvent.AddDynamic(PlayableController, &APlayableController::SetSkillQCoolTimeVisible);
+		SkillSlotQ->SkillCoolTimeEndEvent.AddDynamic(PlayableController, &APlayableController::SetSkillQCoolTimeHidden);
+	}
+	if(SkillSlotE)
+	{
+		SkillSlotE->Rename(TEXT("SkillE"), Character);
+		SkillSlotE->SkillCoolTimeStartEvent.AddDynamic(PlayableController, &APlayableController::SetSkillECoolTimeVisible);
+		SkillSlotE->SkillCoolTimeEndEvent.AddDynamic(PlayableController, &APlayableController::SetSkillECoolTimeHidden);
 	}
 }
 

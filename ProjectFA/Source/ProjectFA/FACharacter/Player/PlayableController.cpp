@@ -136,6 +136,42 @@ void APlayableController::InitializeSkillWidget(const USkillDataAsset* QSkillDat
 	ProjectFAHUD->PlayerOverlay->SkillWidget->SetSkillSlotWidget(QSkillData, ESkillData);
 }
 
+void APlayableController::SetSkillQCoolTimeVisible()
+{
+	if(SkillWidgetNotValid())	return;
+	ProjectFAHUD->PlayerOverlay->SkillWidget->SetSkillQCoolTimeVisible();
+}
+
+void APlayableController::SetSkillECoolTimeVisible()
+{
+	if(SkillWidgetNotValid())	return;
+	ProjectFAHUD->PlayerOverlay->SkillWidget->SetSkillECoolTimeVisible();
+}
+
+void APlayableController::SetSkillQCoolTimeHidden()
+{
+	if(SkillWidgetNotValid())	return;
+	ProjectFAHUD->PlayerOverlay->SkillWidget->SetSkillQCoolTimeHidden();
+}
+
+void APlayableController::SetSkillECoolTimeHidden()
+{
+	if(SkillWidgetNotValid())	return;
+	ProjectFAHUD->PlayerOverlay->SkillWidget->SetSkillECoolTimeHidden();
+}
+
+void APlayableController::SetQSkillTimer(const float RemainTime)
+{
+	if(SkillWidgetNotValid())	return;
+	ProjectFAHUD->PlayerOverlay->SkillWidget->SetSkillQTime(RemainTime);
+}
+
+void APlayableController::SetESkillTimer(const float RemainTime)
+{
+	if(SkillWidgetNotValid())	return;
+	ProjectFAHUD->PlayerOverlay->SkillWidget->SetSkillETime(RemainTime);
+}
+
 void APlayableController::SetInventoryWeight(const float& Weight)
 {
 	if(InventoryWidgetNotValid() || ProjectFAHUD->Inventory->TotalWeight == nullptr)	return;
