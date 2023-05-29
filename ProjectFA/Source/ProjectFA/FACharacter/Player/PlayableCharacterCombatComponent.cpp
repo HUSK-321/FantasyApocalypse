@@ -26,6 +26,29 @@ void UPlayableCharacterCombatComponent::BeginPlay()
 		DefaultPunchWeapon = GetWorld()->SpawnActor<APickupItem>(DefaultPunchWeaponClass);
 		EquipItemToCharacter(DefaultPunchWeapon);
 	}
+	
+	CreateSkillFromData();
+}
+
+void UPlayableCharacterCombatComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(UPlayableCharacterCombatComponent, EquippedItem);
+	DOREPLIFETIME(UPlayableCharacterCombatComponent, SkillSlotQ);
+	DOREPLIFETIME(UPlayableCharacterCombatComponent, SkillSlotE);
+}
+
+void UPlayableCharacterCombatComponent::CreateSkillFromData()
+{
+	if(SkillSlotQClass)
+	{
+		SkillSlotQ = NewObject<USkillDataAsset>(this, SkillSlotQClass);
+	}
+	if(SkillSlotEClass)
+	{
+		SkillSlotE = NewObject<USkillDataAsset>(this, SkillSlotEClass);
+	}
 
 	const auto CharacterController = Cast<APlayerController>(Character->GetController());
 	if(CharacterController == nullptr)	return;
@@ -44,13 +67,6 @@ void UPlayableCharacterCombatComponent::BeginPlay()
 		SkillSlotE->Rename(TEXT("SkillE"), Character);
 		SkillSlotE->SkillMontageEndEvent.AddDynamic(this, &UPlayableCharacterCombatComponent::DoingSkillEnd);
 	}
-}
-
-void UPlayableCharacterCombatComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
-{
-	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-
-	DOREPLIFETIME(UPlayableCharacterCombatComponent, EquippedItem);
 }
 
 void UPlayableCharacterCombatComponent::EquipItemToCharacter(APickupItem* ItemToEquip)
@@ -152,20 +168,32 @@ void UPlayableCharacterCombatComponent::EndAttack()
 
 void UPlayableCharacterCombatComponent::PressQButton()
 {
-	if(SkillSlotQ == nullptr)	return;
-	const auto CharacterController = Cast<APlayerController>(Character->GetController());
-	SkillSlotQ->SetSkillInstigatorController(CharacterController);
-	SkillSlotQ->DoSkill();
-	bNowDoingSkill = true;
+	ServerDoSkill(true);
 }
 
 void UPlayableCharacterCombatComponent::PressEButton()
 {
-	if(SkillSlotE == nullptr)	return;
-	const auto CharacterController = Cast<APlayerController>(Character->GetController());
-	SkillSlotE->SetSkillInstigatorController(CharacterController);
-	SkillSlotE->DoSkill();
+	ServerDoSkill(false);
+}
+
+void UPlayableCharacterCombatComponent::DoSkill(USkillDataAsset* SkillToDo)
+{
+	if(SkillToDo == nullptr)	return;
+	
 	bNowDoingSkill = true;
+	const auto CharacterController = Cast<APlayerController>(Character->GetController());
+	SkillToDo->SetSkillInstigatorController(CharacterController);
+	SkillToDo->DoSkill();
+}
+
+void UPlayableCharacterCombatComponent::ServerDoSkill_Implementation(bool bIsQ)
+{
+	MulticastDoSkill(bIsQ);
+}
+
+void UPlayableCharacterCombatComponent::MulticastDoSkill_Implementation(bool bIsQ)
+{
+	bIsQ ? DoSkill(GetSkillSlotQ()) : DoSkill(GetSkillSlotE());
 }
 
 void UPlayableCharacterCombatComponent::ItemDrop(APickupItem* UnEquipItem)

@@ -3,14 +3,14 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Engine/DataAsset.h"
+#include "UObject/NoExportTypes.h"
 #include "SkillDataAsset.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FSkillEvent);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FSkillDoingEvent, const float&, RemainTime);
 
-UCLASS()
-class PROJECTFA_API USkillDataAsset : public UDataAsset
+UCLASS(Blueprintable, BlueprintType)
+class PROJECTFA_API USkillDataAsset : public UObject
 {
 	GENERATED_BODY()
 

@@ -131,7 +131,6 @@ void AWeapon::AttackStart_Implementation()
 	HittedActors.AddUnique(GetOwner());
 	HittedActors.AddUnique(this);
 	AttackCollision->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
-	UE_LOG(LogTemp, Warning, TEXT("Attack Start"));
 }
 
 void AWeapon::AttackCollisionOnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
@@ -158,7 +157,6 @@ void AWeapon::AttackEnd_Implementation()
 {
 	HittedActors.Empty();
 	AttackCollision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	UE_LOG(LogTemp, Warning, TEXT("Attack end"));
 }
 
 void AWeapon::SetEquipItemEvent(const FEquipItemEvent& Event)
