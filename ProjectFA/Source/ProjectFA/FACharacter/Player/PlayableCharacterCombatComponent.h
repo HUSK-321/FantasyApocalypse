@@ -65,6 +65,7 @@ public:
 	void PressEButton();
 
 	FORCEINLINE bool GetNowAttacking() const { return bNowAttacking; }
+	FORCEINLINE bool GetNowDoingSkill() const { return bNowDoingSkill; }
 	FORCEINLINE void SetSkillSlotQ(USkillDataAsset* SkillDataAsset) { SkillSlotQ = SkillDataAsset; }
 	FORCEINLINE void SetSkillSlotE(USkillDataAsset* SkillDataAsset) { SkillSlotE = SkillDataAsset; }
 	FORCEINLINE USkillDataAsset* GetSkillSlotQ() const { return SkillSlotQ; }
@@ -81,4 +82,7 @@ private:
 
 	UFUNCTION()
 	void OnRep_EquippedItem();
+
+	UFUNCTION()
+	void DoingSkillEnd();
 };

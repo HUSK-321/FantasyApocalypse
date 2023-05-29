@@ -37,10 +37,12 @@ void UPlayableCharacterCombatComponent::BeginPlay()
 	if(SkillSlotQ)
 	{
 		SkillSlotQ->Rename(TEXT("SkillQ"), Character);
+		SkillSlotQ->SkillMontageEndEvent.AddDynamic(this, &UPlayableCharacterCombatComponent::DoingSkillEnd);
 	}
 	if(SkillSlotE)
 	{
 		SkillSlotE->Rename(TEXT("SkillE"), Character);
+		SkillSlotE->SkillMontageEndEvent.AddDynamic(this, &UPlayableCharacterCombatComponent::DoingSkillEnd);
 	}
 }
 
@@ -86,6 +88,12 @@ void UPlayableCharacterCombatComponent::OnRep_EquippedItem()
 
 void UPlayableCharacterCombatComponent::Attack()
 {
+	if(EquippedItem == nullptr || Character == nullptr)	return;
+	if(bNowAttacking)
+	{
+		bDoNextAttack = true;
+		return;
+	}
 	ServerAttack();
 }
 
@@ -96,12 +104,6 @@ void UPlayableCharacterCombatComponent::ServerAttack_Implementation()
 
 void UPlayableCharacterCombatComponent::MulticastAttack_Implementation()
 {
-	if(EquippedItem == nullptr || Character == nullptr)	return;
-	if(bNowAttacking)
-	{
-		bDoNextAttack = true;
-		return;
-	}
 	if(auto const WeaponInterface = Cast<IEquipable>(EquippedItem))
 	{
 		bNowAttacking = true;
@@ -172,4 +174,10 @@ float UPlayableCharacterCombatComponent::GetCharacterAttackDamage()
 {
 	if(EquippedItem == nullptr)	return 0.f;
 	return EquippedItem->GetItemPower();
+}
+
+void UPlayableCharacterCombatComponent::DoingSkillEnd()
+{
+	UE_LOG(LogTemp, Warning, TEXT("doing skillend"));
+	bNowDoingSkill = false;
 }

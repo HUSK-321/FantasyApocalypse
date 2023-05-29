@@ -19,6 +19,8 @@ public:
 	FSkillDoingEvent SkillDoingEvent;
 	FSkillEvent SkillCoolTimeEndEvent;
 
+	FSkillEvent SkillMontageEndEvent;
+
 private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Skill Data", meta = (AllowPrivateAccess = "true"))
 	float DamageAmplify;
@@ -65,4 +67,6 @@ private:
 	void ResetSkill();
 	UFUNCTION()
 	void UpdateCoolTime();
+	UFUNCTION()
+	void SkillMontageEnd(UAnimMontage* Montage, bool bInterrupted);
 };

@@ -36,6 +36,8 @@ void USkillDataAsset::PlaySkillMontage()
 	
 	CharacterAnimInstance->StopAllMontages(0.0f);
 	CharacterAnimInstance->Montage_Play(SkillMontage);
+	CharacterAnimInstance->OnMontageEnded.Clear();
+	CharacterAnimInstance->OnMontageEnded.AddDynamic(this, &USkillDataAsset::SkillMontageEnd);
 }
 
 void USkillDataAsset::ResetSkill()
@@ -52,6 +54,11 @@ void USkillDataAsset::UpdateCoolTime()
 		GetWorld()->GetTimerManager().ClearTimer(SkillCoolTimeHandle);
 	}
 	SkillDoingEvent.Broadcast(RemainTime);
+}
+
+void USkillDataAsset::SkillMontageEnd(UAnimMontage* Montage, bool bInterrupted)
+{
+	SkillMontageEndEvent.Broadcast();
 }
 
 float USkillDataAsset::GetNowCoolTime() const

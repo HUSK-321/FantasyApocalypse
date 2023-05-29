@@ -302,7 +302,8 @@ bool APlayableCharacter::CharacterCannotMove()
 
 bool APlayableCharacter::CharacterCannotAttack()
 {
-	return bIsCrouched || GetCharacterMovement()->IsFalling();
+	return bIsCrouched || GetCharacterMovement()->IsFalling() ||
+			(CombatComponent) ? (CombatComponent->GetNowDoingSkill()) : false;
 }
 
 bool APlayableCharacter::CharacterCannotJump()
