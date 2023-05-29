@@ -38,6 +38,7 @@ private:
 	FString SkillDescription;
 
 	bool bNowCooldown;
+	bool bNowPlayingMontage;
 	FTimerHandle SkillTimerHandle;
 	FTimerHandle SkillCoolTimeHandle;
 
@@ -56,6 +57,7 @@ public:
 	FORCEINLINE FString GetSkillName() const { return SkillName; }
 	FORCEINLINE FString GetSkillDescription() const { return SkillDescription; }
 	FORCEINLINE APlayerController* GetSkillInstigatorController() const { return SkillInstigatorController; }
+	FORCEINLINE bool GetNowPlayingMontage() const { return bNowPlayingMontage; }
 
 	virtual void DoSkill();
 

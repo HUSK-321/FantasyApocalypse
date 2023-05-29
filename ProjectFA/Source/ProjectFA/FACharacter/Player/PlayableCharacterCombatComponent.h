@@ -70,6 +70,7 @@ public:
 	FORCEINLINE void SetSkillSlotE(USkillDataAsset* SkillDataAsset) { SkillSlotE = SkillDataAsset; }
 	FORCEINLINE USkillDataAsset* GetSkillSlotQ() const { return SkillSlotQ; }
 	FORCEINLINE USkillDataAsset* GetSkillSlotE() const { return SkillSlotE; }
+	UFUNCTION()
 	float GetCharacterAttackDamage();
 	
 protected:

@@ -98,6 +98,7 @@ void AWeapon::SetItemVisibilityByState()
 void AWeapon::DropItem(const float DropImpulsePower)
 {
 	UnEquip();
+	GetPlayerDamageProperty.Clear();
 	Super::DropItem(DropImpulsePower);
 }
 
@@ -129,6 +130,7 @@ void AWeapon::AttackStart_Implementation()
 	HittedActors.AddUnique(GetOwner());
 	HittedActors.AddUnique(this);
 	AttackCollision->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+	UE_LOG(LogTemp, Warning, TEXT("Attack Start"));
 }
 
 void AWeapon::AttackCollisionOnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
@@ -140,24 +142,23 @@ void AWeapon::AttackCollisionOnOverlapBegin(UPrimitiveComponent* OverlappedCompo
 	if(AttackingPawn == nullptr)	return;
 	const auto AttackingInstigator = AttackingPawn->GetController();
 	if(AttackingInstigator == nullptr)	return;
-	
-	UGameplayStatics::ApplyDamage(OtherActor, ItemInfo.ItemPowerAmount, AttackingInstigator, this, WeaponInfo.DamageTypeClass);
-	HittedActors.AddUnique(OtherActor);
 
-	// if(GetWorld())
-	// {
-	// 	const FVector DebugLineStart = SweepResult.ImpactPoint;
-	// 	const FVector DebugLineEnd = DebugLineStart + SweepResult.ImpactNormal * 10.f;
-	// 	UE_LOG(LogTemp, Warning, TEXT("impact normal : %s"), *SweepResult.ImpactNormal.ToString());
-	// 	UE_LOG(LogTemp, Warning, TEXT("start : %s, end : %s"), *DebugLineStart.ToString(), *DebugLineEnd.ToString());
-	// 	DrawDebugLine(GetWorld(), DebugLineStart, DebugLineEnd, FColor::Cyan, false, 20.f, 0, 1.f);	
-	// }
+	float Damage = ItemInfo.ItemPowerAmount;
+	if(GetPlayerDamageProperty.IsBound())
+	{
+		UE_LOG(LogTemp, Warning, TEXT("bound"));
+		Damage += GetPlayerDamageProperty.Execute();
+	}
+	UGameplayStatics::ApplyDamage(OtherActor, Damage, AttackingInstigator, this, WeaponInfo.DamageTypeClass);
+	HittedActors.AddUnique(OtherActor);
+	UE_LOG(LogTemp, Warning, TEXT("Attack : %f"), Damage);
 }
 
 void AWeapon::AttackEnd_Implementation()
 {
 	HittedActors.Empty();
 	AttackCollision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	UE_LOG(LogTemp, Warning, TEXT("Attack end"));
 }
 
 void AWeapon::SetEquipItemEvent(const FEquipItemEvent& Event)
@@ -168,6 +169,11 @@ void AWeapon::SetEquipItemEvent(const FEquipItemEvent& Event)
 void AWeapon::SetUnEquipEvent(const FEquipItemEvent& Event)
 {
 	UnEquipEvent = Event;	
+}
+
+void AWeapon::SetPlayerDamagePropertyDelegate(const FGetPlayerDamagePropertyDelegate& Event)
+{
+	GetPlayerDamageProperty = Event;
 }
 
 void AWeapon::InventoryAction_Implementation()

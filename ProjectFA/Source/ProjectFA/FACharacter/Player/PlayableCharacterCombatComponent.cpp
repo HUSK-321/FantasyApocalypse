@@ -72,6 +72,10 @@ void UPlayableCharacterCombatComponent::EquipItemToCharacter(APickupItem* ItemTo
 		FEquipItemEvent Event;
 		Event.AddDynamic(this, &UPlayableCharacterCombatComponent::ItemDrop);
 		Equipable->SetUnEquipEvent(Event);
+
+		FGetPlayerDamagePropertyDelegate PlayerDamagePropertyDelegate;
+		PlayerDamagePropertyDelegate.BindUFunction(this, FName("GetCharacterAttackDamage"));
+		Equipable->SetPlayerDamagePropertyDelegate(PlayerDamagePropertyDelegate);
 	}
 }
 
@@ -152,6 +156,7 @@ void UPlayableCharacterCombatComponent::PressQButton()
 	const auto CharacterController = Cast<APlayerController>(Character->GetController());
 	SkillSlotQ->SetSkillInstigatorController(CharacterController);
 	SkillSlotQ->DoSkill();
+	bNowDoingSkill = true;
 }
 
 void UPlayableCharacterCombatComponent::PressEButton()
@@ -160,6 +165,7 @@ void UPlayableCharacterCombatComponent::PressEButton()
 	const auto CharacterController = Cast<APlayerController>(Character->GetController());
 	SkillSlotE->SetSkillInstigatorController(CharacterController);
 	SkillSlotE->DoSkill();
+	bNowDoingSkill = true;
 }
 
 void UPlayableCharacterCombatComponent::ItemDrop(APickupItem* UnEquipItem)
@@ -172,12 +178,23 @@ void UPlayableCharacterCombatComponent::ItemDrop(APickupItem* UnEquipItem)
 
 float UPlayableCharacterCombatComponent::GetCharacterAttackDamage()
 {
-	if(EquippedItem == nullptr)	return 0.f;
-	return EquippedItem->GetItemPower();
+	// TODO : 플레이어 스탯을 저장하는 것들이 생긴다면 처리하기
+	float ReturnDamage = 0.f;
+	if(GetNowDoingSkill())
+	{
+		if(SkillSlotQ && SkillSlotQ->GetNowPlayingMontage())
+		{
+			ReturnDamage += SkillSlotQ->GetDamageAmplify();
+		}
+		if(SkillSlotE && SkillSlotE->GetNowPlayingMontage())
+		{
+			ReturnDamage += SkillSlotE->GetDamageAmplify();
+		}
+	}
+	return ReturnDamage;
 }
 
 void UPlayableCharacterCombatComponent::DoingSkillEnd()
 {
-	UE_LOG(LogTemp, Warning, TEXT("doing skillend"));
 	bNowDoingSkill = false;
 }

@@ -19,13 +19,13 @@ class UEquipable : public UInterface
  */
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FEquipItemEvent, APickupItem*, Item);
+DECLARE_DYNAMIC_DELEGATE_RetVal(float, FGetPlayerDamagePropertyDelegate);
 
 class PROJECTFA_API IEquipable
 {
 	GENERATED_BODY()
 
 public:
-
 	virtual FName GetNormalAttackMontageSectionName() const = 0;
 	virtual void UnEquip() = 0;
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Attack Action")
@@ -34,4 +34,5 @@ public:
 	void AttackEnd();
 	virtual void SetEquipItemEvent(const FEquipItemEvent& Event) = 0;
 	virtual void SetUnEquipEvent(const FEquipItemEvent& Event) = 0;
+	virtual void SetPlayerDamagePropertyDelegate(const FGetPlayerDamagePropertyDelegate& Event) {}
 };
