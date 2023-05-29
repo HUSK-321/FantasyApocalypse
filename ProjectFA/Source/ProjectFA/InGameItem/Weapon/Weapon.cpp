@@ -41,6 +41,7 @@ void AWeapon::BeginPlay()
 {
 	Super::BeginPlay();
 
+	if(HasAuthority() == false)	return;
 	AttackCollision->OnComponentBeginOverlap.AddDynamic(this, &AWeapon::AttackCollisionOnOverlapBegin);
 }
 
@@ -146,7 +147,6 @@ void AWeapon::AttackCollisionOnOverlapBegin(UPrimitiveComponent* OverlappedCompo
 	float Damage = ItemInfo.ItemPowerAmount;
 	if(GetPlayerDamageProperty.IsBound())
 	{
-		UE_LOG(LogTemp, Warning, TEXT("bound"));
 		Damage += GetPlayerDamageProperty.Execute();
 	}
 	UGameplayStatics::ApplyDamage(OtherActor, Damage, AttackingInstigator, this, WeaponInfo.DamageTypeClass);
