@@ -26,6 +26,29 @@ void UPlayableCharacterCombatComponent::BeginPlay()
 		DefaultPunchWeapon = GetWorld()->SpawnActor<APickupItem>(DefaultPunchWeaponClass);
 		EquipItemToCharacter(DefaultPunchWeapon);
 	}
+	
+	CreateSkillFromData();
+}
+
+void UPlayableCharacterCombatComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(UPlayableCharacterCombatComponent, EquippedItem);
+	DOREPLIFETIME(UPlayableCharacterCombatComponent, SkillSlotQ);
+	DOREPLIFETIME(UPlayableCharacterCombatComponent, SkillSlotE);
+}
+
+void UPlayableCharacterCombatComponent::CreateSkillFromData()
+{
+	if(SkillSlotQClass)
+	{
+		SkillSlotQ = NewObject<USkillDataAsset>(this, SkillSlotQClass);
+	}
+	if(SkillSlotEClass)
+	{
+		SkillSlotE = NewObject<USkillDataAsset>(this, SkillSlotEClass);
+	}
 
 	const auto CharacterController = Cast<APlayerController>(Character->GetController());
 	if(CharacterController == nullptr)	return;
@@ -37,18 +60,13 @@ void UPlayableCharacterCombatComponent::BeginPlay()
 	if(SkillSlotQ)
 	{
 		SkillSlotQ->Rename(TEXT("SkillQ"), Character);
+		SkillSlotQ->SkillMontageEndEvent.AddDynamic(this, &UPlayableCharacterCombatComponent::DoingSkillEnd);
 	}
 	if(SkillSlotE)
 	{
 		SkillSlotE->Rename(TEXT("SkillE"), Character);
+		SkillSlotE->SkillMontageEndEvent.AddDynamic(this, &UPlayableCharacterCombatComponent::DoingSkillEnd);
 	}
-}
-
-void UPlayableCharacterCombatComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
-{
-	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-
-	DOREPLIFETIME(UPlayableCharacterCombatComponent, EquippedItem);
 }
 
 void UPlayableCharacterCombatComponent::EquipItemToCharacter(APickupItem* ItemToEquip)
@@ -70,6 +88,10 @@ void UPlayableCharacterCombatComponent::EquipItemToCharacter(APickupItem* ItemTo
 		FEquipItemEvent Event;
 		Event.AddDynamic(this, &UPlayableCharacterCombatComponent::ItemDrop);
 		Equipable->SetUnEquipEvent(Event);
+
+		FGetPlayerDamagePropertyDelegate PlayerDamagePropertyDelegate;
+		PlayerDamagePropertyDelegate.BindUFunction(this, FName("GetCharacterAttackDamage"));
+		Equipable->SetPlayerDamagePropertyDelegate(PlayerDamagePropertyDelegate);
 	}
 }
 
@@ -146,18 +168,32 @@ void UPlayableCharacterCombatComponent::EndAttack()
 
 void UPlayableCharacterCombatComponent::PressQButton()
 {
-	if(SkillSlotQ == nullptr)	return;
-	const auto CharacterController = Cast<APlayerController>(Character->GetController());
-	SkillSlotQ->SetSkillInstigatorController(CharacterController);
-	SkillSlotQ->DoSkill();
+	ServerDoSkill(true);
 }
 
 void UPlayableCharacterCombatComponent::PressEButton()
 {
-	if(SkillSlotE == nullptr)	return;
+	ServerDoSkill(false);
+}
+
+void UPlayableCharacterCombatComponent::DoSkill(USkillDataAsset* SkillToDo)
+{
+	if(SkillToDo == nullptr)	return;
+	
+	bNowDoingSkill = true;
 	const auto CharacterController = Cast<APlayerController>(Character->GetController());
-	SkillSlotE->SetSkillInstigatorController(CharacterController);
-	SkillSlotE->DoSkill();
+	SkillToDo->SetSkillInstigatorController(CharacterController);
+	SkillToDo->DoSkill();
+}
+
+void UPlayableCharacterCombatComponent::ServerDoSkill_Implementation(bool bIsQ)
+{
+	MulticastDoSkill(bIsQ);
+}
+
+void UPlayableCharacterCombatComponent::MulticastDoSkill_Implementation(bool bIsQ)
+{
+	bIsQ ? DoSkill(GetSkillSlotQ()) : DoSkill(GetSkillSlotE());
 }
 
 void UPlayableCharacterCombatComponent::ItemDrop(APickupItem* UnEquipItem)
@@ -170,6 +206,30 @@ void UPlayableCharacterCombatComponent::ItemDrop(APickupItem* UnEquipItem)
 
 float UPlayableCharacterCombatComponent::GetCharacterAttackDamage()
 {
-	if(EquippedItem == nullptr)	return 0.f;
-	return EquippedItem->GetItemPower();
+	// TODO : 플레이어 스탯을 저장하는 것들이 생긴다면 처리하기
+	float ReturnDamage = 0.f;
+	ReturnDamage += GetSkillDamageAmplify();
+	return ReturnDamage;
+}
+
+float UPlayableCharacterCombatComponent::GetSkillDamageAmplify()
+{
+	float ReturnDamage = 0.f;
+	if(GetNowDoingSkill())
+	{
+		if(SkillSlotQ && SkillSlotQ->GetNowPlayingMontage())
+		{
+			ReturnDamage += SkillSlotQ->GetDamageAmplify();
+		}
+		if(SkillSlotE && SkillSlotE->GetNowPlayingMontage())
+		{
+			ReturnDamage += SkillSlotE->GetDamageAmplify();
+		}
+	}
+	return ReturnDamage;
+}
+
+void UPlayableCharacterCombatComponent::DoingSkillEnd()
+{
+	bNowDoingSkill = false;
 }

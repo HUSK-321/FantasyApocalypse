@@ -3,14 +3,14 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Engine/DataAsset.h"
+#include "UObject/NoExportTypes.h"
 #include "SkillDataAsset.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FSkillEvent);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FSkillDoingEvent, const float&, RemainTime);
 
-UCLASS()
-class PROJECTFA_API USkillDataAsset : public UDataAsset
+UCLASS(Blueprintable, BlueprintType)
+class PROJECTFA_API USkillDataAsset : public UObject
 {
 	GENERATED_BODY()
 
@@ -18,6 +18,8 @@ public:
 	FSkillEvent SkillCoolTimeStartEvent;
 	FSkillDoingEvent SkillDoingEvent;
 	FSkillEvent SkillCoolTimeEndEvent;
+
+	FSkillEvent SkillMontageEndEvent;
 
 private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Skill Data", meta = (AllowPrivateAccess = "true"))
@@ -36,6 +38,7 @@ private:
 	FString SkillDescription;
 
 	bool bNowCooldown;
+	bool bNowPlayingMontage;
 	FTimerHandle SkillTimerHandle;
 	FTimerHandle SkillCoolTimeHandle;
 
@@ -54,6 +57,7 @@ public:
 	FORCEINLINE FString GetSkillName() const { return SkillName; }
 	FORCEINLINE FString GetSkillDescription() const { return SkillDescription; }
 	FORCEINLINE APlayerController* GetSkillInstigatorController() const { return SkillInstigatorController; }
+	FORCEINLINE bool GetNowPlayingMontage() const { return bNowPlayingMontage; }
 
 	virtual void DoSkill();
 
@@ -65,4 +69,6 @@ private:
 	void ResetSkill();
 	UFUNCTION()
 	void UpdateCoolTime();
+	UFUNCTION()
+	void SkillMontageEnd(UAnimMontage* Montage, bool bInterrupted);
 };

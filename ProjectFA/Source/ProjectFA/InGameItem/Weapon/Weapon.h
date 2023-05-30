@@ -21,6 +21,8 @@ class PROJECTFA_API AWeapon : public APickupItem, public IEquipable, public IInv
 	GENERATED_BODY()
 
 public:
+	FGetPlayerDamagePropertyDelegate GetPlayerDamageProperty;
+	
 	FEquipItemEvent EquipItemEvent;
 	FEquipItemEvent UnEquipEvent;
 
@@ -50,6 +52,7 @@ public:
 	virtual void AttackEnd_Implementation() override;
 	virtual void SetEquipItemEvent(const FEquipItemEvent& Event) override;
 	virtual void SetUnEquipEvent(const FEquipItemEvent& Event) override;
+	virtual void SetPlayerDamagePropertyDelegate(const FGetPlayerDamagePropertyDelegate& Event) override;
 
 	virtual void InventoryAction_Implementation() override;
 	virtual void RemoveFromInventoryAction_Implementation() override;

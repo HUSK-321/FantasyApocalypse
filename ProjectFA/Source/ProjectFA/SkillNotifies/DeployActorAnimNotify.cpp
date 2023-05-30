@@ -10,7 +10,8 @@ void UDeployActorAnimNotify::Notify(USkeletalMeshComponent* MeshComp, UAnimSeque
 
 	if(MeshComp == nullptr || DeployObjectClass == nullptr) return;
 	const auto World = MeshComp->GetWorld();
-	if(World == nullptr)	return;
+	const auto OwnerRole = MeshComp->GetOwnerRole();
+	if(World == nullptr || OwnerRole < ROLE_Authority)	return;
 	
 	const auto SpawnPosition = MeshComp->GetComponentLocation() + (SpawnOffset * MeshComp->GetComponentRotation().Vector());
 	World->SpawnActor<AActor>(DeployObjectClass, SpawnPosition, FRotator::ZeroRotator);

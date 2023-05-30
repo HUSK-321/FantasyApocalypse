@@ -10,6 +10,7 @@ ABombActor::ABombActor()
 	SetRootComponent(BombMesh);
 	
 	PrimaryActorTick.bCanEverTick = false;
+	bReplicates = true;
 }
 
 void ABombActor::BeginPlay()
@@ -17,6 +18,13 @@ void ABombActor::BeginPlay()
 	Super::BeginPlay();
 	
 	SetExplodeTimer();
+
+#if UE_EDITOR
+	if(GetWorld())
+	{
+		DrawDebugSphere(GetWorld(), GetActorLocation(), DamageOuterRadius, 50, FColor(181, 0, 0), false, TimeToExplode, 0, 1);	
+	}
+#endif
 }
 
 void ABombActor::SetExplodeTimer()

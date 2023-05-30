@@ -31,8 +31,12 @@ private:
 	TObjectPtr<APickupItem> DefaultPunchWeapon;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Skill", meta = (AllowPrivateAccess = "true"))
-	TObjectPtr<USkillDataAsset> SkillSlotQ;
+	TSubclassOf<USkillDataAsset> SkillSlotQClass;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Skill", meta = (AllowPrivateAccess = "true"))
+	TSubclassOf<USkillDataAsset> SkillSlotEClass;
+	UPROPERTY(Replicated, EditAnywhere, BlueprintReadWrite, Category = "Skill", meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<USkillDataAsset> SkillSlotQ;
+	UPROPERTY(Replicated, EditAnywhere, BlueprintReadWrite, Category = "Skill", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<USkillDataAsset> SkillSlotE;
 	
 	bool bNowAttacking;
@@ -63,12 +67,20 @@ public:
 	void PressQButton();
 	UFUNCTION()
 	void PressEButton();
+	UFUNCTION()
+	void DoSkill(USkillDataAsset* SkillToDo);
+	UFUNCTION(Server, Reliable)
+	void ServerDoSkill(bool bIsQ);
+	UFUNCTION(NetMulticast, Reliable)
+	void MulticastDoSkill(bool bIsQ);
 
 	FORCEINLINE bool GetNowAttacking() const { return bNowAttacking; }
+	FORCEINLINE bool GetNowDoingSkill() const { return bNowDoingSkill; }
 	FORCEINLINE void SetSkillSlotQ(USkillDataAsset* SkillDataAsset) { SkillSlotQ = SkillDataAsset; }
 	FORCEINLINE void SetSkillSlotE(USkillDataAsset* SkillDataAsset) { SkillSlotE = SkillDataAsset; }
 	FORCEINLINE USkillDataAsset* GetSkillSlotQ() const { return SkillSlotQ; }
 	FORCEINLINE USkillDataAsset* GetSkillSlotE() const { return SkillSlotE; }
+	UFUNCTION()
 	float GetCharacterAttackDamage();
 	
 protected:
@@ -76,9 +88,15 @@ protected:
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
 private:
+	void CreateSkillFromData();
+	
 	UFUNCTION()
 	void ItemDrop(APickupItem* UnEquipItem);
+	float GetSkillDamageAmplify();
 
 	UFUNCTION()
 	void OnRep_EquippedItem();
+
+	UFUNCTION()
+	void DoingSkillEnd();
 };

@@ -36,6 +36,9 @@ void USkillDataAsset::PlaySkillMontage()
 	
 	CharacterAnimInstance->StopAllMontages(0.0f);
 	CharacterAnimInstance->Montage_Play(SkillMontage);
+	CharacterAnimInstance->OnMontageEnded.Clear();
+	CharacterAnimInstance->OnMontageEnded.AddDynamic(this, &USkillDataAsset::SkillMontageEnd);
+	bNowPlayingMontage = true;
 }
 
 void USkillDataAsset::ResetSkill()
@@ -50,8 +53,15 @@ void USkillDataAsset::UpdateCoolTime()
 	if(GetNowCoolTime() < KINDA_SMALL_NUMBER && GetWorld())
 	{
 		GetWorld()->GetTimerManager().ClearTimer(SkillCoolTimeHandle);
+		bNowCooldown = false;
 	}
 	SkillDoingEvent.Broadcast(RemainTime);
+}
+
+void USkillDataAsset::SkillMontageEnd(UAnimMontage* Montage, bool bInterrupted)
+{
+	bNowPlayingMontage = false;
+	SkillMontageEndEvent.Broadcast();
 }
 
 float USkillDataAsset::GetNowCoolTime() const
