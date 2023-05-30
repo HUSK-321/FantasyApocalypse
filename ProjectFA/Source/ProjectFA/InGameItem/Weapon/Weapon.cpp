@@ -146,7 +146,7 @@ void AWeapon::AttackCollisionOnOverlapBegin(UPrimitiveComponent* OverlappedCompo
 	float Damage = ItemInfo.ItemPowerAmount;
 	if(GetPlayerDamageProperty.IsBound())
 	{
-		Damage += GetPlayerDamageProperty.Execute();
+		Damage += Damage * GetPlayerDamageProperty.Execute() / 100.f;
 	}
 	UGameplayStatics::ApplyDamage(OtherActor, Damage, AttackingInstigator, this, WeaponInfo.DamageTypeClass);
 	HittedActors.AddUnique(OtherActor);
