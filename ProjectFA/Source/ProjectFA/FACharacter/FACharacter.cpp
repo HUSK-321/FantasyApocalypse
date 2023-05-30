@@ -66,7 +66,7 @@ void AFACharacter::CharacterDead()
 	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
 	if(AnimInstance == nullptr)	return;
 	
-	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_Pawn, ECR_Ignore);
 	if(DieMontage)
 	{
 		AnimInstance->Montage_Play(DieMontage);
