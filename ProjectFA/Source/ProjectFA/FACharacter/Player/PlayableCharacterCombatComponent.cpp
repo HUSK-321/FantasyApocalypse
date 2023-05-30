@@ -108,12 +108,6 @@ void UPlayableCharacterCombatComponent::OnRep_EquippedItem()
 
 void UPlayableCharacterCombatComponent::Attack()
 {
-	if(EquippedItem == nullptr || Character == nullptr)	return;
-	if(bNowAttacking)
-	{
-		bDoNextAttack = true;
-		return;
-	}
 	ServerAttack();
 }
 
@@ -124,6 +118,12 @@ void UPlayableCharacterCombatComponent::ServerAttack_Implementation()
 
 void UPlayableCharacterCombatComponent::MulticastAttack_Implementation()
 {
+	if(EquippedItem == nullptr || Character == nullptr)	return;
+	if(bNowAttacking)
+	{
+		bDoNextAttack = true;
+		return;
+	}
 	if(auto const WeaponInterface = Cast<IEquipable>(EquippedItem))
 	{
 		bNowAttacking = true;
