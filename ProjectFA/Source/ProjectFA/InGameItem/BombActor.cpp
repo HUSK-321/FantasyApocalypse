@@ -10,6 +10,7 @@ ABombActor::ABombActor()
 	SetRootComponent(BombMesh);
 	
 	PrimaryActorTick.bCanEverTick = false;
+	bReplicates = true;
 }
 
 void ABombActor::BeginPlay()
