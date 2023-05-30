@@ -92,6 +92,7 @@ private:
 	
 	UFUNCTION()
 	void ItemDrop(APickupItem* UnEquipItem);
+	float GetSkillDamageAmplify();
 
 	UFUNCTION()
 	void OnRep_EquippedItem();

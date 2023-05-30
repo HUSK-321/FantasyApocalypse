@@ -33,6 +33,7 @@ void USkillDataAsset::PlaySkillMontage()
 	if(CharacterMesh == nullptr)	return;
 	const auto CharacterAnimInstance = CharacterMesh->GetAnimInstance();
 	if(CharacterAnimInstance == nullptr)	return;
+	
 	CharacterAnimInstance->StopAllMontages(0.0f);
 	CharacterAnimInstance->Montage_Play(SkillMontage);
 	CharacterAnimInstance->OnMontageEnded.Clear();

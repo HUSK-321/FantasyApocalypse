@@ -208,6 +208,13 @@ float UPlayableCharacterCombatComponent::GetCharacterAttackDamage()
 {
 	// TODO : 플레이어 스탯을 저장하는 것들이 생긴다면 처리하기
 	float ReturnDamage = 0.f;
+	ReturnDamage += GetSkillDamageAmplify();
+	return ReturnDamage;
+}
+
+float UPlayableCharacterCombatComponent::GetSkillDamageAmplify()
+{
+	float ReturnDamage = 0.f;
 	if(GetNowDoingSkill())
 	{
 		if(SkillSlotQ && SkillSlotQ->GetNowPlayingMontage())
