@@ -81,7 +81,7 @@ public:
 	FORCEINLINE USkillDataAsset* GetSkillSlotQ() const { return SkillSlotQ; }
 	FORCEINLINE USkillDataAsset* GetSkillSlotE() const { return SkillSlotE; }
 	UFUNCTION()
-	float GetCharacterAttackDamage();
+	float GetCharacterAttackDamage() const;
 	
 protected:
 	virtual void BeginPlay() override;
@@ -92,7 +92,7 @@ private:
 	
 	UFUNCTION()
 	void ItemDrop(APickupItem* UnEquipItem);
-	float GetSkillDamageAmplify();
+	float GetSkillDamageAmplify() const;
 
 	UFUNCTION()
 	void OnRep_EquippedItem();
