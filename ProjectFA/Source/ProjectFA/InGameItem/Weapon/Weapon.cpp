@@ -5,9 +5,9 @@
 #include "WeaponItemDataAsset.h"
 #include "Components/BoxComponent.h"
 #include "Components/SkeletalMeshComponent.h"
-#include "Engine/SkeletalMeshSocket.h"
 #include "Kismet/GameplayStatics.h"
 #include "Net/UnrealNetwork.h"
+#include "ProjectFA/FADictionary/GamePlayCalculator.h"
 #include "ProjectFA/FAInterfaces/Controller/ItemRPCableController.h"
 
 AWeapon::AWeapon()
@@ -146,7 +146,7 @@ void AWeapon::AttackCollisionOnOverlapBegin(UPrimitiveComponent* OverlappedCompo
 	float Damage = ItemInfo.ItemPowerAmount;
 	if(GetPlayerDamageProperty.IsBound())
 	{
-		Damage += Damage * GetPlayerDamageProperty.Execute() / 100.f;
+		Damage = UGamePlayCalculator::CalculateWeaponDamage(ItemInfo.ItemPowerAmount, GetPlayerDamageProperty.Execute());
 	}
 	UGameplayStatics::ApplyDamage(OtherActor, Damage, AttackingInstigator, this, WeaponInfo.DamageTypeClass);
 	HittedActors.AddUnique(OtherActor);

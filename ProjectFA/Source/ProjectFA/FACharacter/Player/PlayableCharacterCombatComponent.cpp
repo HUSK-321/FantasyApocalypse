@@ -7,6 +7,7 @@
 #include "Net/UnrealNetwork.h"
 #include "ProjectFA/FACharacter/FACharacter.h"
 #include "ProjectFA/FACharacter/SkillSystem/SkillDataAsset.h"
+#include "ProjectFA/FADictionary/GamePlayCalculator.h"
 #include "ProjectFA/InGameItem/Weapon/Weapon.h"
 
 UPlayableCharacterCombatComponent::UPlayableCharacterCombatComponent()
@@ -204,15 +205,14 @@ void UPlayableCharacterCombatComponent::ItemDrop(APickupItem* UnEquipItem)
 	}
 }
 
-float UPlayableCharacterCombatComponent::GetCharacterAttackDamage()
+float UPlayableCharacterCombatComponent::GetCharacterAttackDamage() const
 {
 	// TODO : 플레이어 스탯을 저장하는 것들이 생긴다면 처리하기
-	float ReturnDamage = 0.f;
-	ReturnDamage += GetSkillDamageAmplify();
-	return ReturnDamage;
+	const float ReturnDamage = 5.0f;
+	return UGamePlayCalculator::GetCharacterAttackAmplify(ReturnDamage, GetSkillDamageAmplify());
 }
 
-float UPlayableCharacterCombatComponent::GetSkillDamageAmplify()
+float UPlayableCharacterCombatComponent::GetSkillDamageAmplify() const
 {
 	float ReturnDamage = 0.f;
 	if(GetNowDoingSkill())

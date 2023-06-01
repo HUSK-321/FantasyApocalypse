@@ -27,3 +27,5 @@
 - [Sword Animation Pack by 9CG](https://www.unrealengine.com/marketplace/en-US/product/sword-animation-pack-01)
 
 - [House Of Changwon](https://www.unrealengine.com/marketplace/en-US/product/house-of-changwon?sessionInvalidated=true)
+
+- [Paragon: Minions](https://www.unrealengine.com/marketplace/en-US/product/paragon-minions)
