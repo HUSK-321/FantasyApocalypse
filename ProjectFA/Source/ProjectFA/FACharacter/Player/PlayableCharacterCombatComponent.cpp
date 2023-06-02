@@ -4,6 +4,8 @@
 #include "PlayableCharacterCombatComponent.h"
 #include "PlayableController.h"
 #include "Engine/SkeletalMeshSocket.h"
+#include "Kismet/KismetMathLibrary.h"
+#include "Kismet/KismetSystemLibrary.h"
 #include "Net/UnrealNetwork.h"
 #include "ProjectFA/FACharacter/FACharacter.h"
 #include "ProjectFA/FACharacter/SkillSystem/SkillDataAsset.h"
@@ -109,6 +111,8 @@ void UPlayableCharacterCombatComponent::OnRep_EquippedItem()
 
 void UPlayableCharacterCombatComponent::Attack()
 {
+	if(EquippedItem == nullptr)	return;
+	TurnToNearbyTarget();
 	ServerAttack();
 }
 
@@ -181,6 +185,7 @@ void UPlayableCharacterCombatComponent::DoSkill(USkillDataAsset* SkillToDo)
 {
 	if(SkillToDo == nullptr)	return;
 	
+	TurnToNearbyTarget();
 	bNowDoingSkill = true;
 	const auto CharacterController = Cast<APlayerController>(Character->GetController());
 	SkillToDo->SetSkillInstigatorController(CharacterController);
@@ -232,4 +237,25 @@ float UPlayableCharacterCombatComponent::GetSkillDamageAmplify() const
 void UPlayableCharacterCombatComponent::DoingSkillEnd()
 {
 	bNowDoingSkill = false;
+}
+
+void UPlayableCharacterCombatComponent::TurnToNearbyTarget()
+{
+	TArray<FHitResult> HitResults;
+	const TArray<TEnumAsByte<EObjectTypeQuery>> ObjectTypes { UEngineTypes::ConvertToObjectType(ECollisionChannel::ECC_WorldDynamic) };
+	const TArray<AActor*> ActorToIgnore;
+	const FVector HalfSize{ 30.f, 30.f, 30.f};
+	UKismetSystemLibrary::BoxTraceMultiForObjects(this, GetOwner()->GetActorLocation(), GetOwner()->GetActorLocation(), HalfSize, FRotator::ZeroRotator,
+													ObjectTypes, false, ActorToIgnore, EDrawDebugTrace::None, HitResults, true);
+	
+	for(auto HitResult : HitResults)
+	{
+		auto FACharacter = Cast<AFACharacter>(HitResult.GetActor());
+		if(FACharacter == nullptr)	continue;
+	
+		auto LookAtRotation = UKismetMathLibrary::FindLookAtRotation(GetOwner()->GetActorLocation(), FACharacter->GetActorLocation());
+		LookAtRotation.Pitch = 0.f;
+		GetOwner()->SetActorRotation(LookAtRotation);
+		return;
+	}
 }

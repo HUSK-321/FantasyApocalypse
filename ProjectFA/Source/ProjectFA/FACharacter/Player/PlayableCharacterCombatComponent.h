@@ -89,6 +89,7 @@ protected:
 
 private:
 	void CreateSkillFromData();
+	void TurnToNearbyTarget();
 	
 	UFUNCTION()
 	void ItemDrop(APickupItem* UnEquipItem);
