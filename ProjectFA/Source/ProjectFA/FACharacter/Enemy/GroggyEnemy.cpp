@@ -3,6 +3,7 @@
 
 #include "GroggyEnemy.h"
 #include "Components/BoxComponent.h"
+#include "Components/CapsuleComponent.h"
 #include "Net/UnrealNetwork.h"
 #include "ProjectFA/FACharacter/PickupableCharacter.h"
 #include "ProjectFA/FADictionary/GamePlayCalculator.h"
@@ -12,10 +13,30 @@
 
 AGroggyEnemy::AGroggyEnemy()
 {
+	GetMesh()->SetVisibility(false);
+	GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_WorldDynamic, ECR_Ignore);
+	GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_Pawn, ECR_Overlap);
+	
 	SpawnTriggerBox = CreateDefaultSubobject<UBoxComponent>(TEXT("TriggerBoxComponent"));
+	SpawnTriggerBox->SetupAttachment(GetRootComponent());
+	SpawnTriggerBox->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+	SpawnTriggerBox->SetCollisionObjectType(ECollisionChannel::ECC_WorldDynamic);
+	SpawnTriggerBox->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
+	SpawnTriggerBox->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Overlap);
 	
 	WeakGroggyGauge = MaxWeakGroggyGauge;
 	StrongGroggyGauge = MaxWeakGroggyGauge;
+}
+
+void AGroggyEnemy::BeginPlay()
+{
+	Super::BeginPlay();
+	
+	SetAttackCollision(false);
+	
+	if(HasAuthority() == false)	return;
+	
+	SpawnTriggerBox->OnComponentBeginOverlap.AddDynamic(this, &AGroggyEnemy::OnSpawnTriggerBoxOverlap);
 }
 
 void AGroggyEnemy::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -40,16 +61,29 @@ void AGroggyEnemy::ReceiveDamage(AActor* DamagedActor, float Damage, const UDama
 	DealGroggyDamage(WeakGroggyDamage, StrongGroggyDamage, DamageCauserPosition);
 }
 
+void AGroggyEnemy::SpawnEnemyByTriggerBox()
+{
+	SpawnTriggerBox->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_WorldDynamic, ECR_Block);
+	GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_Pawn, ECR_Block);
+	
+	if(SpawnMontage == nullptr)	return;
+	if(const auto Animinstance = GetMesh()->GetAnimInstance())
+	{
+		Animinstance->Montage_Play(SpawnMontage);
+	}
+}
+
 void AGroggyEnemy::DealGroggyDamage(const int32 WeakGroggyDamage, const int32 StrongGroggyDamage, const FVector& DamageCauser)
 {
 	WeakGroggyGauge -= WeakGroggyDamage;
 	StrongGroggyGauge -= StrongGroggyDamage;
-	if(StrongGroggyGauge < 0)
+	if(StrongGroggyGauge <= 0)
 	{
 		StrongGroggy();
 		return;
 	}
-	if(WeakGroggyGauge < 0)
+	if(WeakGroggyGauge <= 0)
 	{
 		WeakGroggy(DamageCauser);
 	}
@@ -57,9 +91,8 @@ void AGroggyEnemy::DealGroggyDamage(const int32 WeakGroggyDamage, const int32 St
 
 void AGroggyEnemy::WeakGroggy(const FVector& DamageCauser)
 {
-	if(WeakGroggyMontage == nullptr)	return;
-	
 	WeakGroggyGauge = MaxWeakGroggyGauge;
+	if(WeakGroggyMontage == nullptr)	return;
 	
 	if(const auto Animinstance = GetMesh()->GetAnimInstance())
 	{
@@ -68,24 +101,39 @@ void AGroggyEnemy::WeakGroggy(const FVector& DamageCauser)
 		const auto MontageSection = UGamePlayCalculator::GetDirectionSectionName(ForwardVector, GetActorLocation(), DamageCauser);
 		Animinstance->Montage_JumpToSection(MontageSection);
 	}
+
+	if(const auto EnemyController = GetController<IEnemyControllable>())
+	{
+		
+	}
 }
 
 void AGroggyEnemy::StrongGroggy()
 {
 	StrongGroggyGauge = MaxStrongGroggyGauge;
 	WeakGroggyGauge = MaxWeakGroggyGauge;
-	
 	if(StrongGroggyMontage == nullptr)	return;
+	
+	if(const auto Animinstance = GetMesh()->GetAnimInstance())
+	{
+		Animinstance->Montage_Play(StrongGroggyMontage);
+	}
+
+	if(const auto EnemyController = GetController<IEnemyControllable>())
+	{
+		
+	}
 }
 
 void AGroggyEnemy::OnSpawnTriggerBoxOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
-	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+                                            UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	const auto PlayableCharacter = Cast<IPickupableCharacter>(OtherActor);
 	if(PlayableCharacter == nullptr)	return;
-	const auto EnemyController = GetController<IEnemyControllable>();
-	if(EnemyController == nullptr)	return;
-
-	EnemyController->SetEnemyBlackboardValueAsBool(FName(TEXT("Spawn")), true);
-	// Play Spawn Animation
+	if(const auto EnemyController = GetController<IEnemyControllable>())
+	{
+		EnemyController->SetEnemyBlackboardValueAsObject(FName(TEXT("TargetPlayer")), OtherActor);
+	}
+	
+	SpawnEnemyByTriggerBox();
 }
