@@ -15,5 +15,6 @@ void USetMeshVisualAnimNotify::Notify(USkeletalMeshComponent* MeshComp, UAnimSeq
 	Super::Notify(MeshComp, Animation, EventReference);
 
 	if(MeshComp == nullptr)	return;
-	MeshComp->SetVisibility(bMeshActive);
+	MeshComp->SetRenderInMainPass(bMeshActive);
+	MeshComp->SetCastShadow(bMeshActive);
 }

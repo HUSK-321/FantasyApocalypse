@@ -13,7 +13,6 @@
 
 AGroggyEnemy::AGroggyEnemy()
 {
-	GetMesh()->SetVisibility(false);
 	GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_WorldDynamic, ECR_Ignore);
 	GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_Pawn, ECR_Overlap);
 	
@@ -33,6 +32,8 @@ void AGroggyEnemy::BeginPlay()
 	Super::BeginPlay();
 	
 	SetAttackCollision(false);
+	GetMesh()->SetRenderInMainPass(false);
+	GetMesh()->SetCastShadow(false);
 	
 	if(HasAuthority() == false)	return;
 	
@@ -104,7 +105,8 @@ void AGroggyEnemy::WeakGroggy(const FVector& DamageCauser)
 
 	if(const auto EnemyController = GetController<IEnemyControllable>())
 	{
-		
+		UE_LOG(LogTemp, Warning, TEXT("WeakGroggy"));
+		EnemyController->SetEnemyBlackboardValueAsBool(FName("WeakGroggy"), true);
 	}
 }
 
@@ -121,7 +123,7 @@ void AGroggyEnemy::StrongGroggy()
 
 	if(const auto EnemyController = GetController<IEnemyControllable>())
 	{
-		
+		EnemyController->SetEnemyBlackboardValueAsBool(FName("StrongGroggy"), true);
 	}
 }
 
