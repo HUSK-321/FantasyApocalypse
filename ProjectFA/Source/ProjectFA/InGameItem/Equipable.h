@@ -35,4 +35,7 @@ public:
 	virtual void SetEquipItemEvent(const FEquipItemEvent& Event) = 0;
 	virtual void SetUnEquipEvent(const FEquipItemEvent& Event) = 0;
 	virtual void SetPlayerDamagePropertyDelegate(const FGetPlayerDamagePropertyDelegate& Event) {}
+
+	virtual int32 GetWeakGroggyGauge() const { return 0; }
+	virtual int32 GetStrongGroggyGauge() const { return 0; }
 };

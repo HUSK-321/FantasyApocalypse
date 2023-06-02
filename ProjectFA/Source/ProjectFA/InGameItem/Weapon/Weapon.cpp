@@ -35,6 +35,8 @@ void AWeapon::SetItemPropertyFromDataAsset(const UItemDataAsset* DataAsset)
 	OnRep_WeaponSkeletal();
 	WeaponInfo.WeaponType = WeaponDataAsset->WeaponType;
 	WeaponInfo.DamageTypeClass = WeaponDataAsset->DamageTypeClass;
+	WeaponInfo.WeakGroggyGauge = WeaponDataAsset->WeakGroggyGauge;
+	WeaponInfo.StrongGroggyGauge = WeaponDataAsset->StrongGroggyGauge;
 }
 
 void AWeapon::BeginPlay()

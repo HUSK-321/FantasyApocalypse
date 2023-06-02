@@ -54,6 +54,9 @@ public:
 	virtual void SetUnEquipEvent(const FEquipItemEvent& Event) override;
 	virtual void SetPlayerDamagePropertyDelegate(const FGetPlayerDamagePropertyDelegate& Event) override;
 
+	virtual int32 GetWeakGroggyGauge() const override { return WeaponInfo.WeakGroggyGauge; }
+	virtual int32 GetStrongGroggyGauge() const override { return WeaponInfo.StrongGroggyGauge; }
+
 	virtual void InventoryAction_Implementation() override;
 	virtual void RemoveFromInventoryAction_Implementation() override;
 
