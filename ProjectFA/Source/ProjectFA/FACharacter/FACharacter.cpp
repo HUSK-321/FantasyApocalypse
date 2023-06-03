@@ -67,10 +67,6 @@ void AFACharacter::CharacterDead()
 	if(AnimInstance == nullptr)	return;
 	
 	GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_Pawn, ECR_Ignore);
-	if(DieMontage)
-	{
-		AnimInstance->Montage_Play(DieMontage);
-	}
 
 	GenerateInventoryItems();
 	StartDeadDissolve();

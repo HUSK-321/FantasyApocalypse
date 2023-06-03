@@ -105,7 +105,6 @@ void AGroggyEnemy::WeakGroggy(const FVector& DamageCauser)
 
 	if(const auto EnemyController = GetController<IEnemyControllable>())
 	{
-		UE_LOG(LogTemp, Warning, TEXT("WeakGroggy"));
 		EnemyController->SetEnemyBlackboardValueAsBool(FName("WeakGroggy"), true);
 	}
 }

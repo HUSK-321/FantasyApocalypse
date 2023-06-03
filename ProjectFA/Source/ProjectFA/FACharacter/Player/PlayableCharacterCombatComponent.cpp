@@ -244,9 +244,9 @@ void UPlayableCharacterCombatComponent::TurnToNearbyTarget()
 	TArray<FHitResult> HitResults;
 	const TArray<TEnumAsByte<EObjectTypeQuery>> ObjectTypes { UEngineTypes::ConvertToObjectType(ECollisionChannel::ECC_WorldDynamic) };
 	const TArray<AActor*> ActorToIgnore;
-	const FVector HalfSize{ 30.f, 30.f, 30.f};
+	const FVector HalfSize{ 60.f, 60.f, 10.f};
 	UKismetSystemLibrary::BoxTraceMultiForObjects(this, GetOwner()->GetActorLocation(), GetOwner()->GetActorLocation(), HalfSize, FRotator::ZeroRotator,
-													ObjectTypes, false, ActorToIgnore, EDrawDebugTrace::None, HitResults, true);
+													ObjectTypes, false, ActorToIgnore, EDrawDebugTrace::Persistent, HitResults, true);
 	
 	for(auto HitResult : HitResults)
 	{

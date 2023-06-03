@@ -64,8 +64,6 @@ protected:
 
 	UPROPERTY(EditAnywhere, Category = "Character Combat")
 	TObjectPtr<UAnimMontage> NormalAttackMontage;
-	UPROPERTY(EditAnywhere, Category = "Character Combat")
-	TObjectPtr<UAnimMontage> DieMontage;
 
 private:
 	UPROPERTY(VisibleAnywhere, Category = "Dead", meta = (AllowPrivateAccess = "true"))

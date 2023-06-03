@@ -152,7 +152,6 @@ void AWeapon::AttackCollisionOnOverlapBegin(UPrimitiveComponent* OverlappedCompo
 	}
 	UGameplayStatics::ApplyDamage(OtherActor, Damage, AttackingInstigator, this, WeaponInfo.DamageTypeClass);
 	HittedActors.AddUnique(OtherActor);
-	UE_LOG(LogTemp, Warning, TEXT("Attack : %f"), Damage);
 }
 
 void AWeapon::AttackEnd_Implementation()

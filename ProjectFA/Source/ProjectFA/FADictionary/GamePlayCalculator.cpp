@@ -34,15 +34,12 @@ FName UGamePlayCalculator::GetDirectionSectionName(FVector& OriginForwardVector,
 	const auto AcosAngle = FMath::Acos(DotProduct);
 	const auto Angle = FMath::RadiansToDegrees(AcosAngle);
 
-	switch (Angle)
-	{
-	case Angle >= 0 && Angle <= 45 :
+	if(Angle >= 0 && Angle <= 45)
 		ReturnSection = TEXT("Front");
-		break;
-	case Angle >= 135 && Angle <= 180 :
+	else if (Angle >= 135 && Angle <= 180)
 		ReturnSection = TEXT("Back");
-		break;
-	default:
+	else
+	{
 		if(LR > 0)
 			ReturnSection = TEXT("Right");
 		else
