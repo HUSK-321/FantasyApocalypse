@@ -26,22 +26,17 @@ void USkillDataAsset::DoSkill()
 
 void USkillDataAsset::PlaySkillMontage()
 {
-	UE_LOG(LogTemp, Warning, TEXT("check character"));
 	if(GetSkillOwner() == nullptr)	return;
 	const auto CharacterMesh = GetSkillOwner()->GetMesh();
-	UE_LOG(LogTemp, Warning, TEXT("check character mesh"));
 	if(CharacterMesh == nullptr)	return;
 	const auto CharacterAnimInstance = CharacterMesh->GetAnimInstance();
-	UE_LOG(LogTemp, Warning, TEXT("check character animinstance"));
 	if(CharacterAnimInstance == nullptr)	return;
 	
-	UE_LOG(LogTemp, Warning, TEXT("PlaySkillMontage"));
 	CharacterAnimInstance->StopAllMontages(0.0f);
 	CharacterAnimInstance->Montage_Play(SkillMontage);
 	CharacterAnimInstance->OnMontageEnded.Clear();
 	CharacterAnimInstance->OnMontageEnded.AddDynamic(this, &USkillDataAsset::SkillMontageEnd);
 	bNowPlayingMontage = true;
-	UE_LOG(LogTemp, Warning, TEXT("=========================="));
 }
 
 void USkillDataAsset::ResetSkill()
