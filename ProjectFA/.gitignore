@@ -88,3 +88,5 @@ Content/Assets/Animation/Sword_Animations/*
 !Content/Assets/Animation/Sword_Animations/.gitkeep
 Content/Assets/ParagonMinions/*
 !Content/Assets/ParagonMinions/.gitkeep
+Content/Assets/ParagonKwang/*
+!Content/Assets/ParagonKwang/.gitkeep

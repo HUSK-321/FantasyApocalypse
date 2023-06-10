@@ -29,3 +29,5 @@
 - [House Of Changwon](https://www.unrealengine.com/marketplace/en-US/product/house-of-changwon?sessionInvalidated=true)
 
 - [Paragon: Minions](https://www.unrealengine.com/marketplace/en-US/product/paragon-minions)
+
+- [Paragon: Kwang](https://www.unrealengine.com/marketplace/en-US/product/paragon-kwang)
