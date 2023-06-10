@@ -38,6 +38,8 @@ public:
 	void WeakGroggy(const FVector& DamageCauser);
 	void StrongGroggy();
 
+	virtual void PlayNormalAttackMontage(FName NormalAttackSectionName) override;
+
 protected:
 	virtual void BeginPlay() override;
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
@@ -50,4 +52,9 @@ private:
 	UFUNCTION()
 	void OnSpawnTriggerBoxOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp,
 												int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+	UFUNCTION(NetMulticast, Reliable)
+	void MulticastSpawnEnemy();
+	
+	void SetBlackBoardValueOnMontageEnd(UAnimInstance* EnemyAniminstance, const FName BlackBoardKey, bool bIsSet);
+	
 };
