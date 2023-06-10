@@ -241,21 +241,25 @@ void UPlayableCharacterCombatComponent::DoingSkillEnd()
 
 void UPlayableCharacterCombatComponent::TurnToNearbyTarget()
 {
-	TArray<FHitResult> HitResults;
-	const TArray<TEnumAsByte<EObjectTypeQuery>> ObjectTypes { UEngineTypes::ConvertToObjectType(ECollisionChannel::ECC_WorldDynamic) };
-	const TArray<AActor*> ActorToIgnore;
-	const FVector HalfSize{ 60.f, 60.f, 10.f};
-	UKismetSystemLibrary::BoxTraceMultiForObjects(this, GetOwner()->GetActorLocation(), GetOwner()->GetActorLocation(), HalfSize, FRotator::ZeroRotator,
-													ObjectTypes, false, ActorToIgnore, EDrawDebugTrace::Persistent, HitResults, true);
+	if(GetOwner() == nullptr)	return;
 	
-	for(auto HitResult : HitResults)
+	const TArray<TEnumAsByte<EObjectTypeQuery>> ObjectTypes { UEngineTypes::ConvertToObjectType(ECollisionChannel::ECC_Pawn) };
+	const TArray<AActor*> ActorToIgnore { GetOwner() };
+	TArray<AActor*> OutActors;
+	constexpr float SearchRadius{ 150.f };
+	
+	UKismetSystemLibrary::SphereOverlapActors(GetOwner(), GetOwner()->GetActorLocation(), SearchRadius, ObjectTypes,
+												AFACharacter::StaticClass(), ActorToIgnore, OutActors);
+	for(auto HitActor : OutActors)
 	{
-		auto FACharacter = Cast<AFACharacter>(HitResult.GetActor());
+		const auto FACharacter = Cast<AFACharacter>(HitActor);
 		if(FACharacter == nullptr)	continue;
-	
+		
 		auto LookAtRotation = UKismetMathLibrary::FindLookAtRotation(GetOwner()->GetActorLocation(), FACharacter->GetActorLocation());
 		LookAtRotation.Pitch = 0.f;
 		GetOwner()->SetActorRotation(LookAtRotation);
+		UKismetSystemLibrary::DrawDebugSphere(GetOwner(), GetOwner()->GetActorLocation(), SearchRadius, 30, FLinearColor::Green, .5f, 1.f);
 		return;
 	}
+	UKismetSystemLibrary::DrawDebugSphere(GetOwner(), GetOwner()->GetActorLocation(), SearchRadius, 30, FLinearColor::Blue, .5f, 1.f);
 }
