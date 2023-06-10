@@ -97,6 +97,7 @@ void AGroggyEnemy::WeakGroggy(const FVector& DamageCauser)
 	
 	if(const auto Animinstance = GetMesh()->GetAnimInstance())
 	{
+		if(Animinstance->Montage_IsPlaying(WeakGroggyMontage) || Animinstance->Montage_IsPlaying(StrongGroggyMontage))	return;
 		Animinstance->Montage_Play(WeakGroggyMontage);
 		auto ForwardVector = GetActorForwardVector();
 		const auto MontageSection = UGamePlayCalculator::GetDirectionSectionName(ForwardVector, GetActorLocation(), DamageCauser);
@@ -117,6 +118,7 @@ void AGroggyEnemy::StrongGroggy()
 	
 	if(const auto Animinstance = GetMesh()->GetAnimInstance())
 	{
+		if(Animinstance->Montage_IsPlaying(StrongGroggyMontage))	return;
 		Animinstance->Montage_Play(StrongGroggyMontage);
 	}
 

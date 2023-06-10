@@ -23,7 +23,7 @@ void USkillSlotWidget::SetSkillImage(UTexture2D* Image)
 {
 	SkillImage->SetBrushFromTexture(Image);
 
-	SetCooldownWidgetVisibility(ESlateVisibility::Hidden);
+	SetCoolDownWidgetHidden();
 }
 
 void USkillSlotWidget::SetSkillCoolTimeText(const float& RemainTime)
