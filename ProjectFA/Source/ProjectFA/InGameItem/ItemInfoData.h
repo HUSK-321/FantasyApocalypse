@@ -36,6 +36,10 @@ struct FWeaponItemInfoData
 	TSubclassOf<UDamageType> DamageTypeClass;
 	UPROPERTY(EditDefaultsOnly, Category = "Weapon Data")
 	EWeaponType WeaponType;
+	UPROPERTY(EditDefaultsOnly, Category = "Weapon Data")
+	int32 WeakGroggyGauge;
+	UPROPERTY(EditDefaultsOnly, Category = "Weapon Data")
+	int32 StrongGroggyGauge;
 };
 
 

@@ -25,4 +25,8 @@ public:
 	float PowerAmount;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float Weight;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int32 WeakGroggyGauge;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int32 StrongGroggyGauge;
 };

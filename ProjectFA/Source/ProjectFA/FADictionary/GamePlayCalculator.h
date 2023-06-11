@@ -33,4 +33,7 @@ public:
 	 */
 	UFUNCTION()
 	static float CalculateWeaponDamage(const float& WeaponDamage, const float& PlayerAmplify = 0.f);
+
+	UFUNCTION()
+	static FName GetDirectionSectionName(FVector& OriginForwardVector, const FVector& OriginPosition, const FVector& TargetPosition);
 };

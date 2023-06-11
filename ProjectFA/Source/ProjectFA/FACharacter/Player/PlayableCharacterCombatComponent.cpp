@@ -4,6 +4,8 @@
 #include "PlayableCharacterCombatComponent.h"
 #include "PlayableController.h"
 #include "Engine/SkeletalMeshSocket.h"
+#include "Kismet/KismetMathLibrary.h"
+#include "Kismet/KismetSystemLibrary.h"
 #include "Net/UnrealNetwork.h"
 #include "ProjectFA/FACharacter/FACharacter.h"
 #include "ProjectFA/FACharacter/SkillSystem/SkillDataAsset.h"
@@ -51,9 +53,8 @@ void UPlayableCharacterCombatComponent::CreateSkillFromData()
 		SkillSlotE = NewObject<USkillDataAsset>(this, SkillSlotEClass);
 	}
 
-	const auto CharacterController = Cast<APlayerController>(Character->GetController());
-	if(CharacterController == nullptr)	return;
-	const auto PlayableController = Cast<APlayableController>(CharacterController);
+	if(Character->GetController() == nullptr)	return;
+	const auto PlayableController = Cast<APlayableController>(Character->GetController());
 	if(PlayableController == nullptr)	return;
 
 	// TODO : refactor
@@ -109,6 +110,8 @@ void UPlayableCharacterCombatComponent::OnRep_EquippedItem()
 
 void UPlayableCharacterCombatComponent::Attack()
 {
+	if(EquippedItem == nullptr)	return;
+	TurnToNearbyTarget();
 	ServerAttack();
 }
 
@@ -181,9 +184,10 @@ void UPlayableCharacterCombatComponent::DoSkill(USkillDataAsset* SkillToDo)
 {
 	if(SkillToDo == nullptr)	return;
 	
+	TurnToNearbyTarget();
 	bNowDoingSkill = true;
 	const auto CharacterController = Cast<APlayerController>(Character->GetController());
-	SkillToDo->SetSkillInstigatorController(CharacterController);
+	SkillToDo->SetSkillOwnerCharacter(Character);
 	SkillToDo->DoSkill();
 }
 
@@ -232,4 +236,29 @@ float UPlayableCharacterCombatComponent::GetSkillDamageAmplify() const
 void UPlayableCharacterCombatComponent::DoingSkillEnd()
 {
 	bNowDoingSkill = false;
+}
+
+void UPlayableCharacterCombatComponent::TurnToNearbyTarget()
+{
+	if(GetOwner() == nullptr)	return;
+	
+	const TArray<TEnumAsByte<EObjectTypeQuery>> ObjectTypes { UEngineTypes::ConvertToObjectType(ECollisionChannel::ECC_Pawn) };
+	const TArray<AActor*> ActorToIgnore { GetOwner() };
+	TArray<AActor*> OutActors;
+	constexpr float SearchRadius{ 150.f };
+	
+	UKismetSystemLibrary::SphereOverlapActors(GetOwner(), GetOwner()->GetActorLocation(), SearchRadius, ObjectTypes,
+												AFACharacter::StaticClass(), ActorToIgnore, OutActors);
+	for(auto HitActor : OutActors)
+	{
+		const auto FACharacter = Cast<AFACharacter>(HitActor);
+		if(FACharacter == nullptr)	continue;
+		
+		auto LookAtRotation = UKismetMathLibrary::FindLookAtRotation(GetOwner()->GetActorLocation(), FACharacter->GetActorLocation());
+		LookAtRotation.Pitch = 0.f;
+		GetOwner()->SetActorRotation(LookAtRotation);
+		UKismetSystemLibrary::DrawDebugSphere(GetOwner(), GetOwner()->GetActorLocation(), SearchRadius, 30, FLinearColor::Green, .5f, 1.f);
+		return;
+	}
+	UKismetSystemLibrary::DrawDebugSphere(GetOwner(), GetOwner()->GetActorLocation(), SearchRadius, 30, FLinearColor::Blue, .5f, 1.f);
 }

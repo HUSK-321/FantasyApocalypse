@@ -26,20 +26,21 @@ void AEnemyController::OnPossess(APawn* InPawn)
 void AEnemyController::SetControllingEnemyAttack()
 {
 	const auto EnemyCharacter = Cast<AEnemy>(GetPawn());
+	if(EnemyCharacter == nullptr)	return;
 	EnemyCharacter->TriggerAttackToTarget();
 }
 
-void AEnemyController::SetEnemyBlackboardValueAsBool(const FName& KeyName, bool BoolValue)
+void AEnemyController::SetEnemyBlackboardValueAsBool(const FName KeyName, bool BoolValue)
 {
 	EnemyBlackboardComponent->SetValueAsBool(KeyName, BoolValue);
 }
 
-void AEnemyController::SetEnemyBlackboardValueAsObject(const FName& KeyName, UObject* ObjectValue)
+void AEnemyController::SetEnemyBlackboardValueAsObject(const FName KeyName, UObject* ObjectValue)
 {
 	EnemyBlackboardComponent->SetValueAsObject(KeyName, ObjectValue);
 }
 
-void AEnemyController::SetEnemyBlackboardValueAsVector(const FName& KeyName, FVector VectorValue)
+void AEnemyController::SetEnemyBlackboardValueAsVector(const FName KeyName, FVector VectorValue)
 {
 	EnemyBlackboardComponent->SetValueAsVector(KeyName, VectorValue);
 }

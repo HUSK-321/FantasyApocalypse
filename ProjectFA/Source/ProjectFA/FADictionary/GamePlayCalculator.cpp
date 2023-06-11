@@ -18,3 +18,33 @@ float UGamePlayCalculator::CalculateWeaponDamage(const float& WeaponDamage, cons
 
 	return ReturnWeaponDamage;
 }
+
+FName UGamePlayCalculator::GetDirectionSectionName(FVector& OriginForwardVector, const FVector& OriginPosition, const FVector& TargetPosition)
+{
+	FName ReturnSection;
+	
+	OriginForwardVector.Normalize();
+	auto ToTargetVector = TargetPosition - OriginPosition;
+	ToTargetVector.Z = 0;
+	ToTargetVector.Normalize();
+
+	const auto DotProduct = FVector::DotProduct(OriginForwardVector, ToTargetVector);
+	const auto CrossProduct = FVector::CrossProduct(OriginForwardVector, ToTargetVector);
+	const auto LR = FVector::DotProduct(CrossProduct, FVector::UpVector);
+	const auto AcosAngle = FMath::Acos(DotProduct);
+	const auto Angle = FMath::RadiansToDegrees(AcosAngle);
+
+	if(Angle >= 0 && Angle <= 45)
+		ReturnSection = TEXT("Front");
+	else if (Angle >= 135 && Angle <= 180)
+		ReturnSection = TEXT("Back");
+	else
+	{
+		if(LR > 0)
+			ReturnSection = TEXT("Right");
+		else
+			ReturnSection = TEXT("Left");
+	}
+
+	return ReturnSection;
+}

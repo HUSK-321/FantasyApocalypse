@@ -16,6 +16,7 @@ class PROJECTFA_API UEnemyAnimInstance : public UAnimInstance
 {
 	GENERATED_BODY()
 
+private:
 	UPROPERTY(BlueprintReadOnly, Category = "Enemy Movement", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<AEnemy> Enemy;
 
@@ -23,12 +24,9 @@ class PROJECTFA_API UEnemyAnimInstance : public UAnimInstance
 	float Speed;
 
 public:
-
 	virtual void NativeInitializeAnimation() override;
 	virtual void NativeUpdateAnimation(float DeltaSeconds) override;
 
 private:
-
 	void SetEnemyProperties();
-	
 };

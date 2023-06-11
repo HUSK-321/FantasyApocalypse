@@ -26,10 +26,8 @@ void USkillDataAsset::DoSkill()
 
 void USkillDataAsset::PlaySkillMontage()
 {
-	if(GetSkillInstigatorController() == nullptr)	return;
-	const auto Character = Cast<ACharacter>(GetSkillInstigatorController()->GetPawn());
-	if(Character == nullptr)	return;
-	const auto CharacterMesh = Character->GetMesh();
+	if(GetSkillOwner() == nullptr)	return;
+	const auto CharacterMesh = GetSkillOwner()->GetMesh();
 	if(CharacterMesh == nullptr)	return;
 	const auto CharacterAnimInstance = CharacterMesh->GetAnimInstance();
 	if(CharacterAnimInstance == nullptr)	return;

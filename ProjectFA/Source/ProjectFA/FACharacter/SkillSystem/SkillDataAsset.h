@@ -43,20 +43,21 @@ private:
 	FTimerHandle SkillCoolTimeHandle;
 
 	UPROPERTY()
-	TObjectPtr<APlayerController> SkillInstigatorController;
+	TObjectPtr<ACharacter> SkillOwnerCharacter;
 
 public:
 	USkillDataAsset();
-	FORCEINLINE void SetSkillInstigatorController(APlayerController* Controller) { SkillInstigatorController = Controller; }
+
+	FORCEINLINE void SetSkillOwnerCharacter(ACharacter* OwnerCharacter) { SkillOwnerCharacter = OwnerCharacter; }
 	
 	float GetNowCoolTime() const;
+	FORCEINLINE ACharacter* GetSkillOwner() const { return SkillOwnerCharacter; }
 	FORCEINLINE float GetDamageAmplify() const { return DamageAmplify; }
 	FORCEINLINE float GetSkillCoolTime() const { return CoolTime; }
 	FORCEINLINE float GetCost() const { return Cost; }
 	FORCEINLINE UTexture2D* GetThumbnail() const { return Thumbnail; }
 	FORCEINLINE FString GetSkillName() const { return SkillName; }
 	FORCEINLINE FString GetSkillDescription() const { return SkillDescription; }
-	FORCEINLINE APlayerController* GetSkillInstigatorController() const { return SkillInstigatorController; }
 	FORCEINLINE bool GetNowPlayingMontage() const { return bNowPlayingMontage; }
 
 	virtual void DoSkill();
