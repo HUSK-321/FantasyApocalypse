@@ -53,9 +53,8 @@ void UPlayableCharacterCombatComponent::CreateSkillFromData()
 		SkillSlotE = NewObject<USkillDataAsset>(this, SkillSlotEClass);
 	}
 
-	const auto CharacterController = Cast<APlayerController>(Character->GetController());
-	if(CharacterController == nullptr)	return;
-	const auto PlayableController = Cast<APlayableController>(CharacterController);
+	if(Character->GetController() == nullptr)	return;
+	const auto PlayableController = Cast<APlayableController>(Character->GetController());
 	if(PlayableController == nullptr)	return;
 
 	// TODO : refactor
