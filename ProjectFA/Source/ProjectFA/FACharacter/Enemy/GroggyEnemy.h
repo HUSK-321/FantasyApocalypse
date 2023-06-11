@@ -54,7 +54,4 @@ private:
 												int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 	UFUNCTION(NetMulticast, Reliable)
 	void MulticastSpawnEnemy();
-	
-	void SetBlackBoardValueOnMontageEnd(UAnimInstance* EnemyAniminstance, const FName BlackBoardKey, bool bIsSet);
-	
 };

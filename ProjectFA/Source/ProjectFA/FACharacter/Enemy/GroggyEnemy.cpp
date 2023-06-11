@@ -190,19 +190,3 @@ void AGroggyEnemy::MulticastSpawnEnemy_Implementation()
 {
 	SpawnEnemyByTriggerBox();
 }
-
-void AGroggyEnemy::SetBlackBoardValueOnMontageEnd(UAnimInstance* const EnemyAniminstance, const FName BlackBoardKey, bool bIsSet)
-{
-	if(EnemyAniminstance == nullptr || HasAuthority() == false)	return;
-
-	EnemyAniminstance->OnMontageEnded.Clear();
-	FOnMontageEnded MontageEnded;
-	MontageEnded.BindLambda([&](UAnimMontage*, bool)
-	{
-		if(const auto EnemyController = GetController<IEnemyControllable>())
-		{
-			EnemyController->SetEnemyBlackboardValueAsBool(BlackBoardKey, bIsSet);
-		}
-	});
-	EnemyAniminstance->Montage_SetEndDelegate(MontageEnded);
-}
