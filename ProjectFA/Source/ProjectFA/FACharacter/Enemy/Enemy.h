@@ -75,6 +75,7 @@ protected:
 												int32 OtherBodyIndex);
 												
 	virtual void ReceiveDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType, AController* InstigatorController, AActor* DamageCauser) override;
+	void SearchEnemyDeadEvent();
 	virtual void CurrentHealthChanged() override;
 	UFUNCTION()
 	void AttackCollisionOnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp,

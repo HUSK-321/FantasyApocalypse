@@ -110,7 +110,7 @@ void UPlayableCharacterCombatComponent::OnRep_EquippedItem()
 
 void UPlayableCharacterCombatComponent::Attack()
 {
-	if(EquippedItem == nullptr)	return;
+	if(EquippedItem == nullptr || bNowDoingSkill)	return;
 	TurnToNearbyTarget();
 	ServerAttack();
 }

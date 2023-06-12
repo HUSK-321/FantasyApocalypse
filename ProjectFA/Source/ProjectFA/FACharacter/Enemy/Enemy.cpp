@@ -10,8 +10,10 @@
 #include "Kismet/KismetMathLibrary.h"
 #include "Net/UnrealNetwork.h"
 #include "Perception/PawnSensingComponent.h"
+#include "ProjectFA/FAGameInstance.h"
 #include "ProjectFA/FACharacter/PickupableCharacter.h"
 #include "ProjectFA/FAInterfaces/Controller/EnemyControllable.h"
+#include "ProjectFA/FAQuests/PlayerQuestManagement.h"
 #include "ProjectFA/Interactable/Looting/LootingItemComponent.h"
 
 AEnemy::AEnemy()
@@ -114,10 +116,23 @@ void AEnemy::ReceiveDamage(AActor* DamagedActor, float Damage, const UDamageType
 	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("Enemy Damaged : %f"), Damage));
 }
 
+void AEnemy::SearchEnemyDeadEvent()
+{
+	// TODO : refactor
+	if(auto FAGameInstance = Cast<UFAGameInstance>(GetGameInstance()))
+	{
+		if(FAGameInstance->PlayerQuestManagement)
+		{
+			FAGameInstance->PlayerQuestManagement->SearchDestroyEnemyQuest(this);	
+		}
+	}
+}
+
 void AEnemy::CurrentHealthChanged()
 {
-	if(CurrentHealth <= 0)
+	if(CurrentHealth <= 0 && NowInDeadProcess() == false)
 	{
+		SearchEnemyDeadEvent();
 		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Enemy Dead"));
 		CharacterDead();
 	}
