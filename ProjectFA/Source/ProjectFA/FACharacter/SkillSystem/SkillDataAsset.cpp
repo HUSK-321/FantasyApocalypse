@@ -34,8 +34,6 @@ void USkillDataAsset::PlaySkillMontage()
 	
 	CharacterAnimInstance->StopAllMontages(0.0f);
 	CharacterAnimInstance->Montage_Play(SkillMontage);
-	CharacterAnimInstance->OnMontageEnded.Clear();
-	CharacterAnimInstance->OnMontageEnded.AddDynamic(this, &USkillDataAsset::SkillMontageEnd);
 	bNowPlayingMontage = true;
 }
 

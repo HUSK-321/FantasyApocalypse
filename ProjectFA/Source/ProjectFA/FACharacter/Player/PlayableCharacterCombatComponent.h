@@ -38,10 +38,13 @@ private:
 	TObjectPtr<USkillDataAsset> SkillSlotQ;
 	UPROPERTY(Replicated, EditAnywhere, BlueprintReadWrite, Category = "Skill", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<USkillDataAsset> SkillSlotE;
-	
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta=(AllowPrivateAccess="true"))
 	bool bNowAttacking;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta=(AllowPrivateAccess="true"))
 	bool bDoNextAttack;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta=(AllowPrivateAccess="true"))
 	bool bNowDoingSkill;
 
 public:
@@ -61,7 +64,7 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void CheckShouldStopAttack();
 	UFUNCTION(BlueprintCallable)
-	void EndAttack();
+	void EndNormalAttack();
 
 	UFUNCTION()
 	void PressQButton();
@@ -98,6 +101,6 @@ private:
 	UFUNCTION()
 	void OnRep_EquippedItem();
 
-	UFUNCTION()
+	UFUNCTION(BlueprintCallable)
 	void DoingSkillEnd();
 };

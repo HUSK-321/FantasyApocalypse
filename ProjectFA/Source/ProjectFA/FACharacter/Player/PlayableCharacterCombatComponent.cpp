@@ -122,7 +122,7 @@ void UPlayableCharacterCombatComponent::ServerAttack_Implementation()
 
 void UPlayableCharacterCombatComponent::MulticastAttack_Implementation()
 {
-	if(EquippedItem == nullptr || Character == nullptr)	return;
+	if(EquippedItem == nullptr || Character == nullptr || bNowDoingSkill)	return;
 	if(bNowAttacking)
 	{
 		bDoNextAttack = true;
@@ -161,10 +161,10 @@ void UPlayableCharacterCombatComponent::CheckShouldStopAttack()
 		bDoNextAttack = false;
 		return;
 	}
-	EndAttack();
+	EndNormalAttack();
 }
 
-void UPlayableCharacterCombatComponent::EndAttack()
+void UPlayableCharacterCombatComponent::EndNormalAttack()
 {
 	bNowAttacking = false;
 	Character->StopNormalAttackMontage();
@@ -236,6 +236,8 @@ float UPlayableCharacterCombatComponent::GetSkillDamageAmplify() const
 void UPlayableCharacterCombatComponent::DoingSkillEnd()
 {
 	bNowDoingSkill = false;
+	bNowAttacking = false;
+	bDoNextAttack = false;
 }
 
 void UPlayableCharacterCombatComponent::TurnToNearbyTarget()
