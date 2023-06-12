@@ -3,9 +3,8 @@
 
 #include "TestQuestActor.h"
 #include "Components/BoxComponent.h"
-#include "ProjectFA/FAGameInstance.h"
 #include "ProjectFA/FACharacter/InteractableCharacter.h"
-#include "ProjectFA/FAQuests/PlayerQuestManagement.h"
+#include "ProjectFA/FAInterfaces/QuestManageable.h"
 #include "ProjectFA/FAQuests/QuestObject.h"
 
 ATestQuestActor::ATestQuestActor()
@@ -37,11 +36,11 @@ void ATestQuestActor::FindItem_Implementation(const float SearchTime)
 {
 	if(SearchTime >= 0.1f && bGiveQuest == false && TestQuestClass)
 	{
-		const auto FAGameInstance = Cast<UFAGameInstance>(GetGameInstance());
+		const auto FAGameInstance = Cast<IQuestManageable>(GetGameInstance());
 		if(FAGameInstance == nullptr)	return;
 
 		const auto NewQuest = NewObject<UQuestObject>(GetWorld(), TestQuestClass);
-		FAGameInstance->PlayerQuestManagement->AddEnemyDestroyQuest(NewQuest);
+		FAGameInstance->Execute_AddEnemyDestroyQuest(GetGameInstance(), NewQuest);
 		bGiveQuest = true;
 	}
 }

@@ -4,12 +4,13 @@
 
 #include "CoreMinimal.h"
 #include "Engine/GameInstance.h"
+#include "FAInterfaces/QuestManageable.h"
 #include "FAGameInstance.generated.h"
 
 class UPlayerQuestManagement;
 
 UCLASS()
-class PROJECTFA_API UFAGameInstance : public UGameInstance
+class PROJECTFA_API UFAGameInstance : public UGameInstance, public IQuestManageable
 {
 	GENERATED_BODY()
 
@@ -22,4 +23,8 @@ public:
 public:
 	UFAGameInstance();
 	virtual void Init() override;
+
+	virtual void AddEnemyDestroyQuest_Implementation(UQuestObject* Quest) override;
+	UFUNCTION()
+	void SearchDestroyEnemyQuest(UObject* Enemy);
 };
