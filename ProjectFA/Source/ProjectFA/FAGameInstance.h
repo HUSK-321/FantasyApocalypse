@@ -4,21 +4,21 @@
 
 #include "CoreMinimal.h"
 #include "Engine/GameInstance.h"
-#include "FAInterfaces/QuestManageable.h"
+#include "FAInterfaces/QuestObservable.h"
 #include "FAGameInstance.generated.h"
 
-class UPlayerQuestManagement;
+class UPlayerQuestObserver;
 
 UCLASS()
-class PROJECTFA_API UFAGameInstance : public UGameInstance, public IQuestManageable
+class PROJECTFA_API UFAGameInstance : public UGameInstance, public IQuestObservable
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Game Quest")
-	TSubclassOf<UPlayerQuestManagement> PlayerQuestManagementClass;
+	TSubclassOf<UPlayerQuestObserver> PlayerQuestManagementClass;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Game Quest")
-	TObjectPtr<UPlayerQuestManagement> PlayerQuestManagement;
+	TObjectPtr<UPlayerQuestObserver> PlayerQuestManagement;
 
 public:
 	UFAGameInstance();

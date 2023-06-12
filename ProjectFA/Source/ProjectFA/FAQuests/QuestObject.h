@@ -20,10 +20,17 @@ public:
 	virtual void GetQuestReward() {}
 
 protected:
+	void SetQuestComplete();
+	bool IsQuestCompleted() const;
+
+protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Quest Info", meta = (AllowPrivateAccess = "true"))
 	int32 QuestID;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Quest Info", meta = (AllowPrivateAccess = "true"))
 	FString QuestTitle;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Quest Info", meta = (AllowPrivateAccess = "true"))
 	FString QuestDescription;
+
+private:
+	int8 bQuestCompleted : 1;
 };

@@ -4,10 +4,10 @@
 
 #include "CoreMinimal.h"
 #include "UObject/Interface.h"
-#include "QuestManageable.generated.h"
+#include "QuestObservable.generated.h"
 
 UINTERFACE(MinimalAPI)
-class UQuestManageable : public UInterface
+class UQuestObservable : public UInterface
 {
 	GENERATED_BODY()
 };
@@ -15,7 +15,7 @@ class UQuestManageable : public UInterface
 
 class UQuestObject;
 
-class PROJECTFA_API IQuestManageable
+class PROJECTFA_API IQuestObservable
 {
 	GENERATED_BODY()
 

@@ -186,7 +186,6 @@ void UPlayableCharacterCombatComponent::DoSkill(USkillDataAsset* SkillToDo)
 	
 	TurnToNearbyTarget();
 	bNowDoingSkill = true;
-	const auto CharacterController = Cast<APlayerController>(Character->GetController());
 	SkillToDo->SetSkillOwnerCharacter(Character);
 	SkillToDo->DoSkill();
 }

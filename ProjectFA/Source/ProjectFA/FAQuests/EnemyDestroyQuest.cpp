@@ -16,11 +16,14 @@ void UEnemyDestroyQuest::CalculateQuest(UObject* TargetObject)
 {
 	Super::CalculateQuest(TargetObject);
 
+	if(IsQuestCompleted())	return;
+
 	const auto Enemy = Cast<AFACharacter>(TargetObject);
 	if(Enemy == nullptr)	return;
 	if(TargetEnemyName == Enemy->GetCharacterName())
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Blue, FString::Printf(TEXT("Enemy 이름이 같다")));
+		if(GEngine)
+			GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Blue, FString::Printf(TEXT("Enemy 이름이 같다")));
 		DestroyCorrectEnemy();
 	}
 }
@@ -33,8 +36,10 @@ void UEnemyDestroyQuest::GetQuestReward()
 void UEnemyDestroyQuest::DestroyCorrectEnemy()
 {
 	DestroyCount -= 1;
-	if(DestroyCount <= 0 && GEngine)
+	if(DestroyCount <= 0)
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("Enemy 전부 처치 완료 따이")));
+		SetQuestComplete();
+		if(GEngine)
+			GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("Enemy 전부 처치 완료 따이")));
 	}
 }

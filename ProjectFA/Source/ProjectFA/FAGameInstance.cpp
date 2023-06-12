@@ -3,7 +3,7 @@
 
 #include "FAGameInstance.h"
 #include "FADictionary/FACoreDelegates.h"
-#include "FAQuests/PlayerQuestManagement.h"
+#include "FAQuests/PlayerQuestObserver.h"
 
 UFAGameInstance::UFAGameInstance()
 {
@@ -17,11 +17,7 @@ void UFAGameInstance::Init()
 	
 	if(PlayerQuestManagementClass)
 	{
-		PlayerQuestManagement = NewObject<UPlayerQuestManagement>(this, PlayerQuestManagementClass);
-		if(PlayerQuestManagement && GEngine)
-		{
-			GEngine->AddOnScreenDebugMessage(-1, 10.0f, FColor::Yellow, FString::Printf(TEXT("PlayerQuestManagement 만듬")));
-		}
+		PlayerQuestManagement = NewObject<UPlayerQuestObserver>(this, PlayerQuestManagementClass);
 	}
 }
 

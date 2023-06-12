@@ -4,12 +4,12 @@
 
 #include "CoreMinimal.h"
 #include "UObject/NoExportTypes.h"
-#include "PlayerQuestManagement.generated.h"
+#include "PlayerQuestObserver.generated.h"
 
 class UQuestObject;
 
 UCLASS(Blueprintable, BlueprintType)
-class PROJECTFA_API UPlayerQuestManagement : public UObject
+class PROJECTFA_API UPlayerQuestObserver : public UObject
 {
 	GENERATED_BODY()
 
@@ -18,7 +18,7 @@ private:
 	TArray<TObjectPtr<UQuestObject>> EnemyDestroyQuestList;
 	
 public:
-	UPlayerQuestManagement();
+	UPlayerQuestObserver();
 	
 	UFUNCTION(BlueprintCallable)
 	void AddEnemyDestroyQuest(UQuestObject* Quest);
