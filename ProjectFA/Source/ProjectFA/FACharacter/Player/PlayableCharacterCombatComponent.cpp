@@ -111,7 +111,6 @@ void UPlayableCharacterCombatComponent::OnRep_EquippedItem()
 void UPlayableCharacterCombatComponent::Attack()
 {
 	if(EquippedItem == nullptr || bNowDoingSkill)	return;
-	TurnToNearbyTarget();
 	ServerAttack();
 }
 
@@ -131,6 +130,7 @@ void UPlayableCharacterCombatComponent::MulticastAttack_Implementation()
 	if(auto const WeaponInterface = Cast<IEquipable>(EquippedItem))
 	{
 		bNowAttacking = true;
+		TurnToNearbyTarget();
 		Character->PlayNormalAttackMontage(WeaponInterface->GetNormalAttackMontageSectionName());
 	}
 }

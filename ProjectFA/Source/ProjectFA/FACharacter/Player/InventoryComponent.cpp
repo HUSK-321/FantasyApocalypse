@@ -112,7 +112,9 @@ void UInventoryComponent::ServerEquipItemToPlayer_Implementation(APickupItem* It
 void UInventoryComponent::GenerateItemsToWorld()
 {
 	if(InventoryItemList.IsEmpty())	return;
-	for(const auto Item : InventoryItemList)
+
+	auto ListToDrop = InventoryItemList;
+	for(const auto Item : ListToDrop)
 	{
 		Item->DropItem();
 	}
