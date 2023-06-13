@@ -90,3 +90,7 @@ Content/Assets/ParagonMinions/*
 !Content/Assets/ParagonMinions/.gitkeep
 Content/Assets/ParagonKwang/*
 !Content/Assets/ParagonKwang/.gitkeep
+Content/Assets/Sounds/*
+!Content/Assets/Sounds/.gitkeep
+Content/Assets/A_Surface_Footstep/*
+!Content/Assets/A_Surface_Footstep/.gitkeep

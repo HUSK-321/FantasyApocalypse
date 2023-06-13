@@ -31,3 +31,5 @@
 - [Paragon: Minions](https://www.unrealengine.com/marketplace/en-US/product/paragon-minions)
 
 - [Paragon: Kwang](https://www.unrealengine.com/marketplace/en-US/product/paragon-kwang)
+
+- [Niagara Footstep VFX](https://www.unrealengine.com/marketplace/en-US/product/niagara-footstep-vfx)
