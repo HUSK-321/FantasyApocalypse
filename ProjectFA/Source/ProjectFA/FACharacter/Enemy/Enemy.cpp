@@ -81,8 +81,9 @@ void AEnemy::OnSensingPawn(APawn* OtherPawn)
 	if(PlayableCharacter == nullptr)	return;
 	const auto EnemyController = GetController<IEnemyControllable>();
 	if(EnemyController == nullptr)	return;
-
-	EnemyController->SetEnemyBlackboardValueAsObject(TEXT("TargetPlayer"), OtherPawn);
+	if(EnemyController->HaveObject(OtherPawn))	return;
+	
+	EnemyController->SetEnemyBlackboardValueAsObject(TEXT("TargetPlayer"), OtherPawn, 1.f);
 }
 
 void AEnemy::AttackSphereOnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
@@ -113,6 +114,11 @@ void AEnemy::ReceiveDamage(AActor* DamagedActor, float Damage, const UDamageType
 	CurrentHealth = FMath::Clamp(CurrentHealth - Damage, 0.f, MaxHealth);
 	OnRep_CurrentHealthChanged();
 	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("Enemy Damaged : %f"), Damage));
+
+	const auto EnemyController = GetController<IEnemyControllable>();
+	if(EnemyController == nullptr)	return;
+
+	EnemyController->SetEnemyBlackboardValueAsObject(TEXT("TargetPlayer"), DamageCauser, 3.f);
 }
 
 void AEnemy::SearchEnemyDeadEvent()

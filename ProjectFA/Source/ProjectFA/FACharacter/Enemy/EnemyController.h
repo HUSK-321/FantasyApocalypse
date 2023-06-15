@@ -24,6 +24,9 @@ private:
 	TObjectPtr<UBlackboardComponent> EnemyBlackboardComponent;
 	UPROPERTY(BlueprintReadWrite, Category = "Enemy AI", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UBehaviorTreeComponent> EnemyBehaviorTreeComponent;
+
+	UPROPERTY()
+	TMap<UObject*, float> TargetObjects;
 	
 public:
 	AEnemyController();
@@ -32,5 +35,10 @@ public:
 	virtual void SetControllingEnemyAttack() override;
 	virtual void SetEnemyBlackboardValueAsBool(const FName KeyName, bool BoolValue) override;
 	virtual void SetEnemyBlackboardValueAsObject(const FName KeyName, UObject* ObjectValue) override;
+	virtual void SetEnemyBlackboardValueAsObject(const FName KeyName, UObject* ObjectValue, float Weight) override;
 	virtual void SetEnemyBlackboardValueAsVector(const FName KeyName, FVector VectorValue) override;
+
+	virtual bool HaveObject(const UObject* ObjectKeyName) override;
+
+	virtual UObject* GetMostTarget() override;
 };

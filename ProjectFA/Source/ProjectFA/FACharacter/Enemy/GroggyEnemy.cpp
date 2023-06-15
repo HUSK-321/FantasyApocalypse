@@ -180,7 +180,7 @@ void AGroggyEnemy::OnSpawnTriggerBoxOverlap(UPrimitiveComponent* OverlappedCompo
 	if(PlayableCharacter == nullptr)	return;
 	if(const auto EnemyController = GetController<IEnemyControllable>())
 	{
-		EnemyController->SetEnemyBlackboardValueAsObject(FName(TEXT("TargetPlayer")), OtherActor);
+		EnemyController->SetEnemyBlackboardValueAsObject(FName(TEXT("TargetPlayer")), OtherActor, 2.f);
 	}
 
 	MulticastSpawnEnemy();

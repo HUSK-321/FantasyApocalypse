@@ -2,8 +2,8 @@
 
 
 #include "BTService_CheckTargetDistance.h"
-
 #include "BehaviorTree/BlackboardComponent.h"
+#include "ProjectFA/FAInterfaces/Controller/EnemyControllable.h"
 
 UBTService_CheckTargetDistance::UBTService_CheckTargetDistance()
 {
@@ -22,9 +22,12 @@ void UBTService_CheckTargetDistance::TickNode(UBehaviorTreeComponent& OwnerComp,
 	
 	const auto TargetPosition = TargetActor->GetActorLocation();
 	const auto Distance = FVector::DistSquared2D(StartPosition, TargetPosition);
-	if(Distance > MaxDistanceSqrt)
-	{
-		OwnerComp.GetBlackboardComponent()->SetValueAsObject(TargetPlayerKey, nullptr);
-		OwnerComp.GetBlackboardComponent()->SetValueAsBool(TargetPlayerIsNearKey, false);
-	}
+	if(Distance < MaxDistanceSqrt)	return;
+	
+	const auto EnemyController = OwnerComp.GetOwner<IEnemyControllable>();
+	if(EnemyController == nullptr)	return;
+
+	UE_LOG(LogTemp, Warning, TEXT("========FAR"))
+	EnemyController->SetEnemyBlackboardValueAsObject(TargetPlayerKey, TargetActor, 0.f);
+	EnemyController->SetEnemyBlackboardValueAsBool(TargetPlayerIsNearKey, false);
 }
