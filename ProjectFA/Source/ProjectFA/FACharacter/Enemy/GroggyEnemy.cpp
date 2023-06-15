@@ -149,7 +149,6 @@ void AGroggyEnemy::StrongGroggy()
 			if(const auto EnemyController = GetController<IEnemyControllable>())
 			{
 				EnemyController->SetEnemyBlackboardValueAsBool(FName("StrongGroggy"), false);
-				UE_LOG(LogTemp, Warning, TEXT("StrongGroggy false"));
 			}
 		});
 		Animinstance->Montage_SetEndDelegate(MontageEnded);

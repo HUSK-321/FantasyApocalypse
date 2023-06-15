@@ -9,6 +9,7 @@ UBTService_CheckTargetDistance::UBTService_CheckTargetDistance()
 {
 	NodeName = TEXT("Check Target Distance");
 	Interval = 1.0f;
+	RandomDeviation = 0.f;
 }
 
 void UBTService_CheckTargetDistance::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds)
@@ -27,7 +28,6 @@ void UBTService_CheckTargetDistance::TickNode(UBehaviorTreeComponent& OwnerComp,
 	const auto EnemyController = OwnerComp.GetOwner<IEnemyControllable>();
 	if(EnemyController == nullptr)	return;
 
-	UE_LOG(LogTemp, Warning, TEXT("========FAR"))
 	EnemyController->SetEnemyBlackboardValueAsObject(TargetPlayerKey, TargetActor, 0.f);
 	EnemyController->SetEnemyBlackboardValueAsBool(TargetPlayerIsNearKey, false);
 }

@@ -18,7 +18,6 @@
 AEnemy::AEnemy()
 	:
 	PawnSensingComponent(CreateDefaultSubobject<UPawnSensingComponent>(TEXT("PawnSensingComponent"))),
-	AttackSphere(CreateDefaultSubobject<USphereComponent>(TEXT("AttackSphere"))),
 	AttackCollision(CreateDefaultSubobject<UBoxComponent>(TEXT("AttackCollision"))),
 	LootingItemComponent(CreateDefaultSubobject<ULootingItemComponent>(TEXT("Looting Item Component"))),
 	bAttackTrigger(false)
@@ -27,7 +26,6 @@ AEnemy::AEnemy()
 	
 	PrimaryActorTick.bCanEverTick = false;
 
-	AttackSphere->SetupAttachment(GetRootComponent());
 	GetMesh()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Ignore);
 	GetMesh()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECollisionResponse::ECR_Ignore);
 	GetCapsuleComponent()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECollisionResponse::ECR_Ignore);
@@ -62,8 +60,6 @@ void AEnemy::BeginPlay()
 	}
 	
 	PawnSensingComponent->OnSeePawn.AddDynamic(this, &AEnemy::OnSensingPawn);
-	AttackSphere->OnComponentBeginOverlap.AddDynamic(this, &AEnemy::AttackSphereOnOverlapBegin);
-	AttackSphere->OnComponentEndOverlap.AddDynamic(this, &AEnemy::AttackSphereOnOverlapEnd);
 	AttackCollision->OnComponentBeginOverlap.AddDynamic(this, &AEnemy::AttackCollisionOnOverlapBegin);
 	OnTakeAnyDamage.AddDynamic(this, &AEnemy::ReceiveDamage);
 }
@@ -84,28 +80,6 @@ void AEnemy::OnSensingPawn(APawn* OtherPawn)
 	if(EnemyController->HaveObject(OtherPawn))	return;
 	
 	EnemyController->SetEnemyBlackboardValueAsObject(TEXT("TargetPlayer"), OtherPawn, 1.f);
-}
-
-void AEnemy::AttackSphereOnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
-	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
-{
-	const auto PlayableCharacter = Cast<IPickupableCharacter>(OtherActor);
-	if(PlayableCharacter == nullptr)	return;
-	const auto EnemyController = GetController<IEnemyControllable>();
-	if(EnemyController == nullptr)	return;
-	
-	EnemyController->SetEnemyBlackboardValueAsBool(TEXT("TargetPlayerIsNear"), true);
-}
-
-void AEnemy::AttackSphereOnOverlapEnd(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
-	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
-{
-	const auto PlayableCharacter = Cast<IPickupableCharacter>(OtherActor);
-	if(PlayableCharacter == nullptr)	return;
-	const auto EnemyController = GetController<IEnemyControllable>();
-	if(EnemyController == nullptr)	return;
-	
-	EnemyController->SetEnemyBlackboardValueAsBool(TEXT("TargetPlayerIsNear"), false);
 }
 
 void AEnemy::ReceiveDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType,

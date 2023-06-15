@@ -37,15 +37,16 @@ void AEnemyController::SetEnemyBlackboardValueAsBool(const FName KeyName, bool B
 
 void AEnemyController::SetEnemyBlackboardValueAsObject(const FName KeyName, UObject* ObjectValue, float Weight)
 {
-	if(ObjectValue == nullptr)	return;
-	
-	if(Weight <= KINDA_SMALL_NUMBER && TargetObjects.Contains(ObjectValue))
+	if(ObjectValue != nullptr)
 	{
-		TargetObjects.Remove(ObjectValue);
-	}
-	else
-	{
-		(TargetObjects.Contains(ObjectValue) == false) ? TargetObjects.Add(ObjectValue, Weight) : TargetObjects[ObjectValue] += Weight;
+		if(Weight <= KINDA_SMALL_NUMBER && TargetObjects.Contains(ObjectValue))
+		{
+			TargetObjects.Remove(ObjectValue);
+		}
+		else
+		{
+			(TargetObjects.Contains(ObjectValue) == false) ? TargetObjects.Add(ObjectValue, Weight) : TargetObjects[ObjectValue] += Weight;
+		}
 	}
 	
 	SetEnemyBlackboardValueAsObject(KeyName, GetMostTarget());
@@ -54,7 +55,6 @@ void AEnemyController::SetEnemyBlackboardValueAsObject(const FName KeyName, UObj
 void AEnemyController::SetEnemyBlackboardValueAsObject(const FName KeyName, UObject* ObjectValue)
 {
 	EnemyBlackboardComponent->SetValueAsObject(KeyName, ObjectValue);
-	EnemyBehaviorTreeComponent->RestartTree();
 }
 
 void AEnemyController::SetEnemyBlackboardValueAsVector(const FName KeyName, FVector VectorValue)
