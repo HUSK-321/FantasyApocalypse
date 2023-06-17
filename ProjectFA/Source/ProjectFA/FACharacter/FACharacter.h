@@ -29,6 +29,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void StopNormalAttackMontage();
 
+	FORCEINLINE FName GetCharacterName() const { return CharacterName; }
+	FORCEINLINE bool NowInDeadProcess() const { return bNowInDeadProcess; }
+
 protected:
 	UFUNCTION()
 	virtual void ReceiveDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType, AController* InstigatorController, AActor* DamageCauser);
@@ -56,7 +59,8 @@ private:
 	void AfterDeadDissolve();
 
 protected:
-
+	UPROPERTY(EditAnywhere, Category = "Character Property")
+	FName CharacterName;
 	UPROPERTY(EditAnywhere, Category = "Character Property")
 	float MaxHealth;
 	UPROPERTY(ReplicatedUsing = OnRep_CurrentHealthChanged ,EditAnywhere, Category = "Character Property")
@@ -74,4 +78,6 @@ private:
 	TObjectPtr<UTimelineComponent> DissolveTimeline;
 	UPROPERTY(EditAnywhere, Category = "Dead")
 	TObjectPtr<UCurveFloat> DissolveCurve;
+
+	int8 bNowInDeadProcess : 1;
 };

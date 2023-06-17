@@ -22,8 +22,6 @@ private:
 	UPROPERTY(EditAnywhere)
 	TObjectPtr<UPawnSensingComponent> PawnSensingComponent;
 	UPROPERTY(EditAnywhere)
-	TObjectPtr<USphereComponent> AttackSphere;
-	UPROPERTY(EditAnywhere)
 	TObjectPtr<UBoxComponent> AttackCollision;
 	UPROPERTY(VisibleAnywhere, Category = "Spawn Item", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<ULootingItemComponent> LootingItemComponent;
@@ -67,14 +65,9 @@ protected:
 	
 	UFUNCTION()
 	void OnSensingPawn(APawn* OtherPawn);
-	UFUNCTION()
-	void AttackSphereOnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp,
-												int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
-	UFUNCTION()
-	void AttackSphereOnOverlapEnd(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp,
-												int32 OtherBodyIndex);
 												
 	virtual void ReceiveDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType, AController* InstigatorController, AActor* DamageCauser) override;
+	void SearchEnemyDeadEvent();
 	virtual void CurrentHealthChanged() override;
 	UFUNCTION()
 	void AttackCollisionOnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp,

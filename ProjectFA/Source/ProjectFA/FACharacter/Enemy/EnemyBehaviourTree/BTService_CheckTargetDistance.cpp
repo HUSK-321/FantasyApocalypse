@@ -2,13 +2,14 @@
 
 
 #include "BTService_CheckTargetDistance.h"
-
 #include "BehaviorTree/BlackboardComponent.h"
+#include "ProjectFA/FAInterfaces/Controller/EnemyControllable.h"
 
 UBTService_CheckTargetDistance::UBTService_CheckTargetDistance()
 {
 	NodeName = TEXT("Check Target Distance");
 	Interval = 1.0f;
+	RandomDeviation = 0.f;
 }
 
 void UBTService_CheckTargetDistance::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds)
@@ -22,9 +23,11 @@ void UBTService_CheckTargetDistance::TickNode(UBehaviorTreeComponent& OwnerComp,
 	
 	const auto TargetPosition = TargetActor->GetActorLocation();
 	const auto Distance = FVector::DistSquared2D(StartPosition, TargetPosition);
-	if(Distance > MaxDistanceSqrt)
-	{
-		OwnerComp.GetBlackboardComponent()->SetValueAsObject(TargetPlayerKey, nullptr);
-		OwnerComp.GetBlackboardComponent()->SetValueAsBool(TargetPlayerIsNearKey, false);
-	}
+	if(Distance < MaxDistanceSqrt)	return;
+	
+	const auto EnemyController = OwnerComp.GetOwner<IEnemyControllable>();
+	if(EnemyController == nullptr)	return;
+
+	EnemyController->SetEnemyBlackboardValueAsObject(TargetPlayerKey, TargetActor, 0.f);
+	EnemyController->SetEnemyBlackboardValueAsBool(TargetPlayerIsNearKey, false);
 }

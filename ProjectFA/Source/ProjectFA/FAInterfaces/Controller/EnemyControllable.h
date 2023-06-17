@@ -22,6 +22,11 @@ class PROJECTFA_API IEnemyControllable
 public:
 	virtual void SetControllingEnemyAttack(){}
 	virtual void SetEnemyBlackboardValueAsObject(const FName KeyName, UObject* ObjectValue){}
+	virtual void SetEnemyBlackboardValueAsObject(const FName KeyName, UObject* ObjectValue, float Weight){}
 	virtual void SetEnemyBlackboardValueAsVector(const FName KeyName, FVector VectorValue){}
 	virtual void SetEnemyBlackboardValueAsBool(const FName KeyName, bool BoolValue){}
+
+	virtual bool HaveObject(const UObject* ObjectKeyName){ return false; }
+
+	virtual UObject* GetMostTarget() { return nullptr; }
 };

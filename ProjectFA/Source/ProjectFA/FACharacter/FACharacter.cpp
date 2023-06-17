@@ -9,7 +9,8 @@
 AFACharacter::AFACharacter()
 	:
 	MaxHealth(100.f), CurrentHealth(100.f),
-	DissolveTimeline(CreateDefaultSubobject<UTimelineComponent>(TEXT("Dissolve Timeline")))
+	DissolveTimeline(CreateDefaultSubobject<UTimelineComponent>(TEXT("Dissolve Timeline"))),
+	bNowInDeadProcess(false)
 {
 	PrimaryActorTick.bCanEverTick = true;
 
@@ -66,6 +67,7 @@ void AFACharacter::CharacterDead()
 	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
 	if(AnimInstance == nullptr)	return;
 	
+	bNowInDeadProcess = true;
 	GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_Pawn, ECR_Ignore);
 
 	GenerateInventoryItems();

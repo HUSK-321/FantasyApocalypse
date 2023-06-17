@@ -35,6 +35,23 @@ void AEnemyController::SetEnemyBlackboardValueAsBool(const FName KeyName, bool B
 	EnemyBlackboardComponent->SetValueAsBool(KeyName, BoolValue);
 }
 
+void AEnemyController::SetEnemyBlackboardValueAsObject(const FName KeyName, UObject* ObjectValue, float Weight)
+{
+	if(ObjectValue != nullptr)
+	{
+		if(Weight <= KINDA_SMALL_NUMBER && TargetObjects.Contains(ObjectValue))
+		{
+			TargetObjects.Remove(ObjectValue);
+		}
+		else
+		{
+			(TargetObjects.Contains(ObjectValue) == false) ? TargetObjects.Add(ObjectValue, Weight) : TargetObjects[ObjectValue] += Weight;
+		}
+	}
+	
+	SetEnemyBlackboardValueAsObject(KeyName, GetMostTarget());
+}
+
 void AEnemyController::SetEnemyBlackboardValueAsObject(const FName KeyName, UObject* ObjectValue)
 {
 	EnemyBlackboardComponent->SetValueAsObject(KeyName, ObjectValue);
@@ -43,4 +60,20 @@ void AEnemyController::SetEnemyBlackboardValueAsObject(const FName KeyName, UObj
 void AEnemyController::SetEnemyBlackboardValueAsVector(const FName KeyName, FVector VectorValue)
 {
 	EnemyBlackboardComponent->SetValueAsVector(KeyName, VectorValue);
+}
+
+bool AEnemyController::HaveObject(const UObject* ObjectKeyName)
+{
+	return TargetObjects.Contains(ObjectKeyName);
+}
+
+UObject* AEnemyController::GetMostTarget()
+{
+	TargetObjects.ValueSort([](const float& A, const float& B){ return A > B; });
+	for(const auto& KeyValue : TargetObjects)
+	{
+		if(KeyValue.Key == nullptr || KeyValue.Value < KINDA_SMALL_NUMBER)	continue;
+		return KeyValue.Key;
+	}
+	return nullptr;
 }

@@ -149,7 +149,6 @@ void AGroggyEnemy::StrongGroggy()
 			if(const auto EnemyController = GetController<IEnemyControllable>())
 			{
 				EnemyController->SetEnemyBlackboardValueAsBool(FName("StrongGroggy"), false);
-				UE_LOG(LogTemp, Warning, TEXT("StrongGroggy false"));
 			}
 		});
 		Animinstance->Montage_SetEndDelegate(MontageEnded);
@@ -180,7 +179,7 @@ void AGroggyEnemy::OnSpawnTriggerBoxOverlap(UPrimitiveComponent* OverlappedCompo
 	if(PlayableCharacter == nullptr)	return;
 	if(const auto EnemyController = GetController<IEnemyControllable>())
 	{
-		EnemyController->SetEnemyBlackboardValueAsObject(FName(TEXT("TargetPlayer")), OtherActor);
+		EnemyController->SetEnemyBlackboardValueAsObject(FName(TEXT("TargetPlayer")), OtherActor, 2.f);
 	}
 
 	MulticastSpawnEnemy();
