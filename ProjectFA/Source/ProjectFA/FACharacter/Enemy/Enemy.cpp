@@ -5,7 +5,6 @@
 #include "AIController.h"
 #include "Components/BoxComponent.h"
 #include "Components/CapsuleComponent.h"
-#include "Components/SphereComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Net/UnrealNetwork.h"
@@ -43,8 +42,7 @@ void AEnemy::BeginPlay()
 	
 	if(HasAuthority() == false || IsValid(GetController()) == false)	return;
 
-	const auto EnemyController = Cast<IEnemyControllable>(GetController());
-	if(EnemyController)
+	if(const auto EnemyController = Cast<IEnemyControllable>(GetController()))
 	{
 		const FVector WorldPatrolStartPoint = UKismetMathLibrary::TransformLocation(GetActorTransform(), PatrolStartPoint);
 		const FVector WorldPatrolEndPoint = UKismetMathLibrary::TransformLocation(GetActorTransform(), PatrolEndPoint);
@@ -76,8 +74,7 @@ void AEnemy::OnSensingPawn(APawn* OtherPawn)
 	const auto PlayableCharacter = Cast<IPickupableCharacter>(OtherPawn);
 	if(PlayableCharacter == nullptr)	return;
 	const auto EnemyController = GetController<IEnemyControllable>();
-	if(EnemyController == nullptr)	return;
-	if(EnemyController->HaveObject(OtherPawn))	return;
+	if(EnemyController == nullptr || EnemyController->HaveObject(OtherPawn))	return;
 	
 	EnemyController->SetEnemyBlackboardValueAsObject(TEXT("TargetPlayer"), OtherPawn, 1.f);
 }
@@ -106,7 +103,6 @@ void AEnemy::CurrentHealthChanged()
 	if(CurrentHealth <= 0 && NowInDeadProcess() == false)
 	{
 		SearchEnemyDeadEvent();
-		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, TEXT("Enemy Dead"));
 		CharacterDead();
 	}
 }
@@ -125,12 +121,10 @@ void AEnemy::SetAttackCollision(bool bEnabled)
 void AEnemy::AttackCollisionOnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
                                            UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	if(OtherActor == this || DamageTypeClass == nullptr || HittedActors.Contains(OtherActor))	return;
-	const auto AttackingInstigator = GetController();
-	if(AttackingInstigator == nullptr)	return;
+	if(OtherActor == this || DamageTypeClass == nullptr || HittedActors.Contains(OtherActor) || GetController() == nullptr)	return;
 
 	HittedActors.Add(OtherActor);
-	UGameplayStatics::ApplyDamage(OtherActor, 10.f, AttackingInstigator, this, DamageTypeClass);
+	UGameplayStatics::ApplyDamage(OtherActor, 10.f, GetController(), this, DamageTypeClass);
 }
 
 void AEnemy::SetSpawnItemList(const TArray<APickupItem*>& ItemList)
