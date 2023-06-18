@@ -45,7 +45,6 @@ void AInteractableDoor::BeginPlay()
 	OverlapBoxComponent->OnComponentEndOverlap.AddDynamic(this, &AInteractableDoor::InteractBoxEndOverlap);
 
 	SetupDoorOpenTimeline();
-	SetupDoorOpenTimeline();
 }
 
 void AInteractableDoor::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -54,7 +53,6 @@ void AInteractableDoor::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Ou
 
 	DOREPLIFETIME(AInteractableDoor, bDoorOpen);
 	DOREPLIFETIME(AInteractableDoor, bNowInTimeline);
-	DOREPLIFETIME(AInteractableDoor, DoorMesh);
 }
 
 void AInteractableDoor::SetDoorAngle(float Angle)

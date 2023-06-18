@@ -18,7 +18,7 @@ class PROJECTFA_API AInteractableDoor : public AActor, public IInteractableWithC
 	GENERATED_BODY()
 
 private:
-	UPROPERTY(Replicated, EditAnywhere, BlueprintReadWrite, Category = "Door", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Door", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UStaticMeshComponent> DoorMesh;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Door", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UBoxComponent> OverlapBoxComponent;
