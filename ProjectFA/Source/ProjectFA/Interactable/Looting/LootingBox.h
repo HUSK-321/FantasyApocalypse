@@ -51,6 +51,8 @@ private:
 	UPROPERTY(EditAnywhere, Category = "Spawner Property")
 	TArray<FSpawnerInitializeInfo> SpawnCategoryInfo;
 
+	UPROPERTY(ReplicatedUsing = OnRep_LootingBoxOpened)
+	bool bLootingBoxOpened;
 	bool bLootingBoxDissolving;
 
 public:	
@@ -64,6 +66,7 @@ public:
 
 protected:
 	virtual void BeginPlay() override;
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 	
 private:
 	void StartDissolve();
@@ -79,6 +82,6 @@ private:
 	UFUNCTION()
 	void AfterDissolve();
 	
-	UFUNCTION(NetMulticast, Reliable)
-	void MulticastOpenLootingBox();
+	UFUNCTION()
+	void OnRep_LootingBoxOpened();
 };
