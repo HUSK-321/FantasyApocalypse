@@ -4,10 +4,10 @@
 
 #include "CoreMinimal.h"
 #include "UObject/Interface.h"
-#include "LootInteractable.generated.h"
+#include "InteractableWithCharacter.generated.h"
 
 UINTERFACE(MinimalAPI)
-class ULootInteractable : public UInterface
+class UInteractableWithCharacter : public UInterface
 {
 	GENERATED_BODY()
 };
@@ -15,13 +15,13 @@ class ULootInteractable : public UInterface
 /**
  * 
  */
-class PROJECTFA_API ILootInteractable
+class PROJECTFA_API IInteractableWithCharacter
 {
 	GENERATED_BODY()
 
 public:
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Looting Action")
-	void FindItem(const float SearchTime);
+	void InteractWithObject(const float InteractTime);
 
-	virtual void OpenLooting(){}
+	virtual void EndInteracting(){}
 };

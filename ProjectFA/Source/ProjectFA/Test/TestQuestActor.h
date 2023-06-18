@@ -4,14 +4,14 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "ProjectFA/Interactable/Looting/LootInteractable.h"
+#include "..\Interactable\Looting\InteractableWithCharacter.h"
 #include "TestQuestActor.generated.h"
 
 class UBoxComponent;
 class UQuestObject;
 
 UCLASS()
-class PROJECTFA_API ATestQuestActor : public AActor, public ILootInteractable
+class PROJECTFA_API ATestQuestActor : public AActor, public IInteractableWithCharacter
 {
 	GENERATED_BODY()
 
@@ -26,7 +26,7 @@ private:
 public:	
 	ATestQuestActor();
 
-	virtual void FindItem_Implementation(const float SearchTime) override;
+	virtual void InteractWithObject_Implementation(const float SearchTime) override;
 
 protected:
 	virtual void BeginPlay() override;

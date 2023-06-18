@@ -13,7 +13,7 @@
 #include "ProjectFA/HUD/InventoryWidget/InventoryWidget.h"
 #include "ProjectFA/HUD/PickupItemListWidget/PickupItemList.h"
 #include "ProjectFA/InGameItem/InventoryUsable.h"
-#include "ProjectFA/Interactable/Looting/LootInteractable.h"
+#include "..\..\Interactable\Looting\InteractableWithCharacter.h"
 
 void APlayableController::BeginPlay()
 {
@@ -22,9 +22,9 @@ void APlayableController::BeginPlay()
 	ProjectFAHUD = Cast<AProjectFAHUD>(GetHUD());
 }
 
-void APlayableController::OpenLootingBox(UObject* LootingBox)
+void APlayableController::InteractingWithObject(UObject* LootingBox)
 {
-	ServerOpenLootingBox(LootingBox);
+	ServerInteracting(LootingBox);
 }
 
 void APlayableController::DropItem(APickupItem* Item)
@@ -37,13 +37,13 @@ void APlayableController::UseItem(UObject* Item)
 	ServerUseItem(Item);
 }
 
-void APlayableController::ServerOpenLootingBox_Implementation(UObject* LootingBox)
+void APlayableController::ServerInteracting_Implementation(UObject* LootingBox)
 {
 	if(IsValid(LootingBox) == false)	return;
-	const auto LootableBox = Cast<ILootInteractable>(LootingBox);
+	const auto LootableBox = Cast<IInteractableWithCharacter>(LootingBox);
 	if(LootableBox == nullptr)	return;
 	
-	LootableBox->OpenLooting();
+	LootableBox->EndInteracting();
 }
 
 void APlayableController::ServerDropItem_Implementation(APickupItem* Item)

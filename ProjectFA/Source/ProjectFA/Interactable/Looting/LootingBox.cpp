@@ -5,7 +5,6 @@
 #include "LootingItemComponent.h"
 #include "Components/SphereComponent.h"
 #include "Components/WidgetComponent.h"
-#include "Net/UnrealNetwork.h"
 #include "ProjectFA/FACharacter/InteractableCharacter.h"
 #include "ProjectFA/FAInterfaces/Controller/ItemRPCableController.h"
 #include "ProjectFA/HUD/InteractionWidget/ItemLootingProgressWidget.h"
@@ -62,7 +61,7 @@ void ALootingBox::MulticastOpenLootingBox_Implementation()
 	StartDissolve();
 }
 
-void ALootingBox::FindItem_Implementation(const float SearchTime)
+void ALootingBox::InteractWithObject_Implementation(const float SearchTime)
 {
 	ProgressWidget = ProgressWidget == nullptr ?
 					 Cast<UItemLootingProgressWidget>(ProgressWidgetComponent->GetUserWidgetObject()) :
@@ -76,12 +75,12 @@ void ALootingBox::FindItem_Implementation(const float SearchTime)
 		const auto PlayerController = GetGameInstance()->GetFirstLocalPlayerController(GetWorld());
 		if(const auto Controller = Cast<IItemRPCableController>(PlayerController))
 		{
-			Controller->OpenLootingBox(this);
+			Controller->InteractingWithObject(this);
 		}
 	}
 }
 
-void ALootingBox::OpenLooting()
+void ALootingBox::EndInteracting()
 {
 	MulticastOpenLootingBox();
 }

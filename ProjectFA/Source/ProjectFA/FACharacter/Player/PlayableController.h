@@ -29,7 +29,7 @@ protected:
 	virtual void BeginPlay() override;
 
 public:	
-	virtual void OpenLootingBox(UObject* LootingBox) override;
+	virtual void InteractingWithObject(UObject* LootingBox) override;
 	virtual void DropItem(APickupItem* Item) override;
 	virtual void UseItem(UObject* Item) override;
 
@@ -69,7 +69,7 @@ private:
 	void SetInputModeGameOnly();
 
 	UFUNCTION(Server, Reliable)
-	void ServerOpenLootingBox(UObject* LootingBox);
+	void ServerInteracting(UObject* LootingBox);
 	UFUNCTION(Server, Reliable)
 	void ServerDropItem(APickupItem* Item);
 	UFUNCTION(Server, Reliable)

@@ -32,7 +32,7 @@ void ATestQuestActor::BeginPlay()
 	}
 }
 
-void ATestQuestActor::FindItem_Implementation(const float SearchTime)
+void ATestQuestActor::InteractWithObject_Implementation(const float SearchTime)
 {
 	if(SearchTime >= 0.1f && bGiveQuest == false && TestQuestClass)
 	{
