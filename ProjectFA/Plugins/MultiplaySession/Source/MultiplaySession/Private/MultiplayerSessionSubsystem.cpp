@@ -71,8 +71,11 @@ void UMultiplayerSessionSubsystem::FindSessions(int32 MaxSearchResults)
 	const ULocalPlayer* LocalPlayer = GetWorld()->GetFirstLocalPlayerFromController(); 
 	if(SessionInterface->FindSessions(*LocalPlayer->GetPreferredUniqueNetId(), LastSessionSearch.ToSharedRef()) == false)
 	{
+		if(GEngine)
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 15.f, FColor::Red, FString(TEXT("Can't Find Any Session [UMultiplayerSessionSubsystem::FindSessions]")));
+		}
 		SessionInterface->ClearOnFindSessionsCompleteDelegate_Handle(FindSessionCompleteDelegateHandle);
-
 		MultiplayerOnFindSessionsComplete.Broadcast(TArray<FOnlineSessionSearchResult>(), false);
 	}
 }
@@ -81,6 +84,10 @@ void UMultiplayerSessionSubsystem::JoinSession(const FOnlineSessionSearchResult&
 {
 	if(SessionInterface.IsValid() == false)
 	{
+		if(GEngine)
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 15.f, FColor::Red, FString(TEXT("session interface not valid [UMultiplayerSessionSubsystem::JoinSession]")));
+		}
 		MultiplayerOnJoinSessionComplete.Broadcast(EOnJoinSessionCompleteResult::UnknownError);
 		return;
 	}
@@ -90,6 +97,10 @@ void UMultiplayerSessionSubsystem::JoinSession(const FOnlineSessionSearchResult&
 	const ULocalPlayer* LocalPlayer = GetWorld()->GetFirstLocalPlayerFromController(); 
 	if(SessionInterface->JoinSession(*LocalPlayer->GetPreferredUniqueNetId(), NAME_GameSession, SessionSearchResult) == false)
 	{
+		if(GEngine)
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 15.f, FColor::Red, FString(TEXT("join session failed [UMultiplayerSessionSubsystem::JoinSession]")));
+		}
 		SessionInterface->ClearOnJoinSessionCompleteDelegate_Handle(JoinSessionCompleteDelegateHandle);
 		MultiplayerOnJoinSessionComplete.Broadcast(EOnJoinSessionCompleteResult::UnknownError);
 	}
@@ -99,6 +110,10 @@ void UMultiplayerSessionSubsystem::DestroySession()
 {
 	if(SessionInterface.IsValid() == false)
 	{
+		if(GEngine)
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 15.f, FColor::Red, FString(TEXT("session interface not valid [UMultiplayerSessionSubsystem::DestroySession]")));
+		}
 		MultiplayerOnDestroySessionComplete.Broadcast(false);
 		return;
 	}
@@ -107,6 +122,10 @@ void UMultiplayerSessionSubsystem::DestroySession()
 
 	if(SessionInterface->DestroySession(NAME_GameSession) == false)
 	{
+		if(GEngine)
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 15.f, FColor::Red, FString(TEXT("session destroy failed [UMultiplayerSessionSubsystem::DestroySession]")));
+		}
 		SessionInterface->ClearOnDestroySessionCompleteDelegate_Handle(DestroySessionCompleteDelegateHandle);
 		MultiplayerOnDestroySessionComplete.Broadcast(false);
 	}
@@ -133,8 +152,12 @@ void UMultiplayerSessionSubsystem::OnFindSessionComplete(bool bWasSuccessful)
 		SessionInterface->ClearOnFindSessionsCompleteDelegate_Handle(FindSessionCompleteDelegateHandle);
 	}
 	
-	if(LastSessionSearch->SearchResults.Num())
+	if(LastSessionSearch->SearchResults.Num() <= 0)
 	{
+		if(GEngine)
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 15.f, FColor::Red, FString(TEXT("Session num is ZERO [UMultiplayerSessionSubsystem::OnFindSessionComplete]")));
+		}
 		MultiplayerOnFindSessionsComplete.Broadcast(TArray<FOnlineSessionSearchResult>(), false);
 		return;
 	}
@@ -158,6 +181,10 @@ void UMultiplayerSessionSubsystem::OnDestroySessionComplete(FName SessionName, b
 	}
 	if(bWasSuccessful && bCreateSessionOnDestroy)
 	{
+		if(GEngine)
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 15.f, FColor::Cyan, FString(TEXT("Session Destroy Successful [UMultiplayerSessionSubsystem::OnDestroySessionComplete]")));
+		}
 		bCreateSessionOnDestroy = false;
 		CreateSession(LastNumPublicConnections, LastMatchType);
 	}

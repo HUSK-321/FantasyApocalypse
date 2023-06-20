@@ -106,12 +106,12 @@ void USessionMenu::OnCreateSession(bool bWasSuccessful)
 			World->ServerTravel(FString(PathToLobby));
 		}
 		if(GEngine)
-			GEngine->AddOnScreenDebugMessage(-1, 15.f, FColor::Yellow, FString(TEXT("session create Successfully")));
+			GEngine->AddOnScreenDebugMessage(-1, 15.f, FColor::Yellow, FString(TEXT("session create Successfully [USessionMenu::OnCreateSession]")));
 	}
 	else
 	{
 		if(GEngine)
-			GEngine->AddOnScreenDebugMessage(-1, 15.f, FColor::Red, FString(TEXT("session create FAIL")));
+			GEngine->AddOnScreenDebugMessage(-1, 15.f, FColor::Red, FString(TEXT("session create FAIL [USessionMenu::OnCreateSession]")));
 		if(HostButton)
 		{
 			HostButton->SetIsEnabled(true);
@@ -129,6 +129,21 @@ void USessionMenu::OnFindSessions(const TArray<FOnlineSessionSearchResult>& Sess
 		if(SettingsValue != MatchType)	continue;
 
 		MultiplayerSessionSubsystem->JoinSession(Result);
+	}
+
+	if(bWasSuccessful)
+	{
+		if(GEngine)
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 15.f, FColor::Red, FString(TEXT("Find Session Failed [USessionMenu::OnFindSessions]")));
+		}
+	}
+	if(SessionResults.Num() == 0)
+	{
+		if(GEngine)
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 15.f, FColor::Red, FString(TEXT("Session number is ZERO [USessionMenu::OnFindSessions]")));
+		}
 	}
 
 	if(bWasSuccessful == false || SessionResults.Num() == 0 && JoinButton)
@@ -156,6 +171,10 @@ void USessionMenu::OnJoinSession(EOnJoinSessionCompleteResult::Type Result)
 
 	if(Result != EOnJoinSessionCompleteResult::Success && JoinButton)
 	{
+		if(GEngine)
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 15.f, FColor::Red, FString(TEXT("join session not success [USessionMenu::OnJoinSession]")));
+		}
 		JoinButton->SetIsEnabled(true);
 	}
 }

@@ -26,7 +26,7 @@ void ALobbyGameMode::StartGameTimer()
 {
 	if(NowStartGameTimerOn() || GetWorld() == nullptr)	return;
 
-	GetWorld()->GetTimerManager().SetTimer(StartTimerHandle, this, &ALobbyGameMode::TravelToLevel, 10.f, false, 10.f);
+	GetWorld()->GetTimerManager().SetTimer(StartTimerHandle, this, &ALobbyGameMode::TravelToLevel, 10.f, false, 30.f);
 }
 
 bool ALobbyGameMode::NowStartGameTimerOn() const
