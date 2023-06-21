@@ -40,6 +40,8 @@ void AEnemy::BeginPlay()
 {
 	Super::BeginPlay();
 	
+	SetAttackCollision(false);
+	
 	if(HasAuthority() == false || IsValid(GetController()) == false)	return;
 
 	if(const auto EnemyController = Cast<IEnemyControllable>(GetController()))
@@ -84,7 +86,8 @@ void AEnemy::ReceiveDamage(AActor* DamagedActor, float Damage, const UDamageType
 {
 	CurrentHealth = FMath::Clamp(CurrentHealth - Damage, 0.f, MaxHealth);
 	OnRep_CurrentHealthChanged();
-	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("Enemy Damaged : %f"), Damage));
+	if(GEngine)
+		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("Enemy Damaged : %f"), Damage));
 
 	const auto EnemyController = GetController<IEnemyControllable>();
 	if(EnemyController == nullptr)	return;

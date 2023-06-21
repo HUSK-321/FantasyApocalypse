@@ -11,7 +11,7 @@ void UEnemyAttackNotifyState::NotifyBegin(USkeletalMeshComponent* MeshComp, UAni
 
 	if(MeshComp == nullptr)	return;
 	const auto EnemyCharacter = Cast<AEnemy>(MeshComp->GetOwner());
-	if(EnemyCharacter == nullptr)	return;
+	if(EnemyCharacter == nullptr || EnemyCharacter->HasAuthority() == false)	return;
 
 	EnemyCharacter->SetAttackCollision(true);
 }
@@ -23,7 +23,7 @@ void UEnemyAttackNotifyState::NotifyEnd(USkeletalMeshComponent* MeshComp, UAnimS
 	
 	if(MeshComp == nullptr)	return;
 	const auto EnemyCharacter = Cast<AEnemy>(MeshComp->GetOwner());
-	if(EnemyCharacter == nullptr)	return;
+	if(EnemyCharacter == nullptr || EnemyCharacter->HasAuthority() == false)	return;
 
 	EnemyCharacter->SetAttackCollision(false);
 }
