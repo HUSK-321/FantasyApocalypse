@@ -20,7 +20,7 @@ ALootingBox::ALootingBox()
 	ProgressWidgetComponent(CreateDefaultSubobject<UWidgetComponent>(TEXT("Progress Widget"))),
 	DissolveTimeline(CreateDefaultSubobject<UTimelineComponent>(TEXT("Dissolve Timeline Component"))),
 	MaxTimeToSearch(2.f),
-	bLootingBoxDissolving(false)
+	bLootingBoxOpened(false), bLootingBoxDissolving(false)
 {
 	bReplicates = true;
 	
@@ -48,12 +48,14 @@ void ALootingBox::BeginPlay()
 	BoxArea->OnComponentEndOverlap.AddDynamic(this, &ALootingBox::LootAreaEndOverlap);
 }
 
-void ALootingBox::SetSpawnItemList(const TArray<APickupItem*>& ItemList)
+void ALootingBox::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
-	LootingItemComponent->InitializeItemList(ItemList);
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(ALootingBox, bLootingBoxOpened);
 }
 
-void ALootingBox::MulticastOpenLootingBox_Implementation()
+void ALootingBox::OnRep_LootingBoxOpened()
 {
 	ProgressWidgetComponent->SetVisibility(false);
 	if(LootingItemComponent == nullptr)	return;
@@ -62,7 +64,12 @@ void ALootingBox::MulticastOpenLootingBox_Implementation()
 	StartDissolve();
 }
 
-void ALootingBox::FindItem_Implementation(const float SearchTime)
+void ALootingBox::SetSpawnItemList(const TArray<APickupItem*>& ItemList)
+{
+	LootingItemComponent->InitializeItemList(ItemList);
+}
+
+void ALootingBox::InteractWithObject_Implementation(const float SearchTime)
 {
 	ProgressWidget = ProgressWidget == nullptr ?
 					 Cast<UItemLootingProgressWidget>(ProgressWidgetComponent->GetUserWidgetObject()) :
@@ -76,14 +83,15 @@ void ALootingBox::FindItem_Implementation(const float SearchTime)
 		const auto PlayerController = GetGameInstance()->GetFirstLocalPlayerController(GetWorld());
 		if(const auto Controller = Cast<IItemRPCableController>(PlayerController))
 		{
-			Controller->OpenLootingBox(this);
+			Controller->InteractingWithObject(this);
 		}
 	}
 }
 
-void ALootingBox::OpenLooting()
+void ALootingBox::EndInteracting()
 {
-	MulticastOpenLootingBox();
+	bLootingBoxOpened = true;
+	OnRep_LootingBoxOpened();
 }
 
 void ALootingBox::LootAreaBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,

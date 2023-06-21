@@ -23,7 +23,7 @@ class PROJECTFA_API IItemRPCableController
 	GENERATED_BODY()
 
 public:
-	virtual void OpenLootingBox(UObject* LootingBox){}
+	virtual void InteractingWithObject(UObject* LootingBox){}
 	virtual void DropItem(APickupItem* Item){}
 	virtual void UseItem(UObject* Item){}
 };

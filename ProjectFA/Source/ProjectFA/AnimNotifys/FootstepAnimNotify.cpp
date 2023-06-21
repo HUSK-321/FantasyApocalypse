@@ -7,7 +7,7 @@
 
 UFootstepAnimNotify::UFootstepAnimNotify()
 	:
-	VolumeMultiplier(1.f)
+	VolumeMultiplier(.5f)
 {
 }
 

@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "LootInteractable.h"
+#include "InteractableWithCharacter.h"
 #include "Components/TimelineComponent.h"
 #include "GameFramework/Actor.h"
 #include "ProjectFA/PlayGamePretreatment/ItemSpawnable.h"
@@ -16,7 +16,7 @@ class UWidgetComponent;
 class UItemLootingProgressWidget;
 
 UCLASS()
-class PROJECTFA_API ALootingBox : public AActor, public ILootInteractable, public IItemSpawnable
+class PROJECTFA_API ALootingBox : public AActor, public IInteractableWithCharacter, public IItemSpawnable
 {
 	GENERATED_BODY()
 
@@ -51,19 +51,22 @@ private:
 	UPROPERTY(EditAnywhere, Category = "Spawner Property")
 	TArray<FSpawnerInitializeInfo> SpawnCategoryInfo;
 
+	UPROPERTY(ReplicatedUsing = OnRep_LootingBoxOpened)
+	bool bLootingBoxOpened;
 	bool bLootingBoxDissolving;
 
 public:	
 	ALootingBox();
 
-	virtual void FindItem_Implementation(const float SearchTime) override;
-	virtual void OpenLooting() override;	
+	virtual void InteractWithObject_Implementation(const float SearchTime) override;
+	virtual void EndInteracting() override;	
 
 	virtual TArray<FSpawnerInitializeInfo> GetSpawnCategoryPercent() override;
 	virtual void SetSpawnItemList(const TArray<APickupItem*>& ItemList) override;
 
 protected:
 	virtual void BeginPlay() override;
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 	
 private:
 	void StartDissolve();
@@ -79,6 +82,6 @@ private:
 	UFUNCTION()
 	void AfterDissolve();
 	
-	UFUNCTION(NetMulticast, Reliable)
-	void MulticastOpenLootingBox();
+	UFUNCTION()
+	void OnRep_LootingBoxOpened();
 };
