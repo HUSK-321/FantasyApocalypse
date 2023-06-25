@@ -134,6 +134,7 @@ void ALootingBox::StartDissolve()
 	DynamicDissolveMaterialInstance->SetScalarParameterValue(TEXT("Disslove"), -0.55f);
 	BoxMesh->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
 	BoxMesh->SetMaterial(0, DynamicDissolveMaterialInstance);
+	BoxMesh->SetRenderCustomDepth(true);
 	
 	FOnTimelineFloat DissolveTrack;
 	DissolveTrack.BindDynamic(this, &ALootingBox::UpdateMaterialDissolve);

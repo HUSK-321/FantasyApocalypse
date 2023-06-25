@@ -26,6 +26,7 @@ AInteractableDoor::AInteractableDoor()
 	ProgressWidgetComponent->SetupAttachment(GetRootComponent());
 
 	DoorMesh->SetCollisionResponseToAllChannels(ECR_Block);
+	DoorMesh->SetRenderCustomDepth(true);
 
 	OverlapBoxComponent->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 	OverlapBoxComponent->SetCollisionObjectType(ECollisionChannel::ECC_WorldDynamic);
