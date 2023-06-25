@@ -18,7 +18,7 @@ bool USessionMenu::Initialize()
 
 void USessionMenu::NativeDestruct()
 {
-	TearDownMenu();
+	RemoveWidget();
 	Super::NativeDestruct();
 }
 
@@ -82,7 +82,7 @@ void USessionMenu::JoinButtonClicked()
 	}
 }
 
-void USessionMenu::TearDownMenu()
+void USessionMenu::RemoveWidget()
 {
 	RemoveFromParent();
 	if(UWorld* World = GetWorld())
