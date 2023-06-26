@@ -18,6 +18,7 @@ APickupItem::APickupItem()
 	PickupItemMesh->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Block);
 	PickupItemMesh->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECollisionResponse::ECR_Ignore);
 	PickupItemMesh->SetIsReplicated(true);
+	PickupItemMesh->SetRenderCustomDepth(true);
 
 	PickupAreaSphere = CreateDefaultSubobject<USphereComponent>(TEXT("PickupAreaSphere"));
 	PickupAreaSphere->SetupAttachment(GetRootComponent());

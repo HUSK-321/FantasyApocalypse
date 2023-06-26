@@ -33,3 +33,5 @@
 - [Paragon: Kwang](https://www.unrealengine.com/marketplace/en-US/product/paragon-kwang)
 
 - [Niagara Footstep VFX](https://www.unrealengine.com/marketplace/en-US/product/niagara-footstep-vfx)
+
+- [Stylized Fantasy Provencal](https://www.unrealengine.com/marketplace/en-US/product/stylized-fantasy-provencal)

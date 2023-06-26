@@ -54,6 +54,6 @@ private:
 	UFUNCTION()
 	void JoinButtonClicked();
 
-	void TearDownMenu();
+	void RemoveWidget();
 	
 };

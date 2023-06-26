@@ -94,3 +94,5 @@ Content/Assets/Sounds/*
 !Content/Assets/Sounds/.gitkeep
 Content/Assets/A_Surface_Footstep/*
 !Content/Assets/A_Surface_Footstep/.gitkeep
+Content/Assets/StylizedProvencal/*
+!Content/Assets/StylizedProvencal/.gitkeep

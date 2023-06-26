@@ -242,7 +242,12 @@ void APlayableCharacter::InteractWithActors(const FInputActionValue& Value)
 
 void APlayableCharacter::InteractWithActorsEnd()
 {
+	if(InteractingActor == nullptr)	return;
 	InteractingTime = 0.f;
+	if(UKismetSystemLibrary::DoesImplementInterface(InteractingActor, UInteractableWithCharacter::StaticClass()))
+	{
+		IInteractableWithCharacter::Execute_InteractWithObject(InteractingActor, InteractingTime);
+	}
 }
 
 void APlayableCharacter::AttackButtonPressed()
