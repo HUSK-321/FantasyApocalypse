@@ -19,7 +19,7 @@ bool ULobbyWidget::Initialize()
 	StartButton->OnClicked.AddDynamic(this, &ULobbyWidget::OnStartButtonClicked);
 	if(auto World = GetWorld())
 	{
-		if(auto LobbyGameMode = Cast<ALobbyGameMode>(World->GetAuthGameMode()))
+		if(auto LobbyGameMode = World->GetAuthGameMode<ALobbyGameMode>())
 		{
 			LobbyGameMode->OnNewPlayerJoined.AddUObject(this, &ULobbyWidget::OnPlayerNumChanged);
 			OnPlayerNumChanged(LobbyGameMode->GetNumPlayers());
