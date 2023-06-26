@@ -12,9 +12,9 @@ class PROJECTFA_API ACharacterCameraManager : public APlayerCameraManager
 	GENERATED_BODY()
 
 private:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera Shake", meta = (AllowPrivateAccess))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera Shake", meta = (AllowPrivateAccess = "true"))
 	TSubclassOf<UCameraShakeBase> HitCameraShake;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera Shake|Sound", meta = (AllowPrivateAccess))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera Shake|Sound", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<USoundBase> HitSound;
 
 public:

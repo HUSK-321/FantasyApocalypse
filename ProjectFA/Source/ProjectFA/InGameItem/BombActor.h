@@ -24,6 +24,13 @@ private:
 	float DamageInnerRadius;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Bomb", meta = (AllowPrivateAccess = "true"))
 	float DamageOuterRadius;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Bomb|Effect", meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<USoundBase> BombSound;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Bomb|Effect", meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UParticleSystem> BombParticle;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Bomb|Effect", meta = (AllowPrivateAccess = "true"))
+	TSubclassOf<UCameraShakeBase> CameraShakeEffect;
 
 	FTimerHandle ExplodeTimerHandle;
 	
@@ -31,12 +38,16 @@ public:
 	ABombActor();
 	
 	UFUNCTION(BlueprintCallable)
-	void ExplodeDamage(); 
+	void ExplodeDamage();
+	
 protected:
 	virtual void BeginPlay() override;
+	virtual void Destroyed() override;
 
 private:	
 	void SetExplodeTimer();
 	UFUNCTION()
 	void ExplodeTimerEnd();
+
+	void SpawnBombEffects();
 };
