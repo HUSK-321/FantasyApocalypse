@@ -19,6 +19,7 @@ class UInputMappingContext;
 class UInputAction;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FPlayerCurrentMaxDelegate, const float&, CurrentValue, const float&, MaxValue);
+DECLARE_MULTICAST_DELEGATE(FOnPlayerHitDelegate);
 
 UCLASS()
 class PROJECTFA_API APlayableCharacter : public AFACharacter, public IPickupableCharacter, public ICombatableCharacter, public IInteractableCharacter
@@ -28,6 +29,8 @@ class PROJECTFA_API APlayableCharacter : public AFACharacter, public IPickupable
 public:
 	FPlayerCurrentMaxDelegate PlayerHealthChangedEvent;
 	FPlayerCurrentMaxDelegate PlayerStaminaChangedEvent;
+
+	FOnPlayerHitDelegate OnPlayerHitDelegate;
 
 private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))

@@ -319,6 +319,8 @@ bool APlayableCharacter::CharacterCannotJump()
 void APlayableCharacter::CurrentHealthChanged()
 {
 	PlayerHealthChangedEvent.Broadcast(CurrentHealth, MaxHealth);
+	// TODO : not play in heal up
+	OnPlayerHitDelegate.Broadcast();
 	if(CurrentHealth <= 0.f)
 	{
 		CharacterDead();
