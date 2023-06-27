@@ -7,6 +7,7 @@
 #include "Components/SkeletalMeshComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Net/UnrealNetwork.h"
+#include "ProjectFA/FACharacter/FACharacter.h"
 #include "ProjectFA/FADictionary/GamePlayCalculator.h"
 #include "ProjectFA/FAInterfaces/Controller/ItemRPCableController.h"
 
@@ -152,6 +153,11 @@ void AWeapon::AttackCollisionOnOverlapBegin(UPrimitiveComponent* OverlappedCompo
 	}
 	UGameplayStatics::ApplyDamage(OtherActor, Damage, AttackingInstigator, this, WeaponInfo.DamageTypeClass);
 	HittedActors.AddUnique(OtherActor);
+
+	if(const auto GameCharacter = Cast<AFACharacter>(OtherActor))
+	{
+		GameCharacter->PlayHitParticle(WeaponMesh->GetComponentLocation());
+	}
 }
 
 void AWeapon::AttackEnd_Implementation()
