@@ -156,7 +156,7 @@ void AWeapon::AttackCollisionOnOverlapBegin(UPrimitiveComponent* OverlappedCompo
 
 	if(const auto GameCharacter = Cast<AFACharacter>(OtherActor))
 	{
-		GameCharacter->PlayHitParticle(WeaponMesh->GetComponentLocation());
+		GameCharacter->MulticastPlayHitEffect(WeaponMesh->GetComponentLocation());
 	}
 }
 

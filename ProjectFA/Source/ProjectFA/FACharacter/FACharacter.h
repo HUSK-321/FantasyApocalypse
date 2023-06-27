@@ -14,6 +14,34 @@ class PROJECTFA_API AFACharacter : public ACharacter
 {
 	GENERATED_BODY()
 
+protected:
+	UPROPERTY(EditAnywhere, Category = "Character Property")
+	FName CharacterName;
+	UPROPERTY(EditAnywhere, Category = "Character Property")
+	float MaxHealth;
+	UPROPERTY(ReplicatedUsing = OnRep_CurrentHealthChanged ,EditAnywhere, Category = "Character Property")
+	float CurrentHealth;
+
+	UPROPERTY(EditAnywhere, Category = "Character Combat")
+	TObjectPtr<UAnimMontage> NormalAttackMontage;
+
+private:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Effect", meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UParticleSystem> HitParticle;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Effect", meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<USoundBase> HitSound;
+	
+	UPROPERTY(VisibleAnywhere, Category = "Dead", meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UMaterialInstanceDynamic> DynamicDissolveMaterialInstance;
+	UPROPERTY(EditAnywhere, Category = "Dead", meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UMaterialInstance> DissolveMaterialInstance;
+	UPROPERTY(VisibleAnywhere, Category = "Dead", meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UTimelineComponent> DissolveTimeline;
+	UPROPERTY(EditAnywhere, Category = "Dead")
+	TObjectPtr<UCurveFloat> DissolveCurve;
+
+	int8 bNowInDeadProcess : 1;
+
 public:
 	AFACharacter();
 
@@ -28,6 +56,9 @@ public:
 	virtual void PlayNormalAttackMontage(FName NormalAttackSectionName = FName("Default"));
 	UFUNCTION(BlueprintCallable)
 	void StopNormalAttackMontage();
+
+	UFUNCTION(NetMulticast, Reliable, BlueprintCallable)
+	void MulticastPlayHitEffect(FVector EffectLocation);
 
 	FORCEINLINE FName GetCharacterName() const { return CharacterName; }
 	FORCEINLINE bool NowInDeadProcess() const { return bNowInDeadProcess; }
@@ -57,27 +88,4 @@ private:
 	void UpdateMaterialDissolve(float DissolveTime);
 	UFUNCTION()
 	void AfterDeadDissolve();
-
-protected:
-	UPROPERTY(EditAnywhere, Category = "Character Property")
-	FName CharacterName;
-	UPROPERTY(EditAnywhere, Category = "Character Property")
-	float MaxHealth;
-	UPROPERTY(ReplicatedUsing = OnRep_CurrentHealthChanged ,EditAnywhere, Category = "Character Property")
-	float CurrentHealth;
-
-	UPROPERTY(EditAnywhere, Category = "Character Combat")
-	TObjectPtr<UAnimMontage> NormalAttackMontage;
-
-private:
-	UPROPERTY(VisibleAnywhere, Category = "Dead", meta = (AllowPrivateAccess = "true"))
-	TObjectPtr<UMaterialInstanceDynamic> DynamicDissolveMaterialInstance;
-	UPROPERTY(EditAnywhere, Category = "Dead", meta = (AllowPrivateAccess = "true"))
-	TObjectPtr<UMaterialInstance> DissolveMaterialInstance;
-	UPROPERTY(VisibleAnywhere, Category = "Dead", meta = (AllowPrivateAccess = "true"))
-	TObjectPtr<UTimelineComponent> DissolveTimeline;
-	UPROPERTY(EditAnywhere, Category = "Dead")
-	TObjectPtr<UCurveFloat> DissolveCurve;
-
-	int8 bNowInDeadProcess : 1;
 };
