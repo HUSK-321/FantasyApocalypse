@@ -2,7 +2,6 @@
 
 
 #include "CharacterCameraManager.h"
-#include "Kismet/GameplayStatics.h"
 #include "ProjectFA/FACharacter/Player/PlayableCharacter.h"
 
 void ACharacterCameraManager::BeginPlay()
@@ -18,10 +17,5 @@ void ACharacterCameraManager::BeginPlay()
 
 void ACharacterCameraManager::PlayHitCameraShake()
 {
-	GetOwningPlayerController()->ClientStartCameraShake(HitCameraShake);
-
-	if((IsValid(HitSound) && IsValid(GetOwningPlayerController()) && IsValid(GetOwningPlayerController()->GetPawn())) == false)	return;
-	
-	const auto PlayerLocation = GetOwningPlayerController()->GetPawn()->GetActorLocation();
-	UGameplayStatics::PlaySoundAtLocation(GetOwningPlayerController(), HitSound, PlayerLocation, FRotator::ZeroRotator);	
+	GetOwningPlayerController()->ClientStartCameraShake(HitCameraShake);	
 }

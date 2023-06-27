@@ -14,8 +14,6 @@ class PROJECTFA_API ACharacterCameraManager : public APlayerCameraManager
 private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera Shake", meta = (AllowPrivateAccess = "true"))
 	TSubclassOf<UCameraShakeBase> HitCameraShake;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera Shake|Sound", meta = (AllowPrivateAccess = "true"))
-	TObjectPtr<USoundBase> HitSound;
 
 public:
 	virtual void BeginPlay() override;

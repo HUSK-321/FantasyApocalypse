@@ -128,6 +128,11 @@ void AEnemy::AttackCollisionOnOverlapBegin(UPrimitiveComponent* OverlappedCompon
 
 	HittedActors.Add(OtherActor);
 	UGameplayStatics::ApplyDamage(OtherActor, 10.f, GetController(), this, DamageTypeClass);
+
+	if(const auto GameCharacter = Cast<AFACharacter>(OtherActor))
+	{
+		GameCharacter->MulticastPlayHitEffect(AttackCollision->GetComponentLocation());
+	}
 }
 
 void AEnemy::SetSpawnItemList(const TArray<APickupItem*>& ItemList)
