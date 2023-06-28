@@ -39,7 +39,7 @@ void AEnemySpawner::EnemyDead()
 
 void AEnemySpawner::SpawnEnemy()
 {
-	if(GetWorld() == nullptr || CurrentEnemyCount >= MaxSpawnCount)	return;
+	if(GetWorld() == nullptr || CurrentEnemyCount >= MaxSpawnCount || EnemyClassToSpawn == nullptr)	return;
 
 	const auto RandomLocation = UKismetMathLibrary::RandomPointInBoundingBox(SpawnArea->Bounds.Origin, SpawnArea->Bounds.BoxExtent);
 	const FTransform SpawnTransform{ FRotator::ZeroRotator, RandomLocation };

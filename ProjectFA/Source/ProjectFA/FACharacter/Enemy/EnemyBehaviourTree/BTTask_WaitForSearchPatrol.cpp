@@ -31,5 +31,3 @@ EBTNodeResult::Type UBTTask_WaitForSearchPatrol::ExecuteTask(UBehaviorTreeCompon
 	
 	return Super::ExecuteTask(OwnerComp, NodeMemory);
 }
-
-
