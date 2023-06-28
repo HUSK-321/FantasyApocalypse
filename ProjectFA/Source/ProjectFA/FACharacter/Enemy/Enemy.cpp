@@ -47,13 +47,9 @@ void AEnemy::BeginPlay()
 
 	if(const auto EnemyController = Cast<IEnemyControllable>(GetController()))
 	{
-		const FVector WorldPatrolStartPoint = UKismetMathLibrary::TransformLocation(GetActorTransform(), PatrolStartPoint);
-		const FVector WorldPatrolEndPoint = UKismetMathLibrary::TransformLocation(GetActorTransform(), PatrolEndPoint);
-		DrawDebugSphere(GetWorld(), WorldPatrolStartPoint, 10.f, 12, FColor::Red, true);
-		DrawDebugSphere(GetWorld(), WorldPatrolEndPoint, 10.f, 12, FColor::Red, true);
-		EnemyController->SetEnemyBlackboardValueAsVector(TEXT("PatrolStartPoint"), WorldPatrolStartPoint);
-		EnemyController->SetEnemyBlackboardValueAsVector(TEXT("PatrolEndPoint"), WorldPatrolEndPoint);
-
+		PatrolStartPoint = GetActorLocation();
+		DrawDebugSphere(GetWorld(), PatrolStartPoint, 10.f, 12, FColor::Red, false, 2.f);
+		EnemyController->SetEnemyBlackboardValueAsVector(TEXT("PatrolStartPoint"), PatrolStartPoint);
 		if(const auto AIController = Cast<AAIController>(GetController()))
 		{
 			AIController->RunBehaviorTree(EnemyBehaviorTree);
