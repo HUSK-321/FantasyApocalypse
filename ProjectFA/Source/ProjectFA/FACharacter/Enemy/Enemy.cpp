@@ -19,6 +19,7 @@ AEnemy::AEnemy()
 	PawnSensingComponent(CreateDefaultSubobject<UPawnSensingComponent>(TEXT("PawnSensingComponent"))),
 	AttackCollision(CreateDefaultSubobject<UBoxComponent>(TEXT("AttackCollision"))),
 	LootingItemComponent(CreateDefaultSubobject<ULootingItemComponent>(TEXT("Looting Item Component"))),
+	EnemyBaseDamage(10.f),
 	bAttackTrigger(false)
 {
 	bReplicates = true;
@@ -97,6 +98,7 @@ void AEnemy::ReceiveDamage(AActor* DamagedActor, float Damage, const UDamageType
 
 void AEnemy::SearchEnemyDeadEvent()
 {
+	OnEnemyDeadDelegate.Broadcast();
 	// 서버에서 처치자에게만 아래 내용이 불릴 수 있게 처리하기
 	FACoreDelegates::OnEnemyDestroyed.Broadcast(this);
 }
@@ -127,7 +129,7 @@ void AEnemy::AttackCollisionOnOverlapBegin(UPrimitiveComponent* OverlappedCompon
 	if(OtherActor == this || DamageTypeClass == nullptr || HittedActors.Contains(OtherActor) || GetController() == nullptr)	return;
 
 	HittedActors.Add(OtherActor);
-	UGameplayStatics::ApplyDamage(OtherActor, 10.f, GetController(), this, DamageTypeClass);
+	UGameplayStatics::ApplyDamage(OtherActor, EnemyBaseDamage, GetController(), this, DamageTypeClass);
 
 	if(const auto GameCharacter = Cast<AFACharacter>(OtherActor))
 	{

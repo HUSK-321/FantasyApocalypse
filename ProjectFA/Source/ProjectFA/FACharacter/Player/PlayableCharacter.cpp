@@ -19,7 +19,7 @@ APlayableCharacter::APlayableCharacter()
 	InventoryComponent(CreateDefaultSubobject<UInventoryComponent>(TEXT("InventoryComponent"))),
 	MaxWalkSpeed(400.f), MaxSprintSpeed(700.f), MaxCrouchSpeed(300.f), bNowSprinting(false),
 	MaxStamina(100.f), CurrentStamina(100.f),
-	StaminaIncreaseFactor(10.f), StaminaDecreaseFactor(20.f), JumpStaminaConsume(20.f),
+	StaminaIncreaseFactor(10.f), StaminaDecreaseFactor(20.f),
 	InventoryWeightFactor(0.f),
 	InteractingTime(0.f)
 {

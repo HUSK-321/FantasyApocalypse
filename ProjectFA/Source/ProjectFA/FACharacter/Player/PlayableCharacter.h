@@ -86,8 +86,6 @@ private:
 	float StaminaIncreaseFactor;
 	UPROPERTY(EditAnywhere, Category = "Player Property")
 	float StaminaDecreaseFactor;
-	UPROPERTY(EditAnywhere, Category = "Player Property")
-	float JumpStaminaConsume;
 	
 	float InventoryWeightFactor;
 
