@@ -25,7 +25,7 @@ APlayableCharacter::APlayableCharacter()
 {
 	PrimaryActorTick.bCanEverTick = true;
 
-	CameraSpringArm->SetupAttachment(GetMesh());
+	CameraSpringArm->SetupAttachment(GetRootComponent());
 	CameraSpringArm->TargetArmLength = 600.f;
 	CameraSpringArm->bUsePawnControlRotation = true;
 	CameraSpringArm->SetRelativeLocationAndRotation(FVector(0.0f, 0.0f, 100.0f), FRotator::ZeroRotator);
