@@ -30,6 +30,11 @@ private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<APickupItem> DefaultPunchWeapon;
 
+	UPROPERTY(VisibleAnywhere)
+	int8 CurrentSlotIndex;
+	UPROPERTY(Replicated, VisibleAnywhere)
+	TArray<APickupItem*> HandSlots;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Skill", meta = (AllowPrivateAccess = "true"))
 	TSubclassOf<USkillDataAsset> SkillSlotQClass;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Skill", meta = (AllowPrivateAccess = "true"))
@@ -77,6 +82,8 @@ public:
 	UFUNCTION(NetMulticast, Reliable)
 	void MulticastDoSkill(bool bIsQ);
 
+	void SwapHandSlotWeapon(int8 SlotIndex);
+
 	FORCEINLINE bool GetNowAttacking() const { return bNowAttacking; }
 	FORCEINLINE bool GetNowDoingSkill() const { return bNowDoingSkill; }
 	FORCEINLINE void SetSkillSlotQ(USkillDataAsset* SkillDataAsset) { SkillSlotQ = SkillDataAsset; }
@@ -95,7 +102,9 @@ private:
 	void TurnToNearbyTarget();
 	
 	UFUNCTION()
-	void ItemDrop(APickupItem* UnEquipItem);
+	void WeaponUnEquip(APickupItem* UnEquipItem);
+	UFUNCTION()
+	void WeaponDrop(APickupItem* UnEquipItem);
 	float GetSkillDamageAmplify() const;
 
 	UFUNCTION()
@@ -103,4 +112,9 @@ private:
 
 	UFUNCTION(BlueprintCallable)
 	void DoingSkillEnd();
+
+	UFUNCTION(Server, Reliable)
+	void ServerSwapWeapon(int8 SlotIndex);
+	
+	void FillHandSlots();
 };

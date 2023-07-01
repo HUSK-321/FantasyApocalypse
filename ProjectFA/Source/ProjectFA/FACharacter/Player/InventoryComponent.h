@@ -31,6 +31,7 @@ public:
 private:
 	UPROPERTY()
 	TObjectPtr<UPlayableCharacterCombatComponent> PlayerCombatComponent;
+	
 	UPROPERTY(EditAnywhere)
 	int8 InventoryCapacity;
 	UPROPERTY(VisibleAnywhere)

@@ -4,7 +4,6 @@
 #include "InventoryComponent.h"
 #include "PlayableCharacter.h"
 #include "PlayableCharacterCombatComponent.h"
-#include "Kismet/KismetSystemLibrary.h"
 #include "ProjectFA/InGameItem/Equipable.h"
 #include "ProjectFA/InGameItem/PickupItem.h"
 

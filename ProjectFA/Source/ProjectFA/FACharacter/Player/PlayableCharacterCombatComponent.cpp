@@ -17,6 +17,8 @@ UPlayableCharacterCombatComponent::UPlayableCharacterCombatComponent()
 	bNowAttacking(false), bDoNextAttack(false)
 {
 	PrimaryComponentTick.bCanEverTick = false;
+
+	HandSlots.SetNum(2);
 }
 
 void UPlayableCharacterCombatComponent::BeginPlay()
@@ -27,7 +29,11 @@ void UPlayableCharacterCombatComponent::BeginPlay()
 	if(DefaultPunchWeaponClass)
 	{
 		DefaultPunchWeapon = GetWorld()->SpawnActor<APickupItem>(DefaultPunchWeaponClass);
-		EquipItemToCharacter(DefaultPunchWeapon);
+
+		if(DefaultPunchWeapon)
+		{
+			EquipItemToCharacter(DefaultPunchWeapon);
+		}
 	}
 	
 	CreateSkillFromData();
@@ -40,6 +46,7 @@ void UPlayableCharacterCombatComponent::GetLifetimeReplicatedProps(TArray<FLifet
 	DOREPLIFETIME(UPlayableCharacterCombatComponent, EquippedItem);
 	DOREPLIFETIME(UPlayableCharacterCombatComponent, SkillSlotQ);
 	DOREPLIFETIME(UPlayableCharacterCombatComponent, SkillSlotE);
+	DOREPLIFETIME(UPlayableCharacterCombatComponent, HandSlots);
 }
 
 void UPlayableCharacterCombatComponent::CreateSkillFromData()
@@ -78,9 +85,11 @@ void UPlayableCharacterCombatComponent::EquipItemToCharacter(APickupItem* ItemTo
 	{
 		Equipable->UnEquip();
 	}
+	
 	EquippedItem = ItemToEquip;
 	EquippedItem->SetOwner(Character);
 	EquippedItem->SetItemState(EItemState::EIS_Equipped);
+	EquippedItem->ItemDroppedEvent.AddDynamic(this, &UPlayableCharacterCombatComponent::WeaponDrop);
 	if(const auto RightHandSocket = Character->GetMesh()->GetSocketByName("hand_r_weapon_socket"))
 	{
 		RightHandSocket->AttachActor(EquippedItem, Character->GetMesh());
@@ -88,13 +97,15 @@ void UPlayableCharacterCombatComponent::EquipItemToCharacter(APickupItem* ItemTo
 	if(const auto Equipable = Cast<IEquipable>(ItemToEquip))
 	{
 		FEquipItemEvent Event;
-		Event.AddDynamic(this, &UPlayableCharacterCombatComponent::ItemDrop);
+		Event.AddDynamic(this, &UPlayableCharacterCombatComponent::WeaponUnEquip);
 		Equipable->SetUnEquipEvent(Event);
 
 		FGetPlayerDamagePropertyDelegate PlayerDamagePropertyDelegate;
 		PlayerDamagePropertyDelegate.BindUFunction(this, FName("GetCharacterAttackDamage"));
 		Equipable->SetPlayerDamagePropertyDelegate(PlayerDamagePropertyDelegate);
 	}
+
+	FillHandSlots();
 }
 
 void UPlayableCharacterCombatComponent::OnRep_EquippedItem()
@@ -200,11 +211,26 @@ void UPlayableCharacterCombatComponent::MulticastDoSkill_Implementation(bool bIs
 	bIsQ ? DoSkill(GetSkillSlotQ()) : DoSkill(GetSkillSlotE());
 }
 
-void UPlayableCharacterCombatComponent::ItemDrop(APickupItem* UnEquipItem)
+void UPlayableCharacterCombatComponent::WeaponUnEquip(APickupItem* UnEquipItem)
 {
 	if(UnEquipItem == EquippedItem)
 	{
 		EquippedItem = nullptr;
+	}
+}
+
+void UPlayableCharacterCombatComponent::WeaponDrop(APickupItem* UnEquipItem)
+{
+	for(int8 i = 0; i < HandSlots.Num(); i++)
+	{
+		if(HandSlots[i] != UnEquipItem)	continue;
+		
+		HandSlots[i] = nullptr;
+		if(CurrentSlotIndex == i)
+		{
+			EquipItemToCharacter(DefaultPunchWeapon);
+			CurrentSlotIndex = 3;
+		}
 	}
 }
 
@@ -237,6 +263,45 @@ void UPlayableCharacterCombatComponent::DoingSkillEnd()
 	bNowDoingSkill = false;
 	bNowAttacking = false;
 	bDoNextAttack = false;
+}
+
+void UPlayableCharacterCombatComponent::SwapHandSlotWeapon(int8 SlotIndex)
+{
+	ServerSwapWeapon(SlotIndex);
+}
+
+void UPlayableCharacterCombatComponent::ServerSwapWeapon_Implementation(int8 SlotIndex)
+{
+	if(HandSlots.IsValidIndex(SlotIndex) == false || HandSlots[SlotIndex] == nullptr)
+	{
+		EquipItemToCharacter(DefaultPunchWeapon);
+		CurrentSlotIndex = 3;
+		return;
+	}
+	
+	CurrentSlotIndex = SlotIndex;
+	EquipItemToCharacter(HandSlots[SlotIndex]);
+}
+
+void UPlayableCharacterCombatComponent::FillHandSlots()
+{
+	if(EquippedItem == DefaultPunchWeapon)	return;
+	
+	for(auto Slot : HandSlots)
+	{
+		if(Slot == EquippedItem)	return;
+	}
+	
+	for(int8 SlotIndex = 0; SlotIndex < HandSlots.Num(); SlotIndex++)
+	{
+		if(HandSlots[SlotIndex] != nullptr)	continue;
+
+		HandSlots[SlotIndex] = EquippedItem;
+		CurrentSlotIndex = SlotIndex;
+		return;
+	}
+
+	HandSlots[CurrentSlotIndex] = EquippedItem;
 }
 
 void UPlayableCharacterCombatComponent::TurnToNearbyTarget()
