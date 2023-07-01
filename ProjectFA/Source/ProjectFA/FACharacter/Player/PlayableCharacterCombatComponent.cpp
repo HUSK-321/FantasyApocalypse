@@ -26,15 +26,7 @@ void UPlayableCharacterCombatComponent::BeginPlay()
 	Super::BeginPlay();
 
 	Character = Cast<AFACharacter>(GetOwner());
-	if(DefaultPunchWeaponClass)
-	{
-		DefaultPunchWeapon = GetWorld()->SpawnActor<APickupItem>(DefaultPunchWeaponClass);
-
-		if(DefaultPunchWeapon)
-		{
-			EquipItemToCharacter(DefaultPunchWeapon);
-		}
-	}
+	CreateDefaultWeapon();
 	
 	CreateSkillFromData();
 }
@@ -47,6 +39,19 @@ void UPlayableCharacterCombatComponent::GetLifetimeReplicatedProps(TArray<FLifet
 	DOREPLIFETIME(UPlayableCharacterCombatComponent, SkillSlotQ);
 	DOREPLIFETIME(UPlayableCharacterCombatComponent, SkillSlotE);
 	DOREPLIFETIME(UPlayableCharacterCombatComponent, HandSlots);
+}
+
+void UPlayableCharacterCombatComponent::CreateDefaultWeapon()
+{
+	if(DefaultPunchWeaponClass)
+	{
+		DefaultPunchWeapon = GetWorld()->SpawnActor<APickupItem>(DefaultPunchWeaponClass);
+
+		if(DefaultPunchWeapon)
+		{
+			EquipItemToCharacter(DefaultPunchWeapon);
+		}
+	}
 }
 
 void UPlayableCharacterCombatComponent::CreateSkillFromData()
@@ -80,7 +85,7 @@ void UPlayableCharacterCombatComponent::CreateSkillFromData()
 
 void UPlayableCharacterCombatComponent::EquipItemToCharacter(APickupItem* ItemToEquip)
 {
-	if(Character == nullptr)	return;
+	if(Character == nullptr || ItemToEquip == EquippedItem)	return;
 	if(const auto Equipable = Cast<IEquipable>(EquippedItem))
 	{
 		Equipable->UnEquip();
@@ -117,6 +122,7 @@ void UPlayableCharacterCombatComponent::OnRep_EquippedItem()
 	{
 		RightHandSocket->AttachActor(EquippedItem, Character->GetMesh());
 	}
+	FillHandSlots();
 }
 
 void UPlayableCharacterCombatComponent::Attack()
@@ -229,7 +235,7 @@ void UPlayableCharacterCombatComponent::WeaponDrop(APickupItem* UnEquipItem)
 		if(CurrentSlotIndex == i)
 		{
 			EquipItemToCharacter(DefaultPunchWeapon);
-			CurrentSlotIndex = 3;
+			SetCurrentSlotIndex(2);
 		}
 	}
 }
@@ -265,8 +271,19 @@ void UPlayableCharacterCombatComponent::DoingSkillEnd()
 	bDoNextAttack = false;
 }
 
+void UPlayableCharacterCombatComponent::SetCurrentSlotIndex(int8 NewSlotIndex)
+{
+	CurrentSlotIndex = NewSlotIndex;
+	
+	(HandSlots.IsValidIndex(CurrentSlotIndex)) ? 
+		OnPlayerHandItemChanged.Broadcast(HandSlots[CurrentSlotIndex]) :
+		OnPlayerHandItemChanged.Broadcast(DefaultPunchWeapon);
+}
+
 void UPlayableCharacterCombatComponent::SwapHandSlotWeapon(int8 SlotIndex)
 {
+	if(bNowAttacking || bNowDoingSkill)	return;
+	SetCurrentSlotIndex(SlotIndex);
 	ServerSwapWeapon(SlotIndex);
 }
 
@@ -275,21 +292,27 @@ void UPlayableCharacterCombatComponent::ServerSwapWeapon_Implementation(int8 Slo
 	if(HandSlots.IsValidIndex(SlotIndex) == false || HandSlots[SlotIndex] == nullptr)
 	{
 		EquipItemToCharacter(DefaultPunchWeapon);
-		CurrentSlotIndex = 3;
+		SetCurrentSlotIndex(2);
 		return;
 	}
-	
-	CurrentSlotIndex = SlotIndex;
 	EquipItemToCharacter(HandSlots[SlotIndex]);
 }
 
 void UPlayableCharacterCombatComponent::FillHandSlots()
 {
-	if(EquippedItem == DefaultPunchWeapon)	return;
-	
-	for(auto Slot : HandSlots)
+	if(EquippedItem == DefaultPunchWeapon)
 	{
-		if(Slot == EquippedItem)	return;
+		SetCurrentSlotIndex(2);
+		return;
+	}
+
+	for(int8 SlotIndex = 0; SlotIndex < HandSlots.Num(); SlotIndex++)
+	{
+		if(HandSlots[SlotIndex] == EquippedItem)
+		{
+			SetCurrentSlotIndex(SlotIndex);
+			return;
+		}
 	}
 	
 	for(int8 SlotIndex = 0; SlotIndex < HandSlots.Num(); SlotIndex++)
@@ -297,11 +320,11 @@ void UPlayableCharacterCombatComponent::FillHandSlots()
 		if(HandSlots[SlotIndex] != nullptr)	continue;
 
 		HandSlots[SlotIndex] = EquippedItem;
-		CurrentSlotIndex = SlotIndex;
+		SetCurrentSlotIndex(SlotIndex);
 		return;
 	}
-
-	HandSlots[CurrentSlotIndex] = EquippedItem;
+	
+	HandSlots[0] = EquippedItem;
 }
 
 void UPlayableCharacterCombatComponent::TurnToNearbyTarget()

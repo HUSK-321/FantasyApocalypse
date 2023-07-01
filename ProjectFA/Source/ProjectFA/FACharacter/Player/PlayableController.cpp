@@ -4,6 +4,7 @@
 #include "PlayableController.h"
 #include "InventoryComponent.h"
 #include "PlayableCharacter.h"
+#include "PlayableCharacterCombatComponent.h"
 #include "Components/ListView.h"
 #include "Components/ProgressBar.h"
 #include "Components/TextBlock.h"
@@ -14,6 +15,7 @@
 #include "ProjectFA/HUD/PickupItemListWidget/PickupItemList.h"
 #include "ProjectFA/InGameItem/InventoryUsable.h"
 #include "..\..\Interactable\Looting\InteractableWithCharacter.h"
+#include "ProjectFA/HUD/Handslot/PlayerHandSlotWidget.h"
 
 void APlayableController::BeginPlay()
 {
@@ -72,6 +74,11 @@ void APlayableController::SetInventoryEvent(UInventoryComponent* InventoryCompon
 	InventoryComponent->InventoryChangedEvent.AddDynamic(this, &APlayableController::AddInventoryItem);
 	InventoryComponent->InventoryWeightChangedEvent.AddDynamic(this, &APlayableController::SetInventoryWeight);
 	InventoryComponent->NearbyListScrollChangedEvent.AddDynamic(this, &APlayableController::ScrollNearbyItemList);
+}
+
+void APlayableController::SetCombatComponentEvent(UPlayableCharacterCombatComponent* CombatComponent)
+{
+	CombatComponent->OnPlayerHandItemChanged.AddDynamic(this, &APlayableController::CurrentHandItemWidget);
 }
 
 void APlayableController::SetHealthHUD(const float& CurrentHealth, const float& MaxHealth)
@@ -133,6 +140,13 @@ void APlayableController::InitializeSkillWidget(USkillDataAsset* QSkillData, USk
 {
 	if(SkillWidgetNotValid())	return;
 	ProjectFAHUD->PlayerOverlay->SkillWidget->SetSkillSlotWidget(QSkillData, ESkillData);
+}
+
+void APlayableController::CurrentHandItemWidget(APickupItem* ItemInHand)
+{
+	if(ItemInHand == nullptr || ProjectFAHUD == nullptr || ProjectFAHUD->PlayerOverlay == nullptr || ProjectFAHUD->PlayerOverlay->HandSlotWidget == nullptr)	return;
+	
+	ProjectFAHUD->PlayerOverlay->HandSlotWidget->SetWeaponImage(ItemInHand->GetItemIcon());
 }
 
 void APlayableController::SetInventoryWeight(const float& Weight)

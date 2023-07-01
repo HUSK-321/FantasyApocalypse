@@ -35,6 +35,7 @@ public:
 
 	void SetPlayerEvent(APlayableCharacter* ControllingPlayer);
 	void SetInventoryEvent(UInventoryComponent* InventoryComponent);
+	void SetCombatComponentEvent(UPlayableCharacterCombatComponent* CombatComponent);
 	UFUNCTION()
 	void AddNearbyItem(UObject* Item);
 	UFUNCTION()
@@ -54,6 +55,9 @@ public:
 
 	UFUNCTION()
 	void InitializeSkillWidget(USkillDataAsset* QSkillData, USkillDataAsset* ESkillData);
+
+	UFUNCTION()
+	void CurrentHandItemWidget(APickupItem* ItemInHand);
 
 private:
 	UFUNCTION()

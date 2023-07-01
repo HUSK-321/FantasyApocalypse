@@ -53,6 +53,7 @@ void APlayableCharacter::BeginPlay()
 	{
 		PlayableController->SetPlayerEvent(this);
 		PlayableController->SetInventoryEvent(InventoryComponent);
+		PlayableController->SetCombatComponentEvent(CombatComponent);
 		if(const auto Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayableController->GetLocalPlayer()))
 		{
 			Subsystem->AddMappingContext(PlayerBasicMappingContext, 0);

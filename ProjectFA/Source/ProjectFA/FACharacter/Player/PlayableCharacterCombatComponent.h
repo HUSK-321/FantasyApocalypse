@@ -15,10 +15,15 @@ class UEquipable;
 class APickupItem;
 class USkillDataAsset;
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnPlayerHandItemChanged, APickupItem*, Item);
+
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class PROJECTFA_API UPlayableCharacterCombatComponent : public UActorComponent, public IWeaponAttackableComponent
 {
 	GENERATED_BODY()
+
+public:
+	FOnPlayerHandItemChanged OnPlayerHandItemChanged;
 
 private:
 	UPROPERTY()
@@ -98,6 +103,7 @@ protected:
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
 private:
+	void CreateDefaultWeapon();
 	void CreateSkillFromData();
 	void TurnToNearbyTarget();
 	
@@ -112,6 +118,8 @@ private:
 
 	UFUNCTION(BlueprintCallable)
 	void DoingSkillEnd();
+
+	void SetCurrentSlotIndex(int8 NewSlotIndex);
 
 	UFUNCTION(Server, Reliable)
 	void ServerSwapWeapon(int8 SlotIndex);
