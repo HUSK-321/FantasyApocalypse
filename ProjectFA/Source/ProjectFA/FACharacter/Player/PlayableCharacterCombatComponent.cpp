@@ -109,8 +109,7 @@ void UPlayableCharacterCombatComponent::EquipItemToCharacter(APickupItem* ItemTo
 		PlayerDamagePropertyDelegate.BindUFunction(this, FName("GetCharacterAttackDamage"));
 		Equipable->SetPlayerDamagePropertyDelegate(PlayerDamagePropertyDelegate);
 	}
-
-	FillHandSlots();
+	ManageHandSlots();
 }
 
 void UPlayableCharacterCombatComponent::OnRep_EquippedItem()
@@ -122,7 +121,8 @@ void UPlayableCharacterCombatComponent::OnRep_EquippedItem()
 	{
 		RightHandSocket->AttachActor(EquippedItem, Character->GetMesh());
 	}
-	FillHandSlots();
+	
+	OnPlayerHandItemChanged.Broadcast(EquippedItem);
 }
 
 void UPlayableCharacterCombatComponent::Attack()
@@ -271,6 +271,13 @@ void UPlayableCharacterCombatComponent::DoingSkillEnd()
 	bDoNextAttack = false;
 }
 
+void UPlayableCharacterCombatComponent::SwapHandSlotWeapon(int8 SlotIndex)
+{
+	if(bNowAttacking || bNowDoingSkill)	return;
+	SetCurrentSlotIndex(SlotIndex);
+	ServerSwapWeapon(SlotIndex);
+}
+
 void UPlayableCharacterCombatComponent::SetCurrentSlotIndex(int8 NewSlotIndex)
 {
 	CurrentSlotIndex = NewSlotIndex;
@@ -278,13 +285,6 @@ void UPlayableCharacterCombatComponent::SetCurrentSlotIndex(int8 NewSlotIndex)
 	(HandSlots.IsValidIndex(CurrentSlotIndex)) ? 
 		OnPlayerHandItemChanged.Broadcast(HandSlots[CurrentSlotIndex]) :
 		OnPlayerHandItemChanged.Broadcast(DefaultPunchWeapon);
-}
-
-void UPlayableCharacterCombatComponent::SwapHandSlotWeapon(int8 SlotIndex)
-{
-	if(bNowAttacking || bNowDoingSkill)	return;
-	SetCurrentSlotIndex(SlotIndex);
-	ServerSwapWeapon(SlotIndex);
 }
 
 void UPlayableCharacterCombatComponent::ServerSwapWeapon_Implementation(int8 SlotIndex)
@@ -298,14 +298,15 @@ void UPlayableCharacterCombatComponent::ServerSwapWeapon_Implementation(int8 Slo
 	EquipItemToCharacter(HandSlots[SlotIndex]);
 }
 
-void UPlayableCharacterCombatComponent::FillHandSlots()
+void UPlayableCharacterCombatComponent::ManageHandSlots()
 {
+	// if default weapon set index to 2
 	if(EquippedItem == DefaultPunchWeapon)
 	{
 		SetCurrentSlotIndex(2);
 		return;
 	}
-
+	// Find already in slot 
 	for(int8 SlotIndex = 0; SlotIndex < HandSlots.Num(); SlotIndex++)
 	{
 		if(HandSlots[SlotIndex] == EquippedItem)
@@ -314,7 +315,7 @@ void UPlayableCharacterCombatComponent::FillHandSlots()
 			return;
 		}
 	}
-	
+	// Find empty slot
 	for(int8 SlotIndex = 0; SlotIndex < HandSlots.Num(); SlotIndex++)
 	{
 		if(HandSlots[SlotIndex] != nullptr)	continue;
@@ -323,8 +324,16 @@ void UPlayableCharacterCombatComponent::FillHandSlots()
 		SetCurrentSlotIndex(SlotIndex);
 		return;
 	}
-	
-	HandSlots[0] = EquippedItem;
+	// Not in slot, No empty slot
+	if(HandSlots.IsValidIndex(CurrentSlotIndex))
+	{
+		HandSlots[CurrentSlotIndex] = EquippedItem;
+	}
+	else
+	{
+		HandSlots[0] = EquippedItem;
+		SetCurrentSlotIndex(0);
+	}
 }
 
 void UPlayableCharacterCombatComponent::TurnToNearbyTarget()

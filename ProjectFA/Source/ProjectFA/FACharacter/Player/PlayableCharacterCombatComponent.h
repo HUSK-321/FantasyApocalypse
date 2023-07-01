@@ -124,5 +124,5 @@ private:
 	UFUNCTION(Server, Reliable)
 	void ServerSwapWeapon(int8 SlotIndex);
 	
-	void FillHandSlots();
+	void ManageHandSlots();
 };
