@@ -16,6 +16,8 @@ class PROJECTFA_API UPlayableCharacterAnimInstance : public UAnimInstance
 	TObjectPtr<APlayableCharacter> PlayableCharacter;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Player Movement", meta = (AllowPrivateAccess = "true"))
+	FVector Velocity;
+	UPROPERTY(BlueprintReadOnly, Category = "Player Movement", meta = (AllowPrivateAccess = "true"))
 	float Speed;
 	UPROPERTY(BlueprintReadOnly, Category = "Player Movement", meta = (AllowPrivateAccess = "true"))
 	bool bIsInAir;

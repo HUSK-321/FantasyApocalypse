@@ -23,6 +23,7 @@ void UPlayableCharacterAnimInstance::SetPlayableCharacterProperties()
 {
 	if(PlayableCharacter == nullptr)	return;
 	auto PlayerVelocity = PlayableCharacter->GetVelocity();
+	Velocity = PlayerVelocity;
 	PlayerVelocity.Z = 0.f;
 
 	Speed = PlayerVelocity.Size();

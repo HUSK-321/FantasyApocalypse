@@ -13,10 +13,15 @@ class USphereComponent;
 class UBoxComponent;
 class ULootingItemComponent;
 
+DECLARE_MULTICAST_DELEGATE(FOnEnemyDeadDelegate);
+
 UCLASS()
 class PROJECTFA_API AEnemy : public AFACharacter, public IItemSpawnable
 {
 	GENERATED_BODY()
+
+public:
+	FOnEnemyDeadDelegate OnEnemyDeadDelegate;
 
 private:
 	UPROPERTY(EditAnywhere)
@@ -30,10 +35,10 @@ private:
 	TObjectPtr<UBehaviorTree> EnemyBehaviorTree;
 	UPROPERTY(EditAnywhere, Category = "Behaviour Tree", meta = (AllowPrivateAccess = "true"))
 	FVector PatrolStartPoint;
-	UPROPERTY(EditAnywhere, Category = "Behaviour Tree", meta = (AllowPrivateAccess = "true"))
-	FVector PatrolEndPoint;
 	UPROPERTY(EditAnywhere, Category = "Enemy Properties")
 	TSubclassOf<UDamageType> DamageTypeClass;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Enemy Properties", meta = (AllowPrivateAccess = "true"))
+	float EnemyBaseDamage;
 
 	UPROPERTY(EditAnywhere, Category = "Spawner Property")
 	TArray<FSpawnerInitializeInfo> SpawnCategoryInfo;

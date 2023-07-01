@@ -19,13 +19,13 @@ APlayableCharacter::APlayableCharacter()
 	InventoryComponent(CreateDefaultSubobject<UInventoryComponent>(TEXT("InventoryComponent"))),
 	MaxWalkSpeed(400.f), MaxSprintSpeed(700.f), MaxCrouchSpeed(300.f), bNowSprinting(false),
 	MaxStamina(100.f), CurrentStamina(100.f),
-	StaminaIncreaseFactor(10.f), StaminaDecreaseFactor(20.f), JumpStaminaConsume(20.f),
+	StaminaIncreaseFactor(10.f), StaminaDecreaseFactor(20.f),
 	InventoryWeightFactor(0.f),
 	InteractingTime(0.f)
 {
 	PrimaryActorTick.bCanEverTick = true;
 
-	CameraSpringArm->SetupAttachment(GetMesh());
+	CameraSpringArm->SetupAttachment(GetRootComponent());
 	CameraSpringArm->TargetArmLength = 600.f;
 	CameraSpringArm->bUsePawnControlRotation = true;
 	CameraSpringArm->SetRelativeLocationAndRotation(FVector(0.0f, 0.0f, 100.0f), FRotator::ZeroRotator);
@@ -319,6 +319,8 @@ bool APlayableCharacter::CharacterCannotJump()
 void APlayableCharacter::CurrentHealthChanged()
 {
 	PlayerHealthChangedEvent.Broadcast(CurrentHealth, MaxHealth);
+	// TODO : not play in heal up
+	OnPlayerHitDelegate.Broadcast();
 	if(CurrentHealth <= 0.f)
 	{
 		CharacterDead();

@@ -27,8 +27,19 @@ void ABombActor::BeginPlay()
 #endif
 }
 
+void ABombActor::Destroyed()
+{
+	SpawnBombEffects();
+	Super::Destroyed();
+}
+
 void ABombActor::SetExplodeTimer()
 {
+	if(TimeToExplode < KINDA_SMALL_NUMBER)
+	{
+		ExplodeTimerEnd();
+		return;
+	}
 	GetWorldTimerManager().SetTimer(ExplodeTimerHandle, this, &ABombActor::ExplodeTimerEnd, TimeToExplode);
 }
 
@@ -36,6 +47,24 @@ void ABombActor::ExplodeTimerEnd()
 {
 	ExplodeDamage();
 	Destroy();
+}
+
+void ABombActor::SpawnBombEffects()
+{
+	const FVector SpawnLocation = { GetActorLocation() + FVector{0, 0, 20 } };
+	
+	if(BombSound)
+	{
+		UGameplayStatics::PlaySoundAtLocation(this, BombSound, SpawnLocation, FRotator::ZeroRotator);
+	}
+	if(BombParticle)
+	{
+		UGameplayStatics::SpawnEmitterAtLocation(this, BombParticle, SpawnLocation, FRotator::ZeroRotator, FVector{ 5, 5, 5 });
+	}
+	if(CameraShakeEffect)
+	{
+		UGameplayStatics::PlayWorldCameraShake(this, CameraShakeEffect, SpawnLocation, 0.f, DamageOuterRadius + 50.f, 0.f);	
+	}
 }
 
 void ABombActor::ExplodeDamage()

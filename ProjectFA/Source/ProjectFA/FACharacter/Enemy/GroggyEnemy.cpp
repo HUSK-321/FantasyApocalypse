@@ -34,6 +34,7 @@ void AGroggyEnemy::BeginPlay()
 	SetAttackCollision(false);
 	GetMesh()->SetRenderInMainPass(false);
 	GetMesh()->SetCastShadow(false);
+	GetMesh()->bPauseAnims = true;
 	
 	if(HasAuthority() == false)	return;
 	
@@ -64,6 +65,7 @@ void AGroggyEnemy::ReceiveDamage(AActor* DamagedActor, float Damage, const UDama
 
 void AGroggyEnemy::SpawnEnemyByTriggerBox()
 {
+	GetMesh()->bPauseAnims = false;
 	SpawnTriggerBox->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_WorldDynamic, ECR_Block);
 	GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_Pawn, ECR_Block);
@@ -104,26 +106,7 @@ void AGroggyEnemy::DealGroggyDamage(const int32 WeakGroggyDamage, const int32 St
 void AGroggyEnemy::WeakGroggy(const FVector& DamageCauser)
 {
 	if(WeakGroggyMontage == nullptr)	return;
-	
-	if(const auto Animinstance = GetMesh()->GetAnimInstance())
-	{
-		if(Animinstance->Montage_IsPlaying(WeakGroggyMontage) || Animinstance->Montage_IsPlaying(StrongGroggyMontage))	return;
-		Animinstance->Montage_Play(WeakGroggyMontage);
-		auto ForwardVector = GetActorForwardVector();
-		const auto MontageSection = UGamePlayCalculator::GetDirectionSectionName(ForwardVector, GetActorLocation(), DamageCauser);
-		Animinstance->Montage_JumpToSection(MontageSection);
-
-		Animinstance->OnMontageEnded.Clear();
-		FOnMontageEnded MontageEnded;
-		MontageEnded.BindLambda([&](UAnimMontage*, bool)
-		{
-			if(const auto EnemyController = GetController<IEnemyControllable>())
-			{
-				EnemyController->SetEnemyBlackboardValueAsBool(FName("WeakGroggy"), false);
-			}
-		});
-		Animinstance->Montage_SetEndDelegate(MontageEnded);
-	}
+	if(WeakGroggyMontagePlay(DamageCauser) == false) return;
 
 	if(const auto EnemyController = GetController<IEnemyControllable>())
 	{
@@ -136,23 +119,7 @@ void AGroggyEnemy::WeakGroggy(const FVector& DamageCauser)
 void AGroggyEnemy::StrongGroggy()
 {
 	if(StrongGroggyMontage == nullptr)	return;
-	
-	if(const auto Animinstance = GetMesh()->GetAnimInstance())
-	{
-		if(Animinstance->Montage_IsPlaying(StrongGroggyMontage))	return;
-		Animinstance->Montage_Play(StrongGroggyMontage);
-
-		Animinstance->OnMontageEnded.Clear();
-		FOnMontageEnded MontageEnded;
-		MontageEnded.BindLambda([&](UAnimMontage*, bool)
-		{
-			if(const auto EnemyController = GetController<IEnemyControllable>())
-			{
-				EnemyController->SetEnemyBlackboardValueAsBool(FName("StrongGroggy"), false);
-			}
-		});
-		Animinstance->Montage_SetEndDelegate(MontageEnded);
-	}
+	if(StrongGroggyMontagePlay() == false) return;
 
 	if(const auto EnemyController = GetController<IEnemyControllable>())
 	{
@@ -170,6 +137,65 @@ void AGroggyEnemy::PlayNormalAttackMontage(FName NormalAttackSectionName)
 		NormalAttackSectionName = FName("DyingAttack");
 	}
 	Super::PlayNormalAttackMontage(NormalAttackSectionName);
+}
+
+bool AGroggyEnemy::WeakGroggyMontagePlay(const FVector& DamageCauser)
+{
+	if(const auto Animinstance = GetMesh()->GetAnimInstance())
+	{
+		if(Animinstance->Montage_IsPlaying(WeakGroggyMontage) || Animinstance->Montage_IsPlaying(StrongGroggyMontage))	return false;
+		auto ForwardVector = GetActorForwardVector();
+		const auto MontageSection = UGamePlayCalculator::GetDirectionSectionName(ForwardVector, GetActorLocation(), DamageCauser);
+		MulticastWeakGroggyMontagePlay(MontageSection);
+
+		Animinstance->OnMontageEnded.Clear();
+		FOnMontageEnded MontageEnded;
+		MontageEnded.BindLambda([&](UAnimMontage*, bool)
+		{
+			if(const auto EnemyController = GetController<IEnemyControllable>())
+			{
+				EnemyController->SetEnemyBlackboardValueAsBool(FName("WeakGroggy"), false);
+			}
+		});
+		Animinstance->Montage_SetEndDelegate(MontageEnded);
+	}
+	return true;
+}
+
+bool AGroggyEnemy::StrongGroggyMontagePlay()
+{
+	if(const auto Animinstance = GetMesh()->GetAnimInstance())
+	{
+		if(Animinstance->Montage_IsPlaying(StrongGroggyMontage))	return false;
+		MulticastStrongGroggyMontagePlay();
+
+		Animinstance->OnMontageEnded.Clear();
+		FOnMontageEnded MontageEnded;
+		MontageEnded.BindLambda([&](UAnimMontage*, bool)
+		{
+			if(const auto EnemyController = GetController<IEnemyControllable>())
+			{
+				EnemyController->SetEnemyBlackboardValueAsBool(FName("StrongGroggy"), false);
+			}
+		});
+		Animinstance->Montage_SetEndDelegate(MontageEnded);
+	}
+	return true;
+}
+
+void AGroggyEnemy::MulticastWeakGroggyMontagePlay_Implementation(FName MontageSection)
+{
+	if(GetMesh() == nullptr || GetMesh()->GetAnimInstance() == nullptr)	return;
+
+	GetMesh()->GetAnimInstance()->Montage_Play(WeakGroggyMontage);
+	GetMesh()->GetAnimInstance()->Montage_JumpToSection(MontageSection);
+}
+
+void AGroggyEnemy::MulticastStrongGroggyMontagePlay_Implementation()
+{
+	if(GetMesh() == nullptr || GetMesh()->GetAnimInstance() == nullptr)	return;
+
+	GetMesh()->GetAnimInstance()->Montage_Play(StrongGroggyMontage);
 }
 
 void AGroggyEnemy::OnSpawnTriggerBoxOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,

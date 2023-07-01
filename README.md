@@ -35,3 +35,5 @@
 - [Niagara Footstep VFX](https://www.unrealengine.com/marketplace/en-US/product/niagara-footstep-vfx)
 
 - [Stylized Fantasy Provencal](https://www.unrealengine.com/marketplace/en-US/product/stylized-fantasy-provencal)
+
+- [Zombie Movement and Modular Interaction Animations](https://www.unrealengine.com/marketplace/en-US/product/zombie-animations-and-modular-interactions)

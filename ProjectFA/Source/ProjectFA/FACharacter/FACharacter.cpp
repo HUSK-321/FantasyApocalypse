@@ -4,6 +4,7 @@
 #include "FACharacter.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/TimelineComponent.h"
+#include "Kismet/GameplayStatics.h"
 #include "Net/UnrealNetwork.h"
 
 AFACharacter::AFACharacter()
@@ -55,6 +56,18 @@ void AFACharacter::StopNormalAttackMontage()
 	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
 	if(AnimInstance == nullptr)	return;
 	AnimInstance->Montage_Stop(0.f, NormalAttackMontage);
+}
+
+void AFACharacter::MulticastPlayHitEffect_Implementation(FVector EffectLocation)
+{
+	if(HitParticle)
+	{
+		UGameplayStatics::SpawnEmitterAtLocation(this, HitParticle, EffectLocation, FRotator::ZeroRotator);
+	}
+	if(HitSound)
+	{
+		UGameplayStatics::PlaySoundAtLocation(this, HitSound, EffectLocation, FRotator::ZeroRotator);
+	}
 }
 
 void AFACharacter::ReceiveDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType,
