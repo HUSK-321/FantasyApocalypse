@@ -16,7 +16,7 @@ class PROJECTFA_API UBTTask_WaitForSearchPatrol : public UBTTask_Wait
 
 private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Patrol", meta = (AllowPrivateAccess = "true"))
-	FVector PatrolBoxAreaExtent;
+	float PatrolRadius;
 
 public:
 	UBTTask_WaitForSearchPatrol();

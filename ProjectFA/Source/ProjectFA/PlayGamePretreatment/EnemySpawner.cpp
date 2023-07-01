@@ -50,6 +50,9 @@ void AEnemySpawner::SpawnEnemy()
 		SpawnedEnemy->OnEnemyDeadDelegate.AddUObject(this, &AEnemySpawner::EnemyDead);
 		SpawnedEnemy->SpawnDefaultController();
 		SpawnedEnemy->FinishSpawning(SpawnTransform);
+	}
+	if(IsValid(SpawnedEnemy))
+	{
 		CurrentEnemyCount++;
 	}
 
