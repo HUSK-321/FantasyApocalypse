@@ -17,10 +17,9 @@ EBTNodeResult::Type UBTTask_FaceToPlayer::ExecuteTask(UBehaviorTreeComponent& Ow
 	const auto ControllingPawn = OwnerComp.GetAIOwner()->GetPawn();
 	if (ControllingPawn == nullptr)	return EBTNodeResult::Failed;
 
-	const auto EnemyController = ControllingPawn->GetController<IEnemyControllable>();
 	const auto TargetObject = OwnerComp.GetBlackboardComponent()->GetValueAsObject(TargetPlayerKey);
 	const auto TargetActor = Cast<AActor>(TargetObject);
-	if (IsValid(TargetActor) == false || EnemyController == nullptr)	return EBTNodeResult::Failed;
+	if (IsValid(TargetActor) == false)	return EBTNodeResult::Failed;
 
 	auto NewRotation = UKismetMathLibrary::FindLookAtRotation(ControllingPawn->GetActorLocation(), TargetActor->GetActorLocation());
 	NewRotation.Pitch = 0.f;
