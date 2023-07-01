@@ -5,7 +5,6 @@
 #include "AIController.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "Kismet/KismetMathLibrary.h"
-#include "ProjectFA/FAInterfaces/Controller/EnemyControllable.h"
 
 UBTTask_FaceToPlayer::UBTTask_FaceToPlayer()
 {
