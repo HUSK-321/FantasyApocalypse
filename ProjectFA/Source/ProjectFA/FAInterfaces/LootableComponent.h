@@ -21,5 +21,7 @@ class PROJECTFA_API ILootableComponent
 	GENERATED_BODY()
 
 public:
-	virtual void GenerateItemsToWorld() = 0;
+	virtual void GenerateItemsToWorld() {}
+	virtual void RequestItem() {}
+	virtual bool IsItemSpawned() { return false; }
 };

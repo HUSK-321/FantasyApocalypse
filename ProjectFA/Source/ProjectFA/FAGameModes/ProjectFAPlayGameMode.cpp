@@ -37,10 +37,16 @@ void AProjectFAPlayGameMode::SpawnItemToAllSpawner()
 	for(const auto Spawner : OutSpawnerList)
 	{
 		const auto Spawnable = Cast<IItemSpawnable>(Spawner);
-		if(Spawnable == nullptr)	return;
+		if(Spawnable == nullptr || Spawnable->IsItemSpawned())	return;
 		
 		Spawnable->SetSpawnItemList(GetRandomItemList(Spawnable));
 	}
+}
+
+void AProjectFAPlayGameMode::RequestSetItemArray(TArray<APickupItem*>& ItemList, UObject* Spawner)
+{
+	const auto SpawnerClass = Cast<IItemSpawnable>(Spawner);
+	ItemList = GetRandomItemList(SpawnerClass);
 }
 
 TArray<APickupItem*> AProjectFAPlayGameMode::GetRandomItemList(IItemSpawnable* Spawner)

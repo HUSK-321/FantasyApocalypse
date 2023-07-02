@@ -61,6 +61,7 @@ public:
 
 	virtual TArray<FSpawnerInitializeInfo> GetSpawnCategoryPercent() override;
 	virtual void SetSpawnItemList(const TArray<APickupItem*>& ItemList) override;
+	virtual bool IsItemSpawned() override;
 
 	FORCEINLINE UBehaviorTree* GetEnemyBehaviorTree() const { return EnemyBehaviorTree; }
 
