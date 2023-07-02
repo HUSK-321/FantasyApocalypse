@@ -35,6 +35,8 @@ private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<APickupItem> DefaultPunchWeapon;
 
+	UPROPERTY(EditAnywhere)
+	int8 HandSlotCount;
 	UPROPERTY(VisibleAnywhere)
 	int8 CurrentSlotIndex;
 	UPROPERTY(Replicated, VisibleAnywhere)

@@ -14,11 +14,12 @@
 
 UPlayableCharacterCombatComponent::UPlayableCharacterCombatComponent()
 	:
+	HandSlotCount(2),
 	bNowAttacking(false), bDoNextAttack(false)
 {
 	PrimaryComponentTick.bCanEverTick = false;
 
-	HandSlots.SetNum(2);
+	HandSlots.SetNum(HandSlotCount);
 }
 
 void UPlayableCharacterCombatComponent::BeginPlay()
@@ -227,7 +228,7 @@ void UPlayableCharacterCombatComponent::WeaponUnEquip(APickupItem* UnEquipItem)
 
 void UPlayableCharacterCombatComponent::WeaponDrop(APickupItem* UnEquipItem)
 {
-	for(int8 i = 0; i < HandSlots.Num(); i++)
+	for(int8 i = 0; i < HandSlotCount; i++)
 	{
 		if(HandSlots[i] != UnEquipItem)	continue;
 		
@@ -235,8 +236,9 @@ void UPlayableCharacterCombatComponent::WeaponDrop(APickupItem* UnEquipItem)
 		if(CurrentSlotIndex == i)
 		{
 			EquipItemToCharacter(DefaultPunchWeapon);
-			SetCurrentSlotIndex(2);
+			SetCurrentSlotIndex(HandSlotCount);
 		}
+		return;
 	}
 }
 
@@ -292,7 +294,7 @@ void UPlayableCharacterCombatComponent::ServerSwapWeapon_Implementation(int8 Slo
 	if(HandSlots.IsValidIndex(SlotIndex) == false || HandSlots[SlotIndex] == nullptr)
 	{
 		EquipItemToCharacter(DefaultPunchWeapon);
-		SetCurrentSlotIndex(2);
+		SetCurrentSlotIndex(HandSlotCount);
 		return;
 	}
 	EquipItemToCharacter(HandSlots[SlotIndex]);
@@ -300,23 +302,22 @@ void UPlayableCharacterCombatComponent::ServerSwapWeapon_Implementation(int8 Slo
 
 void UPlayableCharacterCombatComponent::ManageHandSlots()
 {
-	// if default weapon set index to 2
+	// if default weapon set index to 'HandSlotCount'
 	if(EquippedItem == DefaultPunchWeapon)
 	{
-		SetCurrentSlotIndex(2);
+		SetCurrentSlotIndex(HandSlotCount);
 		return;
 	}
 	// Find already in slot 
-	for(int8 SlotIndex = 0; SlotIndex < HandSlots.Num(); SlotIndex++)
+	for(int8 SlotIndex = 0; SlotIndex < HandSlotCount; SlotIndex++)
 	{
-		if(HandSlots[SlotIndex] == EquippedItem)
-		{
-			SetCurrentSlotIndex(SlotIndex);
-			return;
-		}
+		if(HandSlots[SlotIndex] != EquippedItem)	continue;
+		
+		SetCurrentSlotIndex(SlotIndex);
+		return;
 	}
 	// Find empty slot
-	for(int8 SlotIndex = 0; SlotIndex < HandSlots.Num(); SlotIndex++)
+	for(int8 SlotIndex = 0; SlotIndex < HandSlotCount; SlotIndex++)
 	{
 		if(HandSlots[SlotIndex] != nullptr)	continue;
 
