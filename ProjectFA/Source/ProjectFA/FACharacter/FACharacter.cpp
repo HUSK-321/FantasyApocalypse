@@ -104,6 +104,8 @@ bool AFACharacter::CharacterCannotJump()
 
 void AFACharacter::StartDeadDissolve()
 {
+	if(GetController() == nullptr)	return;
+	GetController()->UnPossess();
 	if(GetMesh() == nullptr || DissolveCurve == nullptr || DissolveTimeline == nullptr || DissolveMaterialInstance == nullptr)	return;
 	
 	GetMesh()->bPauseAnims = true;

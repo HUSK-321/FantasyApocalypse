@@ -128,7 +128,6 @@ private:
 	UFUNCTION(Server, Reliable)
 	void ServerSetCharacterMovement(bool bSprinting);
 
-private:
 	void CharacterMove(const FInputActionValue& Value);
 	void CameraMove(const FInputActionValue& Value);
 	virtual void Jump() override;

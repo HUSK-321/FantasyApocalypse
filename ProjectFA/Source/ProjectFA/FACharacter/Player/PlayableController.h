@@ -27,6 +27,7 @@ private:
 	
 protected:
 	virtual void BeginPlay() override;
+	virtual void OnUnPossess() override;
 
 public:	
 	virtual void InteractingWithObject(UObject* LootingBox) override;
@@ -58,6 +59,8 @@ public:
 
 	UFUNCTION()
 	void CurrentHandItemWidget(APickupItem* ItemInHand);
+
+	void SetPlayerSpectate();
 
 private:
 	UFUNCTION()

@@ -15,6 +15,7 @@
 #include "ProjectFA/HUD/PickupItemListWidget/PickupItemList.h"
 #include "ProjectFA/InGameItem/InventoryUsable.h"
 #include "..\..\Interactable\Looting\InteractableWithCharacter.h"
+#include "GameFramework/PlayerState.h"
 #include "ProjectFA/HUD/Handslot/PlayerHandSlotWidget.h"
 
 void APlayableController::BeginPlay()
@@ -22,6 +23,13 @@ void APlayableController::BeginPlay()
 	Super::BeginPlay();
 
 	ProjectFAHUD = Cast<AProjectFAHUD>(GetHUD());
+}
+
+void APlayableController::OnUnPossess()
+{
+	Super::OnUnPossess();
+
+	SetPlayerSpectate();
 }
 
 void APlayableController::InteractingWithObject(UObject* LootingBox)
@@ -193,4 +201,19 @@ void APlayableController::SetInputModeGameOnly()
 	const FInputModeGameOnly InputModeGameOnly;
 	SetInputMode(InputModeGameOnly);
 	bShowMouseCursor = false;
+}
+
+void APlayableController::SetPlayerSpectate()
+{
+	if(HasAuthority() == false || PlayerState == nullptr)	return;
+
+	StartSpectatingOnly();
+	
+	PlayerState->SetIsSpectator(true);
+	ChangeState(NAME_Spectating);
+	bPlayerIsWaiting = true;
+
+	ViewAPlayer(1);
+	ClientGotoState(NAME_Spectating);
+	// TODO : hud
 }
