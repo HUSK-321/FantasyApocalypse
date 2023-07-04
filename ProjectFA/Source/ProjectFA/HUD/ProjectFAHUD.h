@@ -13,6 +13,7 @@ class UPlayerOverlay;
 class UPickupItemList;
 class UInventoryWidget;
 class USkillWidget;
+class UDeadWidget;
 
 UCLASS()
 class PROJECTFA_API AProjectFAHUD : public AHUD
@@ -21,6 +22,8 @@ class PROJECTFA_API AProjectFAHUD : public AHUD
 
 public:
 	virtual void DrawHUD() override;
+
+	void PlayerSetToDead();
 
 protected:
 	virtual void BeginPlay() override;
@@ -41,4 +44,9 @@ public:
 	TSubclassOf<UInventoryWidget> InventoryWidgetClass;
 	UPROPERTY(EditAnywhere, Category = "HUD")
 	TObjectPtr<UInventoryWidget> Inventory;
+	
+	UPROPERTY(EditAnywhere, Category = "HUD|Dead")
+	TSubclassOf<UDeadWidget> DeadWidgetClass;
+	UPROPERTY(EditAnywhere, Category = "HUD|Dead")
+	TObjectPtr<UDeadWidget> DeadWidget;
 };

@@ -51,6 +51,7 @@ void ULootingItemComponent::RequestItem()
 	SpawnerGameMode->RequestSetItemArray(ItemList, GetOwner());
 	for(auto Item : ItemList)
 	{
+		if(Item == nullptr)	continue;
 		Item->SetOwner(GetOwner());
 	}
 }

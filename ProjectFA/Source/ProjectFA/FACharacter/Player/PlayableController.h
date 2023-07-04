@@ -7,9 +7,6 @@
 #include "ProjectFA/FAInterfaces/Controller/ItemRPCableController.h"
 #include "PlayableController.generated.h"
 
-/**
- * 
- */
 class APlayableCharacter;
 class UInventoryComponent;
 class AProjectFAHUD;
@@ -17,10 +14,15 @@ class APickupItem;
 class USkillDataAsset;
 class UPlayableCharacterCombatComponent;
 
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnSpectatorViewTargetChanged, AActor*);
+
 UCLASS()
 class PROJECTFA_API APlayableController : public APlayerController, public IItemRPCableController
 {
 	GENERATED_BODY()
+
+public:
+	FOnSpectatorViewTargetChanged OnSpectatorViewTargetChanged;
 
 private:
 	TObjectPtr<AProjectFAHUD> ProjectFAHUD;
@@ -60,7 +62,12 @@ public:
 	UFUNCTION()
 	void CurrentHandItemWidget(APickupItem* ItemInHand);
 
+	virtual void ViewAPlayer(int32 dir) override;
 	void SetPlayerSpectate();
+	UFUNCTION(Reliable, Client)
+	void ClientViewTarget();
+	UFUNCTION(Reliable, Client)
+	void ClientHUDChangedToDead();
 
 private:
 	UFUNCTION()

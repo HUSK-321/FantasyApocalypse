@@ -71,7 +71,10 @@ TArray<APickupItem*> AProjectFAPlayGameMode::GetRandomItemList(IItemSpawnable* S
 
 APickupItem* AProjectFAPlayGameMode::GetItemFromPool(FName ItemCategory)
 {
+	if(ItemPools.Contains(ItemCategory) == false)	return nullptr;
 	const auto ItemFromPool = ItemPools[ItemCategory]->GetItemFromPool();
+	if(ItemFromPool == nullptr)	return ItemFromPool;
+	
 	ItemFromPool->SetItemPropertyFromDataAsset(GetRandomItemDataAsset(ItemCategory));
 	return ItemFromPool;
 }

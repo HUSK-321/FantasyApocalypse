@@ -4,7 +4,8 @@
 #include "PlayerOverlay.h"
 #include "InventoryWidget/InventoryWidget.h"
 #include "PickupItemListWidget/PickupItemList.h"
-#include "SkillWidget/SkillWidget.h"
+#include "DeadWidget/DeadWidget.h"
+#include "ProjectFA/FACharacter/Player/PlayableController.h"
 
 void AProjectFAHUD::BeginPlay()
 {
@@ -27,4 +28,31 @@ void AProjectFAHUD::BeginPlay()
 void AProjectFAHUD::DrawHUD()
 {
 	Super::DrawHUD();
+}
+
+void AProjectFAHUD::PlayerSetToDead()
+{
+	if(PlayerOverlay)
+	{
+		PlayerOverlay->SetVisibility(ESlateVisibility::Hidden);
+	}
+	if(PickupItemList)
+	{
+		PickupItemList->SetVisibility(ESlateVisibility::Hidden);
+	}
+	if(Inventory)
+	{
+		Inventory->SetVisibility(ESlateVisibility::Hidden);
+	}
+
+	const auto PlayerController = GetOwningPlayerController();
+	if(DeadWidgetClass)
+	{
+		DeadWidget = CreateWidget<UDeadWidget>(PlayerController, DeadWidgetClass);
+		DeadWidget->AddToViewport();
+		if(const auto PlayableController = Cast<APlayableController>(PlayerController))
+		{
+			PlayableController->OnSpectatorViewTargetChanged.AddUObject(DeadWidget, &UDeadWidget::ViewTargetChanged);
+		}
+	}
 }

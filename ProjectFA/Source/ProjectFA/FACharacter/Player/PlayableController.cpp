@@ -16,6 +16,7 @@
 #include "ProjectFA/InGameItem/InventoryUsable.h"
 #include "..\..\Interactable\Looting\InteractableWithCharacter.h"
 #include "GameFramework/PlayerState.h"
+#include "GameFramework/SpectatorPawn.h"
 #include "ProjectFA/HUD/Handslot/PlayerHandSlotWidget.h"
 
 void APlayableController::BeginPlay()
@@ -215,5 +216,28 @@ void APlayableController::SetPlayerSpectate()
 
 	ViewAPlayer(1);
 	ClientGotoState(NAME_Spectating);
-	// TODO : hud
+	ClientHUDChangedToDead();
+}
+
+void APlayableController::ClientViewTarget_Implementation()
+{
+	if(GetViewTarget())
+	{
+		OnSpectatorViewTargetChanged.Broadcast(GetViewTarget());
+	}
+}
+
+void APlayableController::ViewAPlayer(int32 dir)
+{
+	Super::ViewAPlayer(dir);
+	
+	ClientViewTarget();
+}
+
+void APlayableController::ClientHUDChangedToDead_Implementation()
+{
+	if(ProjectFAHUD)
+	{
+		ProjectFAHUD->PlayerSetToDead();
+	}
 }
