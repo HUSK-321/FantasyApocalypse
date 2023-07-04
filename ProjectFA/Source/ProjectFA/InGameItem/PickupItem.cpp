@@ -126,6 +126,12 @@ void APickupItem::SetItemVisibilityByState()
 		break;
 		
 	default:
+		PickupItemMesh->SetVisibility(false);
+		PickupItemMesh->SetSimulatePhysics(false);
+		PickupItemMesh->SetEnableGravity(false);
+		PickupItemMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		
+		PickupAreaSphere->SetCollisionEnabled(ECollisionEnabled::NoCollision);	
 		break;
 	}
 }

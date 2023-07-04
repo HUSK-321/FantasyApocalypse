@@ -177,6 +177,7 @@ void UPlayableCharacterCombatComponent::CheckShouldStopAttack()
 	if(bDoNextAttack || Character == nullptr)
 	{
 		bDoNextAttack = false;
+		TurnToNearbyTarget();
 		return;
 	}
 	EndNormalAttack();

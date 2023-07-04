@@ -43,7 +43,10 @@ void UItemSpawnPool::ReturnItemToPool(APickupItem* Item)
 void UItemSpawnPool::SupplyItemToPool()
 {
 	if(SpawnPoolItemClass == nullptr || GetWorld() == nullptr)	return;
-	
-	const auto CreatedItem = GetWorld()->SpawnActor<APickupItem>(SpawnPoolItemClass);
-	ItemPool.Enqueue(CreatedItem);
+
+	if(const auto CreatedItem = GetWorld()->SpawnActor<APickupItem>(SpawnPoolItemClass))
+	{
+		ItemPool.Enqueue(CreatedItem);
+		CreatedItem->SetItemState(EItemState::EIS_MAX);
+	}
 }

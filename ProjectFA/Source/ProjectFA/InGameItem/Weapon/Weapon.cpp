@@ -95,6 +95,10 @@ void AWeapon::SetItemVisibilityByState()
 		break;
 		
 	default:
+		WeaponMesh->SetVisibility(false);
+		WeaponMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
+		AttackCollision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 		break;
 	}
 }
