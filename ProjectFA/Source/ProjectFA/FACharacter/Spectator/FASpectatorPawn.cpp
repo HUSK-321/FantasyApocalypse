@@ -20,14 +20,13 @@ void AFASpectatorPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 	{
 		if(const auto Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer()))
 		{
+			Subsystem->ClearAllMappings();
 			Subsystem->AddMappingContext(SpectorBasicMappingContext, 0);
 		}
 	}
 	
 	if(const auto EnhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerInputComponent))
 	{
-		EnhancedInputComponent->ClearActionBindings();
-		EnhancedInputComponent->ClearActionValueBindings();
 		EnhancedInputComponent->BindAction(NextPlayerAction, ETriggerEvent::Started, this, &AFASpectatorPawn::SpectateNextPlayer);
 		EnhancedInputComponent->BindAction(PrevPlayerAction, ETriggerEvent::Started, this, &AFASpectatorPawn::SpectatePrevPlayer);
 		EnhancedInputComponent->BindAction(EscapeAction, ETriggerEvent::Started, this, &AFASpectatorPawn::EscapeActionPressed);
