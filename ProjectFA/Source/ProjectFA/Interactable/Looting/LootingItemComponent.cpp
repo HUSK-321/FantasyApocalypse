@@ -2,6 +2,8 @@
 
 
 #include "LootingItemComponent.h"
+#include "GameFramework/GameMode.h"
+#include "ProjectFA/FAInterfaces/ItemSpawnableGameMode.h"
 #include "ProjectFA/InGameItem/PickupItem.h"
 
 ULootingItemComponent::ULootingItemComponent()
@@ -12,6 +14,11 @@ ULootingItemComponent::ULootingItemComponent()
 void ULootingItemComponent::BeginPlay()
 {
 	Super::BeginPlay();
+
+	if(IsItemSpawned() == false)
+	{
+		RequestItem();
+	}
 }
 
 void ULootingItemComponent::InitializeItemList(const TArray<APickupItem*>& List)
@@ -32,4 +39,24 @@ void ULootingItemComponent::GenerateItemsToWorld()
 		Item->DropItem();
 	}
 	ItemList.Empty();
+}
+
+void ULootingItemComponent::RequestItem()
+{
+	const auto World = GetWorld();
+	if(World == nullptr)	return;
+	const auto SpawnerGameMode = Cast<IItemSpawnableGameMode>(World->GetAuthGameMode<AGameMode>());
+	if(SpawnerGameMode == nullptr)	return;
+
+	SpawnerGameMode->RequestSetItemArray(ItemList, GetOwner());
+	for(auto Item : ItemList)
+	{
+		if(Item == nullptr)	continue;
+		Item->SetOwner(GetOwner());
+	}
+}
+
+bool ULootingItemComponent::IsItemSpawned()
+{
+	return ItemList.Num() > 0;
 }

@@ -31,7 +31,7 @@ private:
 	TObjectPtr<USkeletalMesh> WeaponSkeletal;
 	UPROPERTY(EditAnywhere, Category = "Weapon Properties")
 	TObjectPtr<USkeletalMeshComponent> WeaponMesh;
-	UPROPERTY(Replicated, VisibleAnywhere, Category = "Weapon Properties")
+	UPROPERTY(Replicated, EditAnywhere, BlueprintReadWrite, Category = "Weapon Properties", meta = (AllowPrivateAccess = "true"))
 	FWeaponItemInfoData WeaponInfo;
 	UPROPERTY(EditAnywhere, Category = "Weapon Properties")
 	TObjectPtr<UBoxComponent> AttackCollision;

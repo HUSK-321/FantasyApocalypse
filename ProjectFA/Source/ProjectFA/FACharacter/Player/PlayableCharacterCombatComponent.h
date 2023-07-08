@@ -15,10 +15,15 @@ class UEquipable;
 class APickupItem;
 class USkillDataAsset;
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnPlayerHandItemChanged, APickupItem*, Item);
+
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class PROJECTFA_API UPlayableCharacterCombatComponent : public UActorComponent, public IWeaponAttackableComponent
 {
 	GENERATED_BODY()
+
+public:
+	FOnPlayerHandItemChanged OnPlayerHandItemChanged;
 
 private:
 	UPROPERTY()
@@ -29,6 +34,13 @@ private:
 	TSubclassOf<APickupItem> DefaultPunchWeaponClass;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<APickupItem> DefaultPunchWeapon;
+
+	UPROPERTY(EditAnywhere)
+	int8 HandSlotCount;
+	UPROPERTY(VisibleAnywhere)
+	int8 CurrentSlotIndex;
+	UPROPERTY(Replicated, VisibleAnywhere)
+	TArray<APickupItem*> HandSlots;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Skill", meta = (AllowPrivateAccess = "true"))
 	TSubclassOf<USkillDataAsset> SkillSlotQClass;
@@ -77,6 +89,8 @@ public:
 	UFUNCTION(NetMulticast, Reliable)
 	void MulticastDoSkill(bool bIsQ);
 
+	void SwapHandSlotWeapon(int8 SlotIndex);
+
 	FORCEINLINE bool GetNowAttacking() const { return bNowAttacking; }
 	FORCEINLINE bool GetNowDoingSkill() const { return bNowDoingSkill; }
 	FORCEINLINE void SetSkillSlotQ(USkillDataAsset* SkillDataAsset) { SkillSlotQ = SkillDataAsset; }
@@ -91,11 +105,14 @@ protected:
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
 private:
+	void CreateDefaultWeapon();
 	void CreateSkillFromData();
 	void TurnToNearbyTarget();
 	
 	UFUNCTION()
-	void ItemDrop(APickupItem* UnEquipItem);
+	void WeaponUnEquip(APickupItem* UnEquipItem);
+	UFUNCTION()
+	void WeaponDrop(APickupItem* UnEquipItem);
 	float GetSkillDamageAmplify() const;
 
 	UFUNCTION()
@@ -103,4 +120,11 @@ private:
 
 	UFUNCTION(BlueprintCallable)
 	void DoingSkillEnd();
+
+	void SetCurrentSlotIndex(int8 NewSlotIndex);
+
+	UFUNCTION(Server, Reliable)
+	void ServerSwapWeapon(int8 SlotIndex);
+	
+	void ManageHandSlots();
 };

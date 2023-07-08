@@ -3,7 +3,7 @@
 
 #include "BTTask_WaitForSearchPatrol.h"
 #include "BehaviorTree/BlackboardComponent.h"
-#include "Kismet/KismetMathLibrary.h"
+#include "NavigationSystem.h"
 
 UBTTask_WaitForSearchPatrol::UBTTask_WaitForSearchPatrol()
 {
@@ -17,17 +17,21 @@ EBTNodeResult::Type UBTTask_WaitForSearchPatrol::ExecuteTask(UBehaviorTreeCompon
 	if(BlackboardComponent == nullptr || World == nullptr)	return EBTNodeResult::Failed;
 
 	const auto OriginPosition = BlackboardComponent->GetValueAsVector(TEXT("PatrolStartPoint"));
-	auto NextPatrolPoint = UKismetMathLibrary::RandomPointInBoundingBox(OriginPosition, PatrolBoxAreaExtent);
-
-	const FCollisionShape CollisionShape = FCollisionShape::MakeSphere(30.f);
-	while (World->OverlapAnyTestByChannel(NextPatrolPoint, FQuat(), ECC_Visibility, CollisionShape))
+	const auto NavSystem = UNavigationSystemV1::GetNavigationSystem(World);
+	if(NavSystem == nullptr)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("search again"));
-		NextPatrolPoint = UKismetMathLibrary::RandomPointInBoundingBox(OriginPosition, PatrolBoxAreaExtent);
+		UE_LOG(LogTemp, Warning, TEXT("[UBTTask_WaitForSearchPatrol] : In this world Navigation system is null"))
+		return EBTNodeResult::Failed;
 	}
 	
-	DrawDebugSphere(World, NextPatrolPoint, 10.f, 12, FColor::Cyan, false, 2.f);
-	BlackboardComponent->SetValueAsVector(TEXT("NextPatrolPoint"), NextPatrolPoint);
+	FNavLocation NextNavLocation;
+	if(NavSystem->GetRandomPointInNavigableRadius(OriginPosition, PatrolRadius, NextNavLocation))
+	{
+		DrawDebugSphere(World, NextNavLocation.Location, 10.f, 12, FColor::Cyan, false, 2.f);
+		BlackboardComponent->SetValueAsVector(TEXT("NextPatrolPoint"), NextNavLocation.Location);
+		return Super::ExecuteTask(OwnerComp, NodeMemory);
+	}
 	
-	return Super::ExecuteTask(OwnerComp, NodeMemory);
+	UE_LOG(LogTemp, Warning, TEXT("[UBTTask_WaitForSearchPatrol] : GetRandomPointInNavigableRadius Fail"))
+	return EBTNodeResult::Failed;
 }

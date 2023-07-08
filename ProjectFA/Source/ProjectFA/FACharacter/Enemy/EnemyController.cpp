@@ -11,7 +11,6 @@ AEnemyController::AEnemyController()
 	EnemyBlackboardComponent(CreateDefaultSubobject<UBlackboardComponent>(TEXT("BlackboardComponent"))),
 	EnemyBehaviorTreeComponent(CreateDefaultSubobject<UBehaviorTreeComponent>(TEXT("BehaviourTreeComponent")))
 {
-	
 }
 
 void AEnemyController::OnPossess(APawn* InPawn)

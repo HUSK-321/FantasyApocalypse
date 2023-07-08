@@ -6,7 +6,6 @@
 #include "Components/BoxComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Kismet/GameplayStatics.h"
-#include "Kismet/KismetMathLibrary.h"
 #include "Net/UnrealNetwork.h"
 #include "Perception/PawnSensingComponent.h"
 #include "ProjectFA/FACharacter/PickupableCharacter.h"
@@ -136,6 +135,11 @@ void AEnemy::AttackCollisionOnOverlapBegin(UPrimitiveComponent* OverlappedCompon
 void AEnemy::SetSpawnItemList(const TArray<APickupItem*>& ItemList)
 {
 	LootingItemComponent->InitializeItemList(ItemList);
+}
+
+bool AEnemy::IsItemSpawned()
+{
+	return (LootingItemComponent) ? LootingItemComponent->IsItemSpawned() : true;
 }
 
 TArray<FSpawnerInitializeInfo> AEnemy::GetSpawnCategoryPercent()

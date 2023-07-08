@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/GameMode.h"
+#include "ProjectFA/FAInterfaces/ItemSpawnableGameMode.h"
 #include "ProjectFAPlayGameMode.generated.h"
 
 /**
@@ -19,7 +20,7 @@ class UDataTable;
 class UItemDataAsset;
 
 UCLASS()
-class PROJECTFA_API AProjectFAPlayGameMode : public AGameMode
+class PROJECTFA_API AProjectFAPlayGameMode : public AGameMode, public IItemSpawnableGameMode
 {
 	GENERATED_BODY()
 
@@ -38,8 +39,9 @@ protected:
 	virtual void HandleMatchIsWaitingToStart() override;
 
 private:
-	void InitializeSpawnPoolList();
-	void SpawnItemToAllSpawner();
+	virtual void InitializeSpawnPoolList() override;
+	virtual void SpawnItemToAllSpawner() override;
+	virtual void RequestSetItemArray(TArray<APickupItem*>& ItemList, UObject* Spawner) override;
 	
 	TArray<APickupItem*> GetRandomItemList(IItemSpawnable* Spawner);
 	APickupItem* GetItemFromPool(FName ItemCategory);

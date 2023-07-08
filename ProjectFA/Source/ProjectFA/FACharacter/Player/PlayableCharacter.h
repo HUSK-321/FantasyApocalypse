@@ -69,6 +69,13 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Player Input", meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<UInputAction> ScrollAction;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Player Input", meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UInputAction> HandSlot1Action;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Player Input", meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UInputAction> HandSlot2Action;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Player Input", meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<UInputAction> HandSlot3Action;
+
 	UPROPERTY(EditAnywhere, Category = "Player Property")
 	float MaxWalkSpeed;
 	UPROPERTY(EditAnywhere, Category = "Player Property")
@@ -121,7 +128,6 @@ private:
 	UFUNCTION(Server, Reliable)
 	void ServerSetCharacterMovement(bool bSprinting);
 
-private:
 	void CharacterMove(const FInputActionValue& Value);
 	void CameraMove(const FInputActionValue& Value);
 	virtual void Jump() override;
@@ -139,6 +145,10 @@ private:
 	virtual void ReceiveDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType, AController* InstigatorController, AActor* DamageCauser) override;
 	void SetSprinting(bool bSprinting);
 	void ManageStaminaAmount(float DeltaTime);
+
+	void HandSlot1Pressed();
+	void HandSlot2Pressed();
+	void HandSlot3Pressed();
 
 	void SetInteractMappingContext(bool bIsActive);
 

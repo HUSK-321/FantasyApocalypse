@@ -19,6 +19,8 @@ public:
 	void InitializeItemList(const TArray<APickupItem*>& List);
 
 	virtual void GenerateItemsToWorld() override;
+	virtual void RequestItem() override;
+	virtual bool IsItemSpawned() override;
 
 protected:
 	virtual void BeginPlay() override;

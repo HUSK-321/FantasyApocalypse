@@ -7,9 +7,6 @@
 #include "ProjectFA/FAInterfaces/Controller/ItemRPCableController.h"
 #include "PlayableController.generated.h"
 
-/**
- * 
- */
 class APlayableCharacter;
 class UInventoryComponent;
 class AProjectFAHUD;
@@ -17,16 +14,22 @@ class APickupItem;
 class USkillDataAsset;
 class UPlayableCharacterCombatComponent;
 
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnSpectatorViewTargetChanged, AActor*);
+
 UCLASS()
 class PROJECTFA_API APlayableController : public APlayerController, public IItemRPCableController
 {
 	GENERATED_BODY()
+
+public:
+	FOnSpectatorViewTargetChanged OnSpectatorViewTargetChanged;
 
 private:
 	TObjectPtr<AProjectFAHUD> ProjectFAHUD;
 	
 protected:
 	virtual void BeginPlay() override;
+	virtual void OnUnPossess() override;
 
 public:	
 	virtual void InteractingWithObject(UObject* LootingBox) override;
@@ -35,6 +38,7 @@ public:
 
 	void SetPlayerEvent(APlayableCharacter* ControllingPlayer);
 	void SetInventoryEvent(UInventoryComponent* InventoryComponent);
+	void SetCombatComponentEvent(UPlayableCharacterCombatComponent* CombatComponent);
 	UFUNCTION()
 	void AddNearbyItem(UObject* Item);
 	UFUNCTION()
@@ -54,6 +58,16 @@ public:
 
 	UFUNCTION()
 	void InitializeSkillWidget(USkillDataAsset* QSkillData, USkillDataAsset* ESkillData);
+
+	UFUNCTION()
+	void CurrentHandItemWidget(APickupItem* ItemInHand);
+
+	virtual void ViewAPlayer(int32 dir) override;
+	void SetPlayerSpectate();
+	UFUNCTION(Reliable, Client)
+	void ClientViewTarget();
+	UFUNCTION(Reliable, Client)
+	void ClientHUDChangedToDead();
 
 private:
 	UFUNCTION()

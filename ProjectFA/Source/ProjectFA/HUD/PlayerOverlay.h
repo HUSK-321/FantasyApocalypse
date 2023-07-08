@@ -11,6 +11,7 @@
  */
 
 class USkillWidget;
+class UPlayerHandSlotWidget;
 
 UCLASS()
 class PROJECTFA_API UPlayerOverlay : public UUserWidget
@@ -28,4 +29,7 @@ public:
 
 	UPROPERTY(meta=(BindWidget))
 	TObjectPtr<USkillWidget> SkillWidget;
+
+	UPROPERTY(meta=(BindWidget))
+	TObjectPtr<UPlayerHandSlotWidget> HandSlotWidget;
 };

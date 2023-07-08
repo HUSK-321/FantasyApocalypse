@@ -48,7 +48,7 @@ protected:
 	UPROPERTY(EditAnywhere)
 	TObjectPtr<USphereComponent> PickupAreaSphere;
 
-	UPROPERTY(Replicated, VisibleAnywhere, Category = "Item Property")
+	UPROPERTY(Replicated, EditAnywhere, BlueprintReadWrite, Category = "Item Property", meta = (AllowPrivateAccess = "true"))
 	FPickupItemInfoData ItemInfo;
 	
 	UPROPERTY(ReplicatedUsing = OnRep_ItemState, VisibleAnywhere, Category = "Item Property")

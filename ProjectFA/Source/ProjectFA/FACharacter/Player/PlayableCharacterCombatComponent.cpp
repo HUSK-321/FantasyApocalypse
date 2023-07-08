@@ -14,9 +14,12 @@
 
 UPlayableCharacterCombatComponent::UPlayableCharacterCombatComponent()
 	:
+	HandSlotCount(2),
 	bNowAttacking(false), bDoNextAttack(false)
 {
 	PrimaryComponentTick.bCanEverTick = false;
+
+	HandSlots.SetNum(HandSlotCount);
 }
 
 void UPlayableCharacterCombatComponent::BeginPlay()
@@ -24,11 +27,7 @@ void UPlayableCharacterCombatComponent::BeginPlay()
 	Super::BeginPlay();
 
 	Character = Cast<AFACharacter>(GetOwner());
-	if(DefaultPunchWeaponClass)
-	{
-		DefaultPunchWeapon = GetWorld()->SpawnActor<APickupItem>(DefaultPunchWeaponClass);
-		EquipItemToCharacter(DefaultPunchWeapon);
-	}
+	CreateDefaultWeapon();
 	
 	CreateSkillFromData();
 }
@@ -40,6 +39,20 @@ void UPlayableCharacterCombatComponent::GetLifetimeReplicatedProps(TArray<FLifet
 	DOREPLIFETIME(UPlayableCharacterCombatComponent, EquippedItem);
 	DOREPLIFETIME(UPlayableCharacterCombatComponent, SkillSlotQ);
 	DOREPLIFETIME(UPlayableCharacterCombatComponent, SkillSlotE);
+	DOREPLIFETIME(UPlayableCharacterCombatComponent, HandSlots);
+}
+
+void UPlayableCharacterCombatComponent::CreateDefaultWeapon()
+{
+	if(DefaultPunchWeaponClass)
+	{
+		DefaultPunchWeapon = GetWorld()->SpawnActor<APickupItem>(DefaultPunchWeaponClass);
+
+		if(DefaultPunchWeapon)
+		{
+			EquipItemToCharacter(DefaultPunchWeapon);
+		}
+	}
 }
 
 void UPlayableCharacterCombatComponent::CreateSkillFromData()
@@ -73,14 +86,16 @@ void UPlayableCharacterCombatComponent::CreateSkillFromData()
 
 void UPlayableCharacterCombatComponent::EquipItemToCharacter(APickupItem* ItemToEquip)
 {
-	if(Character == nullptr)	return;
+	if(Character == nullptr || ItemToEquip == EquippedItem)	return;
 	if(const auto Equipable = Cast<IEquipable>(EquippedItem))
 	{
 		Equipable->UnEquip();
 	}
+	
 	EquippedItem = ItemToEquip;
 	EquippedItem->SetOwner(Character);
 	EquippedItem->SetItemState(EItemState::EIS_Equipped);
+	EquippedItem->ItemDroppedEvent.AddDynamic(this, &UPlayableCharacterCombatComponent::WeaponDrop);
 	if(const auto RightHandSocket = Character->GetMesh()->GetSocketByName("hand_r_weapon_socket"))
 	{
 		RightHandSocket->AttachActor(EquippedItem, Character->GetMesh());
@@ -88,13 +103,14 @@ void UPlayableCharacterCombatComponent::EquipItemToCharacter(APickupItem* ItemTo
 	if(const auto Equipable = Cast<IEquipable>(ItemToEquip))
 	{
 		FEquipItemEvent Event;
-		Event.AddDynamic(this, &UPlayableCharacterCombatComponent::ItemDrop);
+		Event.AddDynamic(this, &UPlayableCharacterCombatComponent::WeaponUnEquip);
 		Equipable->SetUnEquipEvent(Event);
 
 		FGetPlayerDamagePropertyDelegate PlayerDamagePropertyDelegate;
 		PlayerDamagePropertyDelegate.BindUFunction(this, FName("GetCharacterAttackDamage"));
 		Equipable->SetPlayerDamagePropertyDelegate(PlayerDamagePropertyDelegate);
 	}
+	ManageHandSlots();
 }
 
 void UPlayableCharacterCombatComponent::OnRep_EquippedItem()
@@ -106,6 +122,8 @@ void UPlayableCharacterCombatComponent::OnRep_EquippedItem()
 	{
 		RightHandSocket->AttachActor(EquippedItem, Character->GetMesh());
 	}
+	
+	OnPlayerHandItemChanged.Broadcast(EquippedItem);
 }
 
 void UPlayableCharacterCombatComponent::Attack()
@@ -159,6 +177,7 @@ void UPlayableCharacterCombatComponent::CheckShouldStopAttack()
 	if(bDoNextAttack || Character == nullptr)
 	{
 		bDoNextAttack = false;
+		TurnToNearbyTarget();
 		return;
 	}
 	EndNormalAttack();
@@ -200,11 +219,27 @@ void UPlayableCharacterCombatComponent::MulticastDoSkill_Implementation(bool bIs
 	bIsQ ? DoSkill(GetSkillSlotQ()) : DoSkill(GetSkillSlotE());
 }
 
-void UPlayableCharacterCombatComponent::ItemDrop(APickupItem* UnEquipItem)
+void UPlayableCharacterCombatComponent::WeaponUnEquip(APickupItem* UnEquipItem)
 {
 	if(UnEquipItem == EquippedItem)
 	{
 		EquippedItem = nullptr;
+	}
+}
+
+void UPlayableCharacterCombatComponent::WeaponDrop(APickupItem* UnEquipItem)
+{
+	for(int8 i = 0; i < HandSlotCount; i++)
+	{
+		if(HandSlots[i] != UnEquipItem)	continue;
+		
+		HandSlots[i] = nullptr;
+		if(CurrentSlotIndex == i)
+		{
+			EquipItemToCharacter(DefaultPunchWeapon);
+			SetCurrentSlotIndex(HandSlotCount);
+		}
+		return;
 	}
 }
 
@@ -237,6 +272,70 @@ void UPlayableCharacterCombatComponent::DoingSkillEnd()
 	bNowDoingSkill = false;
 	bNowAttacking = false;
 	bDoNextAttack = false;
+}
+
+void UPlayableCharacterCombatComponent::SwapHandSlotWeapon(int8 SlotIndex)
+{
+	if(bNowAttacking || bNowDoingSkill)	return;
+	SetCurrentSlotIndex(SlotIndex);
+	ServerSwapWeapon(SlotIndex);
+}
+
+void UPlayableCharacterCombatComponent::SetCurrentSlotIndex(int8 NewSlotIndex)
+{
+	CurrentSlotIndex = NewSlotIndex;
+	
+	(HandSlots.IsValidIndex(CurrentSlotIndex)) ? 
+		OnPlayerHandItemChanged.Broadcast(HandSlots[CurrentSlotIndex]) :
+		OnPlayerHandItemChanged.Broadcast(DefaultPunchWeapon);
+}
+
+void UPlayableCharacterCombatComponent::ServerSwapWeapon_Implementation(int8 SlotIndex)
+{
+	if(HandSlots.IsValidIndex(SlotIndex) == false || HandSlots[SlotIndex] == nullptr)
+	{
+		EquipItemToCharacter(DefaultPunchWeapon);
+		SetCurrentSlotIndex(HandSlotCount);
+		return;
+	}
+	EquipItemToCharacter(HandSlots[SlotIndex]);
+}
+
+void UPlayableCharacterCombatComponent::ManageHandSlots()
+{
+	// if default weapon set index to 'HandSlotCount'
+	if(EquippedItem == DefaultPunchWeapon)
+	{
+		SetCurrentSlotIndex(HandSlotCount);
+		return;
+	}
+	// Find already in slot 
+	for(int8 SlotIndex = 0; SlotIndex < HandSlotCount; SlotIndex++)
+	{
+		if(HandSlots[SlotIndex] != EquippedItem)	continue;
+		
+		SetCurrentSlotIndex(SlotIndex);
+		return;
+	}
+	// Find empty slot
+	for(int8 SlotIndex = 0; SlotIndex < HandSlotCount; SlotIndex++)
+	{
+		if(HandSlots[SlotIndex] != nullptr)	continue;
+
+		HandSlots[SlotIndex] = EquippedItem;
+		SetCurrentSlotIndex(SlotIndex);
+		return;
+	}
+	// Not in slot, No empty slot
+	if(HandSlots.IsValidIndex(CurrentSlotIndex))
+	{
+		HandSlots[CurrentSlotIndex] = EquippedItem;
+	}
+	else
+	{
+		HandSlots[0] = EquippedItem;
+		SetCurrentSlotIndex(0);
+	}
 }
 
 void UPlayableCharacterCombatComponent::TurnToNearbyTarget()

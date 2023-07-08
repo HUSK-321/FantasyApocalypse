@@ -39,4 +39,5 @@ class PROJECTFA_API IItemSpawnable
 public:
 	virtual TArray<FSpawnerInitializeInfo> GetSpawnCategoryPercent() = 0;
 	virtual void SetSpawnItemList(const TArray<APickupItem*>& ItemList) = 0;
+	virtual bool IsItemSpawned() { return false; }
 };

@@ -53,6 +53,7 @@ void APlayableCharacter::BeginPlay()
 	{
 		PlayableController->SetPlayerEvent(this);
 		PlayableController->SetInventoryEvent(InventoryComponent);
+		PlayableController->SetCombatComponentEvent(CombatComponent);
 		if(const auto Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayableController->GetLocalPlayer()))
 		{
 			Subsystem->AddMappingContext(PlayerBasicMappingContext, 0);
@@ -84,6 +85,10 @@ void APlayableCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 		EnhancedInputComponent->BindAction(SprintAction, ETriggerEvent::Started, this, &APlayableCharacter::SprintButtonPressed);
 		EnhancedInputComponent->BindAction(SprintAction, ETriggerEvent::Completed, this, &APlayableCharacter::SprintButtonReleased);
 		EnhancedInputComponent->BindAction(ScrollAction, ETriggerEvent::Triggered, this, &APlayableCharacter::ScrollNearbyItemList);
+
+		EnhancedInputComponent->BindAction(HandSlot1Action, ETriggerEvent::Started, this, &APlayableCharacter::HandSlot1Pressed);
+		EnhancedInputComponent->BindAction(HandSlot2Action, ETriggerEvent::Started, this, &APlayableCharacter::HandSlot2Pressed);
+		EnhancedInputComponent->BindAction(HandSlot3Action, ETriggerEvent::Started, this, &APlayableCharacter::HandSlot3Pressed);
 
 		EnhancedInputComponent->BindAction(InteractWithObject, ETriggerEvent::Triggered, this, &APlayableCharacter::InteractWithActors);
 		EnhancedInputComponent->BindAction(InteractWithObject, ETriggerEvent::Completed, this, &APlayableCharacter::InteractWithActorsEnd);
@@ -166,6 +171,24 @@ void APlayableCharacter::ManageStaminaAmount(float DeltaTime)
 		SetSprinting(false);
 	}
 	PlayerStaminaChangedEvent.Broadcast(CurrentStamina, MaxStamina);
+}
+
+void APlayableCharacter::HandSlot1Pressed()
+{
+	if(CombatComponent == nullptr)	return;
+	CombatComponent->SwapHandSlotWeapon(0);
+}
+
+void APlayableCharacter::HandSlot2Pressed()
+{
+	if(CombatComponent == nullptr)	return;
+	CombatComponent->SwapHandSlotWeapon(1);
+}
+
+void APlayableCharacter::HandSlot3Pressed()
+{
+	if(CombatComponent == nullptr)	return;
+	CombatComponent->SwapHandSlotWeapon(3);
 }
 
 void APlayableCharacter::SetCharacterMoveSpeed()

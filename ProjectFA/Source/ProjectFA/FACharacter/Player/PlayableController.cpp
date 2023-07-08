@@ -4,6 +4,7 @@
 #include "PlayableController.h"
 #include "InventoryComponent.h"
 #include "PlayableCharacter.h"
+#include "PlayableCharacterCombatComponent.h"
 #include "Components/ListView.h"
 #include "Components/ProgressBar.h"
 #include "Components/TextBlock.h"
@@ -14,12 +15,22 @@
 #include "ProjectFA/HUD/PickupItemListWidget/PickupItemList.h"
 #include "ProjectFA/InGameItem/InventoryUsable.h"
 #include "..\..\Interactable\Looting\InteractableWithCharacter.h"
+#include "GameFramework/PlayerState.h"
+#include "GameFramework/SpectatorPawn.h"
+#include "ProjectFA/HUD/Handslot/PlayerHandSlotWidget.h"
 
 void APlayableController::BeginPlay()
 {
 	Super::BeginPlay();
 
 	ProjectFAHUD = Cast<AProjectFAHUD>(GetHUD());
+}
+
+void APlayableController::OnUnPossess()
+{
+	Super::OnUnPossess();
+
+	SetPlayerSpectate();
 }
 
 void APlayableController::InteractingWithObject(UObject* LootingBox)
@@ -72,6 +83,11 @@ void APlayableController::SetInventoryEvent(UInventoryComponent* InventoryCompon
 	InventoryComponent->InventoryChangedEvent.AddDynamic(this, &APlayableController::AddInventoryItem);
 	InventoryComponent->InventoryWeightChangedEvent.AddDynamic(this, &APlayableController::SetInventoryWeight);
 	InventoryComponent->NearbyListScrollChangedEvent.AddDynamic(this, &APlayableController::ScrollNearbyItemList);
+}
+
+void APlayableController::SetCombatComponentEvent(UPlayableCharacterCombatComponent* CombatComponent)
+{
+	CombatComponent->OnPlayerHandItemChanged.AddDynamic(this, &APlayableController::CurrentHandItemWidget);
 }
 
 void APlayableController::SetHealthHUD(const float& CurrentHealth, const float& MaxHealth)
@@ -135,6 +151,13 @@ void APlayableController::InitializeSkillWidget(USkillDataAsset* QSkillData, USk
 	ProjectFAHUD->PlayerOverlay->SkillWidget->SetSkillSlotWidget(QSkillData, ESkillData);
 }
 
+void APlayableController::CurrentHandItemWidget(APickupItem* ItemInHand)
+{
+	if(ItemInHand == nullptr || ProjectFAHUD == nullptr || ProjectFAHUD->PlayerOverlay == nullptr || ProjectFAHUD->PlayerOverlay->HandSlotWidget == nullptr)	return;
+	
+	ProjectFAHUD->PlayerOverlay->HandSlotWidget->SetWeaponImage(ItemInHand->GetItemIcon());
+}
+
 void APlayableController::SetInventoryWeight(const float& Weight)
 {
 	if(InventoryWidgetNotValid() || ProjectFAHUD->Inventory->TotalWeight == nullptr)	return;
@@ -179,4 +202,42 @@ void APlayableController::SetInputModeGameOnly()
 	const FInputModeGameOnly InputModeGameOnly;
 	SetInputMode(InputModeGameOnly);
 	bShowMouseCursor = false;
+}
+
+void APlayableController::SetPlayerSpectate()
+{
+	if(HasAuthority() == false || PlayerState == nullptr)	return;
+
+	StartSpectatingOnly();
+	
+	PlayerState->SetIsSpectator(true);
+	ChangeState(NAME_Spectating);
+	bPlayerIsWaiting = true;
+
+	ViewAPlayer(1);
+	ClientGotoState(NAME_Spectating);
+	ClientHUDChangedToDead();
+}
+
+void APlayableController::ClientViewTarget_Implementation()
+{
+	if(GetViewTarget())
+	{
+		OnSpectatorViewTargetChanged.Broadcast(GetViewTarget());
+	}
+}
+
+void APlayableController::ViewAPlayer(int32 dir)
+{
+	Super::ViewAPlayer(dir);
+	
+	ClientViewTarget();
+}
+
+void APlayableController::ClientHUDChangedToDead_Implementation()
+{
+	if(ProjectFAHUD)
+	{
+		ProjectFAHUD->PlayerSetToDead();
+	}
 }
