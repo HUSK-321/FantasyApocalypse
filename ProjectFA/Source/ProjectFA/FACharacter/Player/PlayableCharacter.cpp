@@ -137,7 +137,7 @@ void APlayableCharacter::Jump()
 
 void APlayableCharacter::CrouchButtonPressed()
 {
-	if(bNowSprinting || CharacterCannotMove())	return;
+	if(CharacterCannotCrouch())	return;
 	bIsCrouched ? UnCrouch() : Crouch();
 }
 
@@ -329,14 +329,22 @@ bool APlayableCharacter::CharacterCannotMove()
 
 bool APlayableCharacter::CharacterCannotAttack()
 {
-	return bIsCrouched || GetCharacterMovement()->IsFalling() ||
-			(CombatComponent) ? (CombatComponent->GetNowDoingSkill()) : false;
+	bool CannotAttack = bIsCrouched || GetCharacterMovement()->IsFalling();
+	return (CombatComponent) ? CannotAttack || CombatComponent->GetNowDoingSkill()
+							 : CannotAttack;
 }
 
 bool APlayableCharacter::CharacterCannotJump()
 {
 	if(CombatComponent == nullptr)	return CharacterCannotMove();
 	return CharacterCannotMove() || CombatComponent->GetNowAttacking();
+}
+
+bool APlayableCharacter::CharacterCannotCrouch()
+{
+	bool CannotCrouch = bNowSprinting || CharacterCannotMove() || GetCharacterMovement()->IsFalling();
+	return (CombatComponent) ? (CannotCrouch || CombatComponent->GetNowAttacking() || CombatComponent->GetNowDoingSkill())
+							 : CannotCrouch; 
 }
 
 void APlayableCharacter::CurrentHealthChanged()

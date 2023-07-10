@@ -121,6 +121,7 @@ protected:
 	virtual bool CharacterCannotMove() override;
 	virtual bool CharacterCannotAttack() override;
 	virtual bool CharacterCannotJump() override;
+	bool CharacterCannotCrouch();
 
 	virtual void CurrentHealthChanged() override;
 	

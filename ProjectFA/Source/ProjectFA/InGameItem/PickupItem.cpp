@@ -151,7 +151,7 @@ void APickupItem::DropItem(const float DropImpulsePower)
 	SetItemState(EItemState::EIS_Dropped);
 	
 	FVector ImpulseDirection = GetActorForwardVector();
-	const float RandomRotation = FMath::FRandRange(-40.f, 40.f);
+	const float RandomRotation = FMath::FRandRange(-90.f, 90.f);
 	ImpulseDirection = ImpulseDirection.RotateAngleAxis(RandomRotation, FVector::UpVector);
 	PickupItemMesh->AddImpulse(ImpulseDirection * DropImpulsePower);
 	
