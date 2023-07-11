@@ -8,6 +8,7 @@
 #include "ProjectFA/FACharacter/CombatableCharacter.h"
 #include "ProjectFA/FACharacter/InteractableCharacter.h"
 #include "ProjectFA/FACharacter/PickupableCharacter.h"
+#include "ProjectFA/FAInterfaces/SearchOutEffectable.h"
 #include "PlayableCharacter.generated.h"
 
 class UInputComponent;
@@ -22,7 +23,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FPlayerCurrentMaxDelegate, const fl
 DECLARE_MULTICAST_DELEGATE(FOnPlayerHitDelegate);
 
 UCLASS()
-class PROJECTFA_API APlayableCharacter : public AFACharacter, public IPickupableCharacter, public ICombatableCharacter, public IInteractableCharacter
+class PROJECTFA_API APlayableCharacter : public AFACharacter, public IPickupableCharacter, public ICombatableCharacter, public IInteractableCharacter, public ISearchOutEffectable
 {
 	GENERATED_BODY()
 
@@ -111,6 +112,9 @@ public:
 	virtual UActorComponent* GetCombatComponent() const override;
 
 	virtual void SetInteractingActor(AActor* Actor) override;
+
+	virtual void EnableSearchOutEffect() override;
+	virtual void DisableSearchOutEffect() override;
 
 protected:
 	virtual void BeginPlay() override;

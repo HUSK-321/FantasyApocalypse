@@ -10,6 +10,7 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "..\..\Interactable\Looting\InteractableWithCharacter.h"
+#include "Components/SkeletalMeshComponent.h"
 
 APlayableCharacter::APlayableCharacter()
 	:
@@ -374,3 +375,15 @@ void APlayableCharacter::ServerSetCharacterMovement_Implementation(bool bSprinti
 	GetCharacterMovement()->MaxWalkSpeed = CurrentSpeed;
 	GetCharacterMovement()->MaxWalkSpeedCrouched = CurrentCrouchSpeed;
 }
+
+void APlayableCharacter::EnableSearchOutEffect()
+{
+	GetMesh()->SetRenderCustomDepth(true);
+	GetMesh()->CustomDepthStencilValue = 100;
+}
+
+void APlayableCharacter::DisableSearchOutEffect()
+{
+	GetMesh()->SetRenderCustomDepth(false);
+}
+
