@@ -135,7 +135,7 @@ void USessionMenu::OnFindSessions(const TArray<FOnlineSessionSearchResult>& Sess
 	{
 		if(GEngine)
 		{
-			GEngine->AddOnScreenDebugMessage(-1, 15.f, FColor::Red, FString(TEXT("Find Session Failed [USessionMenu::OnFindSessions]")));
+			GEngine->AddOnScreenDebugMessage(-1, 15.f, FColor::Cyan, FString(TEXT("Find Session [USessionMenu::OnFindSessions]")));
 		}
 	}
 	if(SessionResults.Num() == 0)
