@@ -12,7 +12,6 @@
 
 ASearchOutItem::ASearchOutItem()
 {
-	
 }
 
 void ASearchOutItem::InventoryAction_Implementation()
@@ -32,11 +31,36 @@ void ASearchOutItem::RemoveFromInventoryAction_Implementation()
 
 void ASearchOutItem::UseAction()
 {
-	TArray<TEnumAsByte<EObjectTypeQuery>> ObjectTypeQuery;
-	TArray<AActor*> ActorsToIgnore;
+	SearchOutByOverlap();
+	EnableSearchOutEffect();
+
+	if(GetWorld())
+	{
+		GetWorld()->GetTimerManager().SetTimer(SearchOutTimer, this, &ASearchOutItem::ResetSearchOutActors, SearchOutTime);
+	}
+	// Remove Item From Inventory, without destroy
+	ItemDroppedEvent.Broadcast(this);
+}
+
+void ASearchOutItem::ResetSearchOutActors()
+{
+	DisableSearchOutEffect();
+
+	if(GetWorld())
+	{
+		GetWorld()->GetTimerManager().ClearAllTimersForObject(this);
+	}
+
+	Destroy();
+}
+
+void ASearchOutItem::SearchOutByOverlap()
+{
+	const TArray<TEnumAsByte<EObjectTypeQuery>> ObjectTypeQuery;
+	const TArray<AActor*> ActorsToIgnore;
 	TArray<AActor*> OutActors;
 	UKismetSystemLibrary::SphereOverlapActors(this, GetActorLocation(), 1000.f, ObjectTypeQuery,
-		ACharacter::StaticClass(), ActorsToIgnore, OutActors);
+											  ACharacter::StaticClass(), ActorsToIgnore, OutActors);
 
 	for(auto SearchedActor : OutActors)
 	{
@@ -45,36 +69,26 @@ void ASearchOutItem::UseAction()
 			SearchOutList.Emplace(SearchedActor);
 		}
 	}
+}
 
-	for(auto SearchOutACtor : SearchOutList)
+void ASearchOutItem::EnableSearchOutEffect()
+{
+	for(auto SearchOutActor : SearchOutList)
 	{
-		if(auto SearchOutEffectableActor = Cast<ISearchOutEffectable>(SearchOutACtor))
+		if(auto SearchOutEffectableActor = Cast<ISearchOutEffectable>(SearchOutActor))
 		{
 			SearchOutEffectableActor->EnableSearchOutEffect();
 		}
 	}
-
-	if(GetWorld())
-	{
-		GetWorld()->GetTimerManager().SetTimer(SearchOutTimer, this, &ASearchOutItem::ResetSearchOutActors, SearchOutTime);
-	}
 }
 
-void ASearchOutItem::ResetSearchOutActors()
+void ASearchOutItem::DisableSearchOutEffect()
 {
-	for(auto SearchOutACtor : SearchOutList)
+	for(auto SearchOutActor : SearchOutList)
 	{
-		if(auto SearchOutEffectableActor = Cast<ISearchOutEffectable>(SearchOutACtor))
+		if(auto SearchOutEffectableActor = Cast<ISearchOutEffectable>(SearchOutActor))
 		{
 			SearchOutEffectableActor->DisableSearchOutEffect();
 		}
 	}
-	UE_LOG(LogTemp, Warning, TEXT("[APlayableCharacter::DisableSearchOutEffect]"));
-
-	if(GetWorld())
-	{
-		GetWorld()->GetTimerManager().ClearAllTimersForObject(this);
-	}
-
-	Destroy();
 }

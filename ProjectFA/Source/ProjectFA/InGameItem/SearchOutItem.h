@@ -29,4 +29,8 @@ public:
 	virtual void UseAction() override;
 private:
 	void ResetSearchOutActors();
+	
+	void EnableSearchOutEffect();
+	void DisableSearchOutEffect();
+	void SearchOutByOverlap();
 };
