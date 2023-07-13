@@ -19,6 +19,8 @@ private:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Search Out", meta = (AllowPrivateAccess = "true"))
 	float SearchOutTime;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Search Out", meta = (AllowPrivateAccess = "true"))
+	float SearchOutRadius;
 	FTimerHandle SearchOutTimer;
 	FTimerHandle SearchOutTimerServer;
 

@@ -48,6 +48,7 @@ void ASearchOutItem::ClientDoSearchOut_Implementation()
 	if(GetWorld())
 	{
 		GetWorld()->GetTimerManager().SetTimer(SearchOutTimer, this, &ASearchOutItem::ClientResetSearchOut, SearchOutTime);
+		DrawDebugSphere(GetWorld(), GetOwner()->GetActorLocation(), SearchOutRadius, 50, FColor::Red, false, 2.f, 0, 8.f);
 	}
 	// Remove Item From Inventory, without destroy
 	ItemDroppedEvent.Broadcast(this);
@@ -83,7 +84,7 @@ void ASearchOutItem::SearchOutByOverlap()
 	const TArray<TEnumAsByte<EObjectTypeQuery>> ObjectTypeQuery;
 	const TArray<AActor*> ActorsToIgnore { GetOwner() };
 	TArray<AActor*> OutActors;
-	UKismetSystemLibrary::SphereOverlapActors(this, GetActorLocation(), 1000.f, ObjectTypeQuery,
+	UKismetSystemLibrary::SphereOverlapActors(this, GetOwner()->GetActorLocation(), SearchOutRadius, ObjectTypeQuery,
 											  ACharacter::StaticClass(), ActorsToIgnore, OutActors);
 
 	for(auto SearchedActor : OutActors)
