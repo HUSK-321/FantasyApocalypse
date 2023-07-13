@@ -160,11 +160,22 @@ void APlayableController::CurrentHandItemWidget(APickupItem* ItemInHand)
 
 void APlayableController::AnnouncePlayer(FString AnnounceText)
 {
+	ClientAnnouncePlayer(AnnounceText);
+}
+
+void APlayableController::ClientAnnouncePlayer_Implementation(const FString& AnnounceText)
+{
 	if(ProjectFAHUD == nullptr || ProjectFAHUD->PlayerOverlay == nullptr)	return;
 	ProjectFAHUD->PlayerOverlay->SetAnnounceText(AnnounceText);
 }
 
 void APlayableController::DisableAnnounce()
+{
+	// TODO : do in client
+	ClientDisableAnnounce();
+}
+
+void APlayableController::ClientDisableAnnounce_Implementation()
 {
 	if(ProjectFAHUD == nullptr || ProjectFAHUD->PlayerOverlay == nullptr)	return;
 	ProjectFAHUD->PlayerOverlay->DisableAnnounce();

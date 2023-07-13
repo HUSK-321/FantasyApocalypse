@@ -29,6 +29,11 @@ public:
 	virtual void DisableSearchOutEffect() {}
 
 	/*
+	* @brief Announce to detected user
+	*/
+	virtual void AnnounceDetected() {}
+
+	/*
 	* @brief Announce to user how many detected
 	*/
 	virtual void AnnounceToOwner(int32 DetectedCount) {}

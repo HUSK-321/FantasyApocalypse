@@ -62,10 +62,16 @@ public:
 	UFUNCTION()
 	void CurrentHandItemWidget(APickupItem* ItemInHand);
 
+	// TODO : delete
 	UFUNCTION()
 	void AnnouncePlayer(FString AnnounceText);
+	UFUNCTION(Client, Unreliable)
+	void ClientAnnouncePlayer(const FString& AnnounceText);
+	// TODO : delete
 	UFUNCTION()
 	void DisableAnnounce();
+	UFUNCTION(Client, Unreliable)
+	void ClientDisableAnnounce();
 
 	virtual void ViewAPlayer(int32 dir) override;
 	void SetPlayerSpectate();

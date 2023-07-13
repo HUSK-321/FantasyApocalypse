@@ -115,6 +115,7 @@ public:
 
 	virtual void EnableSearchOutEffect() override;
 	virtual void DisableSearchOutEffect() override;
+	virtual void AnnounceDetected() override;
 	virtual void AnnounceToOwner(int32 DetectedCount) override;
 	virtual void AnnounceToOwnerEnd() override;
 

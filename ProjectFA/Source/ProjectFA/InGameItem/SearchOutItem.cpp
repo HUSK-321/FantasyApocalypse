@@ -16,7 +16,12 @@ ASearchOutItem::ASearchOutItem()
 
 void ASearchOutItem::InventoryAction_Implementation()
 {
-	UseAction();
+	const auto OwnerPawn = Cast<APawn>(GetOwner());
+	if(OwnerPawn == nullptr)	return;
+	if(const auto OwnerController = OwnerPawn->GetController<IItemRPCableController>())
+	{
+		OwnerController->UseItem(this);
+	}
 }
 
 void ASearchOutItem::RemoveFromInventoryAction_Implementation()
@@ -31,15 +36,36 @@ void ASearchOutItem::RemoveFromInventoryAction_Implementation()
 
 void ASearchOutItem::UseAction()
 {
+	ClientDoSearchOut();
+	DoSearchOut();
+}
+
+void ASearchOutItem::ClientDoSearchOut_Implementation()
+{
 	SearchOutByOverlap();
 	EnableSearchOutEffect();
 
 	if(GetWorld())
 	{
-		GetWorld()->GetTimerManager().SetTimer(SearchOutTimer, this, &ASearchOutItem::ResetSearchOutActors, SearchOutTime);
+		GetWorld()->GetTimerManager().SetTimer(SearchOutTimer, this, &ASearchOutItem::ClientResetSearchOut, SearchOutTime);
 	}
 	// Remove Item From Inventory, without destroy
 	ItemDroppedEvent.Broadcast(this);
+}
+
+void ASearchOutItem::DoSearchOut()
+{
+	SearchOutByOverlap();
+	AnnounceDetectedToPlayers();
+	if(GetWorld())
+	{
+		GetWorld()->GetTimerManager().SetTimer(SearchOutTimerServer, this, &ASearchOutItem::ResetSearchOutActors, SearchOutTime);
+	}
+}
+
+void ASearchOutItem::ClientResetSearchOut_Implementation()
+{
+	ResetSearchOutActors();
 }
 
 void ASearchOutItem::ResetSearchOutActors()
@@ -50,8 +76,6 @@ void ASearchOutItem::ResetSearchOutActors()
 	{
 		GetWorld()->GetTimerManager().ClearAllTimersForObject(this);
 	}
-
-	Destroy();
 }
 
 void ASearchOutItem::SearchOutByOverlap()
@@ -90,6 +114,17 @@ void ASearchOutItem::EnableSearchOutEffect()
 	}
 }
 
+void ASearchOutItem::AnnounceDetectedToPlayers()
+{
+	for(auto SearchOutActor : SearchOutList)
+	{
+		if(auto SearchOutEffectableActor = Cast<ISearchOutEffectable>(SearchOutActor))
+		{
+			SearchOutEffectableActor->AnnounceDetected();
+		}
+	}
+}
+
 void ASearchOutItem::DisableSearchOutEffect()
 {
 	for(auto SearchOutActor : SearchOutList)
@@ -104,6 +139,4 @@ void ASearchOutItem::DisableSearchOutEffect()
 	{
 		OwnerPlayer->AnnounceToOwnerEnd();
 	}
-
-	Destroy();
 }

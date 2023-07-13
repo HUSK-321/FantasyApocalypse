@@ -14,12 +14,13 @@ class PROJECTFA_API ASearchOutItem : public APickupItem, public IInventoryUsable
 	GENERATED_BODY()
 
 private:
-	UPROPERTY()
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Search Out", meta = (AllowPrivateAccess = "true"))
 	TArray<AActor*> SearchOutList;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Search Out", meta = (AllowPrivateAccess = "true"))
 	float SearchOutTime;
 	FTimerHandle SearchOutTimer;
+	FTimerHandle SearchOutTimerServer;
 
 	UPROPERTY()
 	TObjectPtr<AActor> ActorToAnnounceEnd;
@@ -30,10 +31,19 @@ public:
 	virtual void InventoryAction_Implementation() override;
 	virtual void RemoveFromInventoryAction_Implementation() override;
 	virtual void UseAction() override;
+	
+	UFUNCTION(Client, Reliable)
+	void ClientDoSearchOut();
+	UFUNCTION()
+	void DoSearchOut();
+	
 private:
 	void ResetSearchOutActors();
+	UFUNCTION(Client, Reliable)
+	void ClientResetSearchOut();
 	
 	void EnableSearchOutEffect();
+	void AnnounceDetectedToPlayers();
 	void DisableSearchOutEffect();
 	void SearchOutByOverlap();
 };
