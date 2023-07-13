@@ -12,6 +12,7 @@
 
 class USkillWidget;
 class UPlayerHandSlotWidget;
+class UAnnouncementWidget;
 
 UCLASS()
 class PROJECTFA_API UPlayerOverlay : public UUserWidget
@@ -32,4 +33,15 @@ public:
 
 	UPROPERTY(meta=(BindWidget))
 	TObjectPtr<UPlayerHandSlotWidget> HandSlotWidget;
+
+	UPROPERTY(meta=(BindWidget))
+	TObjectPtr<UAnnouncementWidget> AnnounceWidget;
+
+public:
+	void SetAnnounceText(FString TextToAnnounce);
+
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	void EnableAnnounce();
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	void DisableAnnounce();
 };

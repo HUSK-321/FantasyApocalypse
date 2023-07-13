@@ -27,4 +27,14 @@ public:
 	* @brief Disable custom depth for customdepth stencil value 100
 	*/
 	virtual void DisableSearchOutEffect() {}
+
+	/*
+	* @brief Announce to user how many detected
+	*/
+	virtual void AnnounceToOwner(int32 DetectedCount) {}
+
+	/*
+	* @brief Announce to user end effect
+	*/
+	virtual void AnnounceToOwnerEnd() {}
 };

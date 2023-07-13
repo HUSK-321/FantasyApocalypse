@@ -380,10 +380,36 @@ void APlayableCharacter::EnableSearchOutEffect()
 {
 	GetMesh()->SetRenderCustomDepth(true);
 	GetMesh()->CustomDepthStencilValue = 100;
+	
+	if(const auto PlayableController = Cast<APlayableController>(Controller))
+	{
+		PlayableController->AnnouncePlayer(FString(TEXT("You Are Detected!!!")));
+	}
 }
 
 void APlayableCharacter::DisableSearchOutEffect()
 {
 	GetMesh()->SetRenderCustomDepth(false);
+
+	if(const auto PlayableController = Cast<APlayableController>(Controller))
+	{
+		PlayableController->DisableAnnounce();
+	}
 }
 
+void APlayableCharacter::AnnounceToOwner(int32 DetectedCount)
+{
+	const FString Announcement = FString::Printf(TEXT("Detect %d Players"), DetectedCount);
+	if(const auto PlayableController = Cast<APlayableController>(Controller))
+	{
+		PlayableController->AnnouncePlayer(Announcement);
+	}
+}
+
+void APlayableCharacter::AnnounceToOwnerEnd()
+{
+	if(const auto PlayableController = Cast<APlayableController>(Controller))
+	{
+		PlayableController->DisableAnnounce();
+	}
+}

@@ -57,7 +57,7 @@ void ASearchOutItem::ResetSearchOutActors()
 void ASearchOutItem::SearchOutByOverlap()
 {
 	const TArray<TEnumAsByte<EObjectTypeQuery>> ObjectTypeQuery;
-	const TArray<AActor*> ActorsToIgnore;
+	const TArray<AActor*> ActorsToIgnore { GetOwner() };
 	TArray<AActor*> OutActors;
 	UKismetSystemLibrary::SphereOverlapActors(this, GetActorLocation(), 1000.f, ObjectTypeQuery,
 											  ACharacter::StaticClass(), ActorsToIgnore, OutActors);
@@ -73,12 +73,20 @@ void ASearchOutItem::SearchOutByOverlap()
 
 void ASearchOutItem::EnableSearchOutEffect()
 {
-	for(auto SearchOutActor : SearchOutList)
+	int32 SearchOutCount = 0;
+	for(const auto SearchOutActor : SearchOutList)
 	{
 		if(auto SearchOutEffectableActor = Cast<ISearchOutEffectable>(SearchOutActor))
 		{
 			SearchOutEffectableActor->EnableSearchOutEffect();
+			++SearchOutCount;
 		}
+	}
+
+	if(const auto OwnerPlayer = Cast<ISearchOutEffectable>(GetOwner()))
+	{
+		OwnerPlayer->AnnounceToOwner(SearchOutCount);
+		ActorToAnnounceEnd = GetOwner();
 	}
 }
 
@@ -91,4 +99,11 @@ void ASearchOutItem::DisableSearchOutEffect()
 			SearchOutEffectableActor->DisableSearchOutEffect();
 		}
 	}
+
+	if(const auto OwnerPlayer = Cast<ISearchOutEffectable>(ActorToAnnounceEnd))
+	{
+		OwnerPlayer->AnnounceToOwnerEnd();
+	}
+
+	Destroy();
 }

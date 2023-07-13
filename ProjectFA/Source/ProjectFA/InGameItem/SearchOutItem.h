@@ -21,6 +21,9 @@ private:
 	float SearchOutTime;
 	FTimerHandle SearchOutTimer;
 
+	UPROPERTY()
+	TObjectPtr<AActor> ActorToAnnounceEnd;
+
 public:
 	ASearchOutItem();
 	
