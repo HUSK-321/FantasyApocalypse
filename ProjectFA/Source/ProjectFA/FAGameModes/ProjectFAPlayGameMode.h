@@ -34,6 +34,7 @@ private:
 	
 public:
 	void PlayerDead(APlayableCharacter* VictimCharacter, APlayableController* VictimController, APlayableController* InstigatorController);
+	virtual void SwapPlayerControllers(APlayerController* OldPC, APlayerController* NewPC) override;
 
 protected:
 	virtual void HandleMatchIsWaitingToStart() override;

@@ -3,11 +3,17 @@
 
 #include "DeadWidget.h"
 #include "Components/TextBlock.h"
+#include "GameFramework/PlayerState.h"
 
 void UDeadWidget::ViewTargetChanged(AActor* ViewTarget)
 {
 	if(SpectatedActorName == nullptr)	return;
 
-	const auto Name = FText::FromString(ViewTarget->GetActorNameOrLabel());
-	SpectatedActorName->SetText(Name);
+	if(const auto ViewPawn = Cast<APawn>(ViewTarget))
+	{
+		if(ViewPawn->GetPlayerState())
+		{
+			SpectatedActorName->SetText(FText::FromString(ViewPawn->GetPlayerState()->GetPlayerName()));
+		}
+	}
 }

@@ -2,6 +2,7 @@
 
 
 #include "ProjectFAPlayGameMode.h"
+#include "GameFramework/PlayerState.h"
 #include "Kismet/GameplayStatics.h"
 #include "ProjectFA/InGameItem/PickupItem.h"
 #include "ProjectFA/PlayGamePretreatment/ItemSpawnable.h"
@@ -10,6 +11,30 @@
 void AProjectFAPlayGameMode::PlayerDead(APlayableCharacter* VictimCharacter, APlayableController* VictimController,
                                         APlayableController* InstigatorController)
 {
+}
+
+void AProjectFAPlayGameMode::SwapPlayerControllers(APlayerController* OldPC, APlayerController* NewPC)
+{
+	Super::SwapPlayerControllers(OldPC, NewPC);
+	UE_LOG(LogTemp, Warning, TEXT("SwapPlayerControllers"))
+
+	const auto OldPLayerState = OldPC->GetPlayerState<APlayerState>();
+	const auto NewPLayerState = NewPC->GetPlayerState<APlayerState>();
+
+	if(IsValid(OldPLayerState) == false)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("OldPLayerState invalid"));
+	}
+	if(IsValid(NewPLayerState) == false)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("NewPLayerState invalid"));
+	}
+	
+	if(IsValid(OldPLayerState) && IsValid(NewPLayerState))
+	{
+		NewPLayerState->SetPlayerName(OldPLayerState->GetPlayerName());
+		UE_LOG(LogTemp, Warning, TEXT("player name : %s"), *NewPLayerState->GetPlayerName());
+	}
 }
 
 void AProjectFAPlayGameMode::HandleMatchIsWaitingToStart()

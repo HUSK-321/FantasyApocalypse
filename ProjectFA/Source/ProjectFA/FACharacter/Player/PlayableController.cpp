@@ -16,7 +16,6 @@
 #include "ProjectFA/InGameItem/InventoryUsable.h"
 #include "..\..\Interactable\Looting\InteractableWithCharacter.h"
 #include "GameFramework/PlayerState.h"
-#include "ProjectFA/HUD/Announce/AnnouncementWidget.h"
 #include "ProjectFA/HUD/Handslot/PlayerHandSlotWidget.h"
 
 void APlayableController::BeginPlay()
