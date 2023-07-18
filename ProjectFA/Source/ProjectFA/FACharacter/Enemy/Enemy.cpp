@@ -9,7 +9,6 @@
 #include "Net/UnrealNetwork.h"
 #include "Perception/PawnSensingComponent.h"
 #include "ProjectFA/FACharacter/PickupableCharacter.h"
-#include "ProjectFA/FADictionary/FACoreDelegates.h"
 #include "ProjectFA/FAInterfaces/Controller/EnemyControllable.h"
 #include "ProjectFA/Interactable/Looting/LootingItemComponent.h"
 
@@ -97,8 +96,6 @@ void AEnemy::ReceiveDamage(AActor* DamagedActor, float Damage, const UDamageType
 void AEnemy::SearchEnemyDeadEvent()
 {
 	OnEnemyDeadDelegate.Broadcast();
-	// 서버에서 처치자에게만 아래 내용이 불릴 수 있게 처리하기
-	FACoreDelegates::OnEnemyDestroyed.Broadcast(this);
 }
 
 void AEnemy::CurrentHealthChanged()
