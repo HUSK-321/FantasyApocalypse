@@ -82,8 +82,11 @@ void AEnemy::ReceiveDamage(AActor* DamagedActor, float Damage, const UDamageType
 {
 	CurrentHealth = FMath::Clamp(CurrentHealth - Damage, 0.f, MaxHealth);
 	OnRep_CurrentHealthChanged();
+
+#if WITH_EDITOR
 	if(GEngine)
 		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("Enemy Damaged : %f"), Damage));
+#endif
 
 	const auto EnemyController = GetController<IEnemyControllable>();
 	if(EnemyController == nullptr || InstigatorController == nullptr)	return;

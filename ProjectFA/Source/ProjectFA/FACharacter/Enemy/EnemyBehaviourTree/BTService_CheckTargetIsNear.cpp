@@ -30,7 +30,10 @@ void UBTService_CheckTargetIsNear::TickNode(UBehaviorTreeComponent& OwnerComp, u
 	const TArray<AActor*> ActorToIgnore { Pawn };
 	TArray<AActor*> OutActors;
 	UKismetSystemLibrary::SphereOverlapActors(Pawn, Pawn->GetActorLocation(), SearchRadius, ObjectTypes, AFACharacter::StaticClass(), ActorToIgnore, OutActors);
+
+#if WITH_EDITOR
 	UKismetSystemLibrary::DrawDebugSphere(Pawn, Pawn->GetActorLocation(), SearchRadius, 30, FLinearColor::Green, .5f, 1.f);
+#endif
 
 	for(const auto OverlappedActor : OutActors)
 	{

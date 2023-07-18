@@ -27,7 +27,11 @@ EBTNodeResult::Type UBTTask_WaitForSearchPatrol::ExecuteTask(UBehaviorTreeCompon
 	FNavLocation NextNavLocation;
 	if(NavSystem->GetRandomPointInNavigableRadius(OriginPosition, PatrolRadius, NextNavLocation))
 	{
+		
+#if WITH_EDITOR
 		DrawDebugSphere(World, NextNavLocation.Location, 10.f, 12, FColor::Cyan, false, 2.f);
+#endif
+		
 		BlackboardComponent->SetValueAsVector(TEXT("NextPatrolPoint"), NextNavLocation.Location);
 		return Super::ExecuteTask(OwnerComp, NodeMemory);
 	}

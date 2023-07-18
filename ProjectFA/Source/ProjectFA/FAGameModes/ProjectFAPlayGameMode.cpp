@@ -2,6 +2,7 @@
 
 
 #include "ProjectFAPlayGameMode.h"
+#include "GameFramework/PlayerState.h"
 #include "Kismet/GameplayStatics.h"
 #include "ProjectFA/InGameItem/PickupItem.h"
 #include "ProjectFA/PlayGamePretreatment/ItemSpawnable.h"

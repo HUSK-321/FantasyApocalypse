@@ -360,5 +360,9 @@ void UPlayableCharacterCombatComponent::TurnToNearbyTarget()
 		UKismetSystemLibrary::DrawDebugSphere(GetOwner(), GetOwner()->GetActorLocation(), SearchRadius, 30, FLinearColor::Green, .5f, 1.f);
 		return;
 	}
+
+#if WITH_EDITOR
 	UKismetSystemLibrary::DrawDebugSphere(GetOwner(), GetOwner()->GetActorLocation(), SearchRadius, 30, FLinearColor::Blue, .5f, 1.f);
+#endif
+	
 }

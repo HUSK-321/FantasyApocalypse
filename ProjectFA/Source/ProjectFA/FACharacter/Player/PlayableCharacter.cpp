@@ -10,6 +10,7 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "..\..\Interactable\Looting\InteractableWithCharacter.h"
+#include "Components/SkeletalMeshComponent.h"
 
 APlayableCharacter::APlayableCharacter()
 	:
@@ -137,7 +138,7 @@ void APlayableCharacter::Jump()
 
 void APlayableCharacter::CrouchButtonPressed()
 {
-	if(bNowSprinting || CharacterCannotMove())	return;
+	if(CharacterCannotCrouch())	return;
 	bIsCrouched ? UnCrouch() : Crouch();
 }
 
@@ -329,14 +330,22 @@ bool APlayableCharacter::CharacterCannotMove()
 
 bool APlayableCharacter::CharacterCannotAttack()
 {
-	return bIsCrouched || GetCharacterMovement()->IsFalling() ||
-			(CombatComponent) ? (CombatComponent->GetNowDoingSkill()) : false;
+	bool CannotAttack = bIsCrouched || GetCharacterMovement()->IsFalling();
+	return (CombatComponent) ? CannotAttack || CombatComponent->GetNowDoingSkill()
+							 : CannotAttack;
 }
 
 bool APlayableCharacter::CharacterCannotJump()
 {
 	if(CombatComponent == nullptr)	return CharacterCannotMove();
 	return CharacterCannotMove() || CombatComponent->GetNowAttacking();
+}
+
+bool APlayableCharacter::CharacterCannotCrouch()
+{
+	bool CannotCrouch = bNowSprinting || CharacterCannotMove() || GetCharacterMovement()->IsFalling();
+	return (CombatComponent) ? (CannotCrouch || CombatComponent->GetNowAttacking() || CombatComponent->GetNowDoingSkill())
+							 : CannotCrouch; 
 }
 
 void APlayableCharacter::CurrentHealthChanged()
@@ -365,4 +374,45 @@ void APlayableCharacter::ServerSetCharacterMovement_Implementation(bool bSprinti
 	const float CurrentCrouchSpeed = MaxCrouchSpeed - DecreaseFactors;
 	GetCharacterMovement()->MaxWalkSpeed = CurrentSpeed;
 	GetCharacterMovement()->MaxWalkSpeedCrouched = CurrentCrouchSpeed;
+}
+
+void APlayableCharacter::EnableSearchOutEffect()
+{
+	GetMesh()->SetRenderCustomDepth(true);
+	GetMesh()->CustomDepthStencilValue = 100;
+}
+
+void APlayableCharacter::DisableSearchOutEffect()
+{
+	GetMesh()->SetRenderCustomDepth(false);
+
+	if(const auto PlayableController = Cast<APlayableController>(Controller))
+	{
+		PlayableController->DisableAnnounce();
+	}
+}
+
+void APlayableCharacter::AnnounceDetected()
+{
+	if(const auto PlayableController = Cast<APlayableController>(Controller))
+	{
+		PlayableController->ClientAnnouncePlayer(FString(TEXT("You Are Detected!!!")));
+	}
+}
+
+void APlayableCharacter::AnnounceToOwner(int32 DetectedCount)
+{
+	const FString Announcement = FString::Printf(TEXT("Detect %d Players"), DetectedCount);
+	if(const auto PlayableController = Cast<APlayableController>(Controller))
+	{
+		PlayableController->ClientAnnouncePlayer(Announcement);
+	}
+}
+
+void APlayableCharacter::AnnounceToOwnerEnd()
+{
+	if(const auto PlayableController = Cast<APlayableController>(Controller))
+	{
+		PlayableController->DisableAnnounce();
+	}
 }

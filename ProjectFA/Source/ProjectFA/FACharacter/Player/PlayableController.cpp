@@ -16,7 +16,6 @@
 #include "ProjectFA/InGameItem/InventoryUsable.h"
 #include "..\..\Interactable\Looting\InteractableWithCharacter.h"
 #include "GameFramework/PlayerState.h"
-#include "GameFramework/SpectatorPawn.h"
 #include "ProjectFA/HUD/Handslot/PlayerHandSlotWidget.h"
 
 void APlayableController::BeginPlay()
@@ -156,6 +155,28 @@ void APlayableController::CurrentHandItemWidget(APickupItem* ItemInHand)
 	if(ItemInHand == nullptr || ProjectFAHUD == nullptr || ProjectFAHUD->PlayerOverlay == nullptr || ProjectFAHUD->PlayerOverlay->HandSlotWidget == nullptr)	return;
 	
 	ProjectFAHUD->PlayerOverlay->HandSlotWidget->SetWeaponImage(ItemInHand->GetItemIcon());
+}
+
+void APlayableController::AnnouncePlayer(FString AnnounceText)
+{
+	ClientAnnouncePlayer(AnnounceText);
+}
+
+void APlayableController::ClientAnnouncePlayer_Implementation(const FString& AnnounceText)
+{
+	if(ProjectFAHUD == nullptr || ProjectFAHUD->PlayerOverlay == nullptr)	return;
+	ProjectFAHUD->PlayerOverlay->SetAnnounceText(AnnounceText);
+}
+
+void APlayableController::DisableAnnounce()
+{
+	ClientDisableAnnounce();
+}
+
+void APlayableController::ClientDisableAnnounce_Implementation()
+{
+	if(ProjectFAHUD == nullptr || ProjectFAHUD->PlayerOverlay == nullptr)	return;
+	ProjectFAHUD->PlayerOverlay->DisableAnnounce();
 }
 
 void APlayableController::SetInventoryWeight(const float& Weight)
