@@ -16,6 +16,6 @@ EBTNodeResult::Type UBTTask_SearchTargetByWeight::ExecuteTask(UBehaviorTreeCompo
 	const auto EnemyController = ControllingPawn->GetController<IEnemyControllable>();
 	if(EnemyController == nullptr)	return EBTNodeResult::Failed;
 
-	EnemyController->SetEnemyBlackboardValueAsObject(ObjectKeyToSearch, nullptr, 0.f);
+	EnemyController->SetEnemyBlackboardValueAsObject(ObjectKeyToSearch, EnemyController->GetMostTarget(), 0.f);
 	return EBTNodeResult::Succeeded;
 }

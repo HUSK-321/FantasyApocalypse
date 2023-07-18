@@ -13,30 +13,6 @@ void AProjectFAPlayGameMode::PlayerDead(APlayableCharacter* VictimCharacter, APl
 {
 }
 
-void AProjectFAPlayGameMode::SwapPlayerControllers(APlayerController* OldPC, APlayerController* NewPC)
-{
-	Super::SwapPlayerControllers(OldPC, NewPC);
-	UE_LOG(LogTemp, Warning, TEXT("SwapPlayerControllers"))
-
-	const auto OldPLayerState = OldPC->GetPlayerState<APlayerState>();
-	const auto NewPLayerState = NewPC->GetPlayerState<APlayerState>();
-
-	if(IsValid(OldPLayerState) == false)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("OldPLayerState invalid"));
-	}
-	if(IsValid(NewPLayerState) == false)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("NewPLayerState invalid"));
-	}
-	
-	if(IsValid(OldPLayerState) && IsValid(NewPLayerState))
-	{
-		NewPLayerState->SetPlayerName(OldPLayerState->GetPlayerName());
-		UE_LOG(LogTemp, Warning, TEXT("player name : %s"), *NewPLayerState->GetPlayerName());
-	}
-}
-
 void AProjectFAPlayGameMode::HandleMatchIsWaitingToStart()
 {
 	Super::HandleMatchIsWaitingToStart();

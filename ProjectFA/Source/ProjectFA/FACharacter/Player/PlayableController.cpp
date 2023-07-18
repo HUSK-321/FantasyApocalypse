@@ -170,7 +170,6 @@ void APlayableController::ClientAnnouncePlayer_Implementation(const FString& Ann
 
 void APlayableController::DisableAnnounce()
 {
-	// TODO : do in client
 	ClientDisableAnnounce();
 }
 
