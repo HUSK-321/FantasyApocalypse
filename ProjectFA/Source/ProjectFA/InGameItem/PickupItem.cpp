@@ -6,7 +6,7 @@
 #include "Components/SphereComponent.h"
 #include "Components/StaticMeshComponent.h"
 #include "Net/UnrealNetwork.h"
-#include "ProjectFA/FACharacter/PickupableCharacter.h"
+#include "ProjectFA/FAInterfaces/PickupableCharacter.h"
 
 APickupItem::APickupItem()
 {

@@ -13,9 +13,9 @@
 #include "ProjectFA/HUD/ProjectFAHUD.h"
 #include "ProjectFA/HUD/InventoryWidget/InventoryWidget.h"
 #include "ProjectFA/HUD/PickupItemListWidget/PickupItemList.h"
-#include "ProjectFA/InGameItem/InventoryUsable.h"
 #include "..\..\Interactable\Looting\InteractableWithCharacter.h"
 #include "GameFramework/PlayerState.h"
+#include "ProjectFA/FAInterfaces/InventoryUsable.h"
 #include "ProjectFA/HUD/Handslot/PlayerHandSlotWidget.h"
 
 void APlayableController::BeginPlay()

@@ -2,10 +2,10 @@
 
 
 #include "WeaponCollisionNotifyState.h"
-#include "PlayableCharacterCombatComponent.h"
+#include "ProjectFA/FAInterfaces/WeaponAttackableComponent.h"
 
 void UWeaponCollisionNotifyState::NotifyBegin(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation,
-	float TotalDuration, const FAnimNotifyEventReference& EventReference)
+                                              float TotalDuration, const FAnimNotifyEventReference& EventReference)
 {
 	Super::NotifyBegin(MeshComp, Animation, TotalDuration, EventReference);
 	const auto MeshOwnerActor = MeshComp->GetOwner();

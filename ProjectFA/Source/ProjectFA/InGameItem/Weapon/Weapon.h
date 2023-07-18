@@ -3,8 +3,8 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "ProjectFA/InGameItem/Equipable.h"
-#include "ProjectFA/InGameItem/InventoryUsable.h"
+#include "ProjectFA/FAInterfaces/Equipable.h"
+#include "ProjectFA/FAInterfaces/InventoryUsable.h"
 #include "ProjectFA/InGameItem/PickupItem.h"
 #include "ProjectFA/InGameItem/ItemInfoData.h"
 #include "Weapon.generated.h"

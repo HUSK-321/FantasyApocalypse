@@ -3,8 +3,8 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "InventoryUsable.h"
 #include "PickupItem.h"
+#include "ProjectFA/FAInterfaces/InventoryUsable.h"
 #include "SearchOutItem.generated.h"
 
 

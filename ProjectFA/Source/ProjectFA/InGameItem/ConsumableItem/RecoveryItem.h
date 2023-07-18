@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "ProjectFA/InGameItem/InventoryUsable.h"
+#include "ProjectFA/FAInterfaces/InventoryUsable.h"
 #include "ProjectFA/InGameItem/PickupItem.h"
 #include "RecoveryItem.generated.h"
 

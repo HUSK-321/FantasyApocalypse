@@ -8,7 +8,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "Net/UnrealNetwork.h"
 #include "Perception/PawnSensingComponent.h"
-#include "ProjectFA/FACharacter/PickupableCharacter.h"
+#include "ProjectFA/FAInterfaces/PickupableCharacter.h"
 #include "ProjectFA/FAInterfaces/Controller/EnemyControllable.h"
 #include "ProjectFA/Interactable/Looting/LootingItemComponent.h"
 

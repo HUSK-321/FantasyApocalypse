@@ -5,10 +5,10 @@
 #include "Components/BoxComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Net/UnrealNetwork.h"
-#include "ProjectFA/FACharacter/PickupableCharacter.h"
 #include "ProjectFA/FADictionary/GamePlayCalculator.h"
+#include "ProjectFA/FAInterfaces/Equipable.h"
+#include "ProjectFA/FAInterfaces/PickupableCharacter.h"
 #include "ProjectFA/FAInterfaces/Controller/EnemyControllable.h"
-#include "ProjectFA/InGameItem/Equipable.h"
 
 
 AGroggyEnemy::AGroggyEnemy()

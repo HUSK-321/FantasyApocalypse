@@ -5,9 +5,9 @@
 #include "CoreMinimal.h"
 #include "ProjectFA/FACharacter/FACharacter.h"
 #include "InputActionValue.h"
-#include "ProjectFA/FACharacter/CombatableCharacter.h"
-#include "ProjectFA/FACharacter/InteractableCharacter.h"
-#include "ProjectFA/FACharacter/PickupableCharacter.h"
+#include "ProjectFA/FAInterfaces/CombatableCharacter.h"
+#include "ProjectFA/FAInterfaces/InteractableCharacter.h"
+#include "ProjectFA/FAInterfaces/PickupableCharacter.h"
 #include "ProjectFA/FAInterfaces/SearchOutEffectable.h"
 #include "PlayableCharacter.generated.h"
 
