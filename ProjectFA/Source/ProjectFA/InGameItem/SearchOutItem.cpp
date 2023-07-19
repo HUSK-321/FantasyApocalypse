@@ -2,7 +2,6 @@
 
 
 #include "SearchOutItem.h"
-
 #include "TimerManager.h"
 #include "GameFramework/Character.h"
 #include "GameFramework/Pawn.h"
@@ -81,6 +80,8 @@ void ASearchOutItem::ResetSearchOutActors()
 
 void ASearchOutItem::SearchOutByOverlap()
 {
+	if(GetOwner() == nullptr)	return;
+	
 	const TArray<TEnumAsByte<EObjectTypeQuery>> ObjectTypeQuery;
 	const TArray<AActor*> ActorsToIgnore { GetOwner() };
 	TArray<AActor*> OutActors;
