@@ -14,6 +14,17 @@
 | **프로젝트 기간**   | 2023.03.12 ~             |
 | **기타**        |                          |
 
+## 프로젝트 빌드 파일
+
+[Google Drive](https://drive.google.com/file/d/1KEZW9a_Nzwo-dYEq8Fyf560_q8pHBjIh/view?usp=sharing)
+```
+플레이시 Steam 클라이언트를 켜야 합니다.
+```
+
+## 개발 사항
+
+[해당 링크](https://past-airbus-17b.notion.site/Project-FA-0f614beb578a473582f430c9c39c9852?pvs=4) 참조
+
 ## 사용 에셋
 
 - [Animation from 'Mixamo'](https://www.mixamo.com/#/)
@@ -37,3 +48,8 @@
 - [Stylized Fantasy Provencal](https://www.unrealengine.com/marketplace/en-US/product/stylized-fantasy-provencal)
 
 - [Zombie Movement and Modular Interaction Animations](https://www.unrealengine.com/marketplace/en-US/product/zombie-animations-and-modular-interactions)
+
+- [Blink and Dash VFX](https://www.unrealengine.com/marketplace/en-US/product/blink-and-dash-vfx)
+
+- Sounds from Fanatical, [FreeSound](https://freesound.org/)
+
