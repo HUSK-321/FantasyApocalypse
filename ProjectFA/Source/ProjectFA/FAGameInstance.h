@@ -4,22 +4,15 @@
 
 #include "CoreMinimal.h"
 #include "Engine/GameInstance.h"
-#include "FAInterfaces/QuestObservable.h"
 #include "FAInterfaces/SoundPlayableInstance.h"
 #include "FAGameInstance.generated.h"
 
 class UPlayerQuestObserver;
 
 UCLASS()
-class PROJECTFA_API UFAGameInstance : public UGameInstance, public IQuestObservable, public ISoundPlayableInstance
+class PROJECTFA_API UFAGameInstance : public UGameInstance, public ISoundPlayableInstance
 {
 	GENERATED_BODY()
-
-public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Game Quest")
-	TSubclassOf<UPlayerQuestObserver> PlayerQuestManagementClass;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Game Quest")
-	TObjectPtr<UPlayerQuestObserver> PlayerQuestManagement;
 
 private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Game Sound/Footstep", meta = (AllowPrivateAccess = "true"))
@@ -35,11 +28,5 @@ private:
 
 public:
 	UFAGameInstance();
-	virtual void Init() override;
-
-	virtual void AddEnemyDestroyQuest_Implementation(UQuestObject* Quest) override;
-	UFUNCTION()
-	void SearchDestroyEnemyQuest(UObject* Enemy);
-
 	virtual void PlayFootstepSoundPhysics(FVector SoundLocation, TEnumAsByte<EPhysicalSurface> SurfaceType, float VolumeMultiplier) override;
 };

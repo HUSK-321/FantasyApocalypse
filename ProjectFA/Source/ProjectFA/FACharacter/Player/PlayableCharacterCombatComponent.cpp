@@ -10,6 +10,7 @@
 #include "ProjectFA/FACharacter/FACharacter.h"
 #include "ProjectFA/FACharacter/SkillSystem/SkillDataAsset.h"
 #include "ProjectFA/FADictionary/GamePlayCalculator.h"
+#include "ProjectFA/FAInterfaces/Equipable.h"
 #include "ProjectFA/InGameItem/Weapon/Weapon.h"
 
 UPlayableCharacterCombatComponent::UPlayableCharacterCombatComponent()

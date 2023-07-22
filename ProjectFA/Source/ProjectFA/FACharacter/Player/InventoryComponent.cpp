@@ -2,9 +2,9 @@
 
 
 #include "InventoryComponent.h"
-#include "PlayableCharacter.h"
 #include "PlayableCharacterCombatComponent.h"
-#include "ProjectFA/InGameItem/Equipable.h"
+#include "ProjectFA/FAInterfaces/CombatableCharacter.h"
+#include "ProjectFA/FAInterfaces/Equipable.h"
 #include "ProjectFA/InGameItem/PickupItem.h"
 
 UInventoryComponent::UInventoryComponent()

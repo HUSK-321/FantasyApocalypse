@@ -6,7 +6,7 @@
 #include "Components/SphereComponent.h"
 #include "Components/WidgetComponent.h"
 #include "Net/UnrealNetwork.h"
-#include "ProjectFA/FACharacter/InteractableCharacter.h"
+#include "ProjectFA/FAInterfaces/InteractableCharacter.h"
 #include "ProjectFA/FAInterfaces/Controller/ItemRPCableController.h"
 #include "ProjectFA/HUD/InteractionWidget/ItemLootingProgressWidget.h"
 #include "ProjectFA/InGameItem/PickupItem.h"

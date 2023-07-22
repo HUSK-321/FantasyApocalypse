@@ -3,34 +3,10 @@
 
 #include "FAGameInstance.h"
 #include "ProjectFA.h"
-#include "FADictionary/FACoreDelegates.h"
-#include "FAQuests/PlayerQuestObserver.h"
 #include "Kismet/GameplayStatics.h"
 
 UFAGameInstance::UFAGameInstance()
 {
-}
-
-void UFAGameInstance::Init()
-{
-	Super::Init();
-	
-	FACoreDelegates::OnEnemyDestroyed.AddUFunction(this, FName("SearchDestroyEnemyQuest"));
-	
-	if(PlayerQuestManagementClass)
-	{
-		PlayerQuestManagement = NewObject<UPlayerQuestObserver>(this, PlayerQuestManagementClass);
-	}
-}
-
-void UFAGameInstance::AddEnemyDestroyQuest_Implementation(UQuestObject* Quest)
-{
-	PlayerQuestManagement->AddEnemyDestroyQuest(Quest);
-}
-
-void UFAGameInstance::SearchDestroyEnemyQuest(UObject* Enemy)
-{
-	PlayerQuestManagement->SearchDestroyEnemyQuest(Enemy);
 }
 
 void UFAGameInstance::PlayFootstepSoundPhysics(FVector SoundLocation, TEnumAsByte<EPhysicalSurface> SurfaceType, float VolumeMultiplier)
