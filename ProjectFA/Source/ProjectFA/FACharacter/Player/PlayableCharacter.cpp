@@ -9,8 +9,8 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Kismet/KismetSystemLibrary.h"
-#include "..\..\Interactable\Looting\InteractableWithCharacter.h"
 #include "Components/SkeletalMeshComponent.h"
+#include "ProjectFA/FAInterfaces/InteractableWithCharacter.h"
 
 APlayableCharacter::APlayableCharacter()
 	:

@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "Looting/InteractableWithCharacter.h"
+#include "ProjectFA/FAInterfaces/InteractableWithCharacter.h"
 #include "InteractableDoor.generated.h"
 
 class UTimelineComponent;

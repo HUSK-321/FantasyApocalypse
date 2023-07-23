@@ -3,9 +3,9 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "InteractableWithCharacter.h"
 #include "Components/TimelineComponent.h"
 #include "GameFramework/Actor.h"
+#include "ProjectFA/FAInterfaces/InteractableWithCharacter.h"
 #include "ProjectFA/PlayGamePretreatment/ItemSpawnable.h"
 #include "LootingBox.generated.h"
 
