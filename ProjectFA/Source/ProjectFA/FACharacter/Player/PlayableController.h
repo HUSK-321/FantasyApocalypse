@@ -82,11 +82,7 @@ private:
 	UFUNCTION()
 	void SetInventoryWeight(const float& Weight);
 	
-	bool PlayerHealthOverlayNotValid() const;
-	bool NearbyItemListNotValid() const;
-	bool PlayerStaminaOverlayNotValid() const;
 	bool InventoryWidgetNotValid() const;
-	bool SkillWidgetNotValid() const;
 
 	void SetInputModeGameAndUI();
 	void SetInputModeGameOnly();

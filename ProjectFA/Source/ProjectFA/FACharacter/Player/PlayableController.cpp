@@ -5,18 +5,11 @@
 #include "InventoryComponent.h"
 #include "PlayableCharacter.h"
 #include "PlayableCharacterCombatComponent.h"
-#include "Components/ListView.h"
-#include "Components/ProgressBar.h"
-#include "Components/TextBlock.h"
-#include "ProjectFA/HUD/PlayerOverlay.h"
-#include "ProjectFA/HUD/SkillWidget/SkillWidget.h"
 #include "ProjectFA/HUD/ProjectFAHUD.h"
 #include "ProjectFA/HUD/InventoryWidget/InventoryWidget.h"
-#include "ProjectFA/HUD/PickupItemListWidget/PickupItemList.h"
 #include "GameFramework/PlayerState.h"
 #include "ProjectFA/FAInterfaces/InteractableWithCharacter.h"
 #include "ProjectFA/FAInterfaces/InventoryUsable.h"
-#include "ProjectFA/HUD/Handslot/PlayerHandSlotWidget.h"
 
 void APlayableController::BeginPlay()
 {
@@ -91,48 +84,44 @@ void APlayableController::SetCombatComponentEvent(UPlayableCharacterCombatCompon
 
 void APlayableController::SetHealthHUD(const float& CurrentHealth, const float& MaxHealth)
 {
-	if(PlayerHealthOverlayNotValid())	return;
-	const auto& Overlay = ProjectFAHUD->PlayerOverlay;
-	const float HealthPercent = CurrentHealth / MaxHealth;
-	const FString HealthText = FString::Printf(TEXT("%d / %d"), FMath::CeilToInt(CurrentHealth), FMath::CeilToInt(MaxHealth));
-	Overlay->HealthBar->SetPercent(HealthPercent);
-	Overlay->HealthText->SetText(FText::FromString(HealthText));
+	if(IsValid(ProjectFAHUD) == false)	return;
+
+	ProjectFAHUD->SetHealth(CurrentHealth, MaxHealth);
 }
 
 void APlayableController::SetStaminaHUD(const float& CurrentStamina, const float& MaxStamina)
 {
-	if(PlayerStaminaOverlayNotValid())	return;
-	const float StaminaPercent = CurrentStamina / MaxStamina;
-	ProjectFAHUD->PlayerOverlay->StaminaBar->SetPercent(StaminaPercent);
+	if(IsValid(ProjectFAHUD) == false)	return;
+	
+	ProjectFAHUD->SetStamina(CurrentStamina, MaxStamina);
 }
 
 void APlayableController::AddNearbyItem(UObject* Item)
 {
-	if(NearbyItemListNotValid())	return;
-	ProjectFAHUD->PickupItemList->NearbyItemList->AddItem(Item);
-	ProjectFAHUD->PickupItemList->SetVisibility(ESlateVisibility::Visible);
+	if(IsValid(ProjectFAHUD) == false)	return;
+	
+	ProjectFAHUD->AddNearbyItem(Item);
 }
 
 void APlayableController::DeleteNearbyItem(UObject* Item)
 {
-	if(NearbyItemListNotValid())	return;
-	ProjectFAHUD->PickupItemList->NearbyItemList->RemoveItem(Item);
-	if(ProjectFAHUD->PickupItemList->NearbyItemList->GetNumItems() == 0)
-	{
-		ProjectFAHUD->PickupItemList->SetVisibility(ESlateVisibility::Hidden);
-	}
+	if(IsValid(ProjectFAHUD) == false)	return;
+	
+	ProjectFAHUD->DeleteNearbyItem(Item);
 }
 
 void APlayableController::ScrollNearbyItemList(int32 ScrollIndex)
 {
-	if(NearbyItemListNotValid())	return;
-	ProjectFAHUD->PickupItemList->SetScrollIndex(ScrollIndex);
+	if(IsValid(ProjectFAHUD) == false)	return;
+	
+	ProjectFAHUD->ScrollNearbyItemList(ScrollIndex);
 }
 
 void APlayableController::AddInventoryItem(const TArray<APickupItem*> ItemList)
 {
-	if(InventoryWidgetNotValid())	return;
-	ProjectFAHUD->Inventory->SetInventoryWidgetList(ItemList);
+	if(IsValid(ProjectFAHUD) == false)	return;
+	
+	ProjectFAHUD->AddInventoryItem(ItemList);
 }
 
 void APlayableController::ToggleInventoryWidget()
@@ -146,15 +135,16 @@ void APlayableController::ToggleInventoryWidget()
 
 void APlayableController::InitializeSkillWidget(USkillDataAsset* QSkillData, USkillDataAsset* ESkillData)
 {
-	if(SkillWidgetNotValid())	return;
-	ProjectFAHUD->PlayerOverlay->SkillWidget->SetSkillSlotWidget(QSkillData, ESkillData);
+	if(IsValid(ProjectFAHUD) == false)	return;
+	
+	ProjectFAHUD->InitializeSkillWidget(QSkillData, ESkillData);
 }
 
 void APlayableController::CurrentHandItemWidget(APickupItem* ItemInHand)
 {
-	if(ItemInHand == nullptr || ProjectFAHUD == nullptr || ProjectFAHUD->PlayerOverlay == nullptr || ProjectFAHUD->PlayerOverlay->HandSlotWidget == nullptr)	return;
+	if(IsValid(ProjectFAHUD) == false)	return;
 	
-	ProjectFAHUD->PlayerOverlay->HandSlotWidget->SetWeaponImage(ItemInHand->GetItemIcon());
+	ProjectFAHUD->CurrentHandItemWidget(ItemInHand);
 }
 
 void APlayableController::AnnouncePlayer(FString AnnounceText)
@@ -164,8 +154,9 @@ void APlayableController::AnnouncePlayer(FString AnnounceText)
 
 void APlayableController::ClientAnnouncePlayer_Implementation(const FString& AnnounceText)
 {
-	if(ProjectFAHUD == nullptr || ProjectFAHUD->PlayerOverlay == nullptr)	return;
-	ProjectFAHUD->PlayerOverlay->SetAnnounceText(AnnounceText);
+	if(IsValid(ProjectFAHUD) == false)	return;
+	
+	ProjectFAHUD->SetAnnounceText(AnnounceText);
 }
 
 void APlayableController::DisableAnnounce()
@@ -175,40 +166,21 @@ void APlayableController::DisableAnnounce()
 
 void APlayableController::ClientDisableAnnounce_Implementation()
 {
-	if(ProjectFAHUD == nullptr || ProjectFAHUD->PlayerOverlay == nullptr)	return;
-	ProjectFAHUD->PlayerOverlay->DisableAnnounce();
+	if(IsValid(ProjectFAHUD) == false)	return;
+	
+	ProjectFAHUD->DisableAnnounce();
 }
 
 void APlayableController::SetInventoryWeight(const float& Weight)
 {
-	if(InventoryWidgetNotValid() || ProjectFAHUD->Inventory->TotalWeight == nullptr)	return;
-	const FString WeightTextString = FString::Printf(TEXT("Total Weight : %.2fKG"), Weight); 
-	ProjectFAHUD->Inventory->TotalWeight->SetText(FText::FromString(WeightTextString));
-}
-
-bool APlayableController::PlayerHealthOverlayNotValid() const
-{
-	return ProjectFAHUD == nullptr || ProjectFAHUD->PlayerOverlay == nullptr || ProjectFAHUD->PlayerOverlay->HealthText == nullptr || ProjectFAHUD->PlayerOverlay->HealthBar == nullptr;
-}
-
-bool APlayableController::NearbyItemListNotValid() const
-{
-	return ProjectFAHUD == nullptr || ProjectFAHUD->PickupItemList == nullptr || ProjectFAHUD->PickupItemList->NearbyItemList == nullptr;
-}
-
-bool APlayableController::PlayerStaminaOverlayNotValid() const
-{
-	return ProjectFAHUD == nullptr || ProjectFAHUD->PlayerOverlay == nullptr || ProjectFAHUD->PlayerOverlay->StaminaBar == nullptr;
+	if(IsValid(ProjectFAHUD) == false)	return;
+	
+	ProjectFAHUD->SetInventoryWeight(Weight);
 }
 
 bool APlayableController::InventoryWidgetNotValid() const
 {
 	return ProjectFAHUD == nullptr || ProjectFAHUD->Inventory == nullptr;
-}
-
-bool APlayableController::SkillWidgetNotValid() const
-{
-	return ProjectFAHUD == nullptr || ProjectFAHUD->PlayerOverlay == nullptr || ProjectFAHUD->PlayerOverlay->SkillWidget == nullptr;
 }
 
 void APlayableController::SetInputModeGameAndUI()
